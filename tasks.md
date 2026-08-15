@@ -6,11 +6,11 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 
 ## 🏗️ Fase 1: Fundação Técnica, Ambiente e Design System
 
-- [ ] **Task 1.1: Inicialização do Workspace Next.js & TypeScript com TailwindCSS 4**
-  - [ ] Criar projeto Next.js 16 (App Router) com TypeScript estrito (`strict: true`).
-  - [ ] Configurar path alias `@/*` no `tsconfig.json`.
-  - [ ] Configurar TailwindCSS 4 com `@import "tailwindcss";` e `prettier-plugin-tailwindcss`.
-  - [ ] Critério de Aceite: `npm run build` executa sem erros de compilação ou linter.
+- [x] **Task 1.1: Inicialização do Workspace Next.js & TypeScript com TailwindCSS 4**
+  - [x] Criar projeto Next.js 16 (App Router) com TypeScript estrito (`strict: true`).
+  - [x] Configurar path alias `@/*` no `tsconfig.json`.
+  - [x] Configurar TailwindCSS 4 com `@import "tailwindcss";` e `prettier-plugin-tailwindcss`.
+  - [x] Critério de Aceite: `npm run build` executa sem erros de compilação ou linter.
 
 - [ ] **Task 1.2: Infraestrutura Local Docker**
   - [ ] Criar `docker-compose.yml` com serviço PostgreSQL 16 Alpine e volume de persistência.
