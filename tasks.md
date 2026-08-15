@@ -53,37 +53,37 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Implementar Route Handler `POST /api/auth/login`.
   - [x] Implementar tela `src/app/(auth)/login/page.tsx` com formulário Zod e botões de atalho com credenciais pré-preenchidas.
   - [x] Redirecionamento contextual: `ORGANIZER` -> `/organizer`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/` ou `returnUrl`.
-- [ ] **Task 2.3: Cadastro de Novos Usuários (UC02)**
-  - [ ] Implementar Route Handler `POST /api/auth/register` com validação de unicidade de e-mail.
-  - [ ] Implementar tela `src/app/(auth)/register/page.tsx` com seleção de papel (`CUSTOMER` ou `ORGANIZER`).
-- [ ] **Task 2.4: Middleware Edge RBAC e Proteção de Rotas (UC03)**
-  - [ ] Implementar `src/middleware.ts` com validação de token e proteção por papel.
-  - [ ] Injetar cabeçalhos downstream `x-user-id`, `x-user-role`, `x-user-email`.
-  - [ ] Criar página personalizada `403 Forbidden` (`src/app/forbidden.tsx`).
-- [ ] **Task 2.5: Script de Seed Automatizado e Idempotente (UC04)**
-  - [ ] Criar `prisma/seed.ts` populando 1 Organizador, 2 Clientes, 1 Portaria e 1 Evento completo com Pista e 30 Assentos VIP numerados.
-  - [ ] Configurar comando `npm run db:seed` no `package.json`.
-- [ ] **Task 2.6: Logout e Invalidação de Sessão (UC05)**
-  - [ ] Implementar Route Handler `POST /api/auth/logout`.
-  - [ ] Integrar botão de logout na `Navbar` com limpeza de estado e feedback visual.
+- [x] **Task 2.3: Cadastro de Novos Usuários (UC02)**
+  - [x] Implementar Route Handler `POST /api/auth/register` com validação de unicidade de e-mail.
+  - [x] Implementar tela `src/app/(auth)/register/page.tsx` com seleção de papel (`CUSTOMER` ou `ORGANIZER`).
+- [x] **Task 2.4: Middleware Edge RBAC e Proteção de Rotas (UC03)**
+  - [x] Implementar `src/proxy.ts` (substituindo middleware.ts) com validação de token e proteção por papel.
+  - [x] Injetar cabeçalhos downstream `x-user-id`, `x-user-role`, `x-user-email`.
+  - [x] Criar página personalizada `403 Forbidden` (`src/app/forbidden.tsx`).
+- [x] **Task 2.5: Script de Seed Automatizado e Idempotente (UC04)**
+  - [x] Criar `prisma/seed.ts` populando 1 Organizador, 2 Clientes, 1 Portaria e 1 Evento completo com Pista e 30 Assentos VIP numerados.
+  - [x] Configurar comando `npm run db:seed` no `package.json`.
+- [x] **Task 2.6: Logout e Invalidação de Sessão (UC05)**
+  - [x] Implementar Route Handler `POST /api/auth/logout`.
+  - [x] Integrar botão de logout na `Navbar` com limpeza de estado e feedback visual.
 
 ---
 
 ### Módulo 2: Integração Externa e Gestão de Eventos (UC06 a UC10)
-- [ ] **Task 2.7: Integração TMDb com Catálogo Fallback Mock (UC06)**
-  - [ ] Implementar Route Handler `GET /api/external-catalog/tmdb`.
-  - [ ] Implementar catálogo mock embutido com filmes populares caso `TMDB_API_KEY` esteja ausente.
-  - [ ] Integrar modal de busca debounced no formulário de eventos.
-- [ ] **Task 2.8: Integração Ticketmaster com Catálogo Fallback Mock (UC07)**
-  - [ ] Implementar Route Handler `GET /api/external-catalog/ticketmaster`.
-  - [ ] Implementar catálogo mock embutido de shows/turnês caso `TICKETMASTER_API_KEY` esteja ausente.
-  - [ ] Integrar modal de busca debounced no formulário de eventos.
-- [ ] **Task 2.9: Criação de Evento com Setores de Pista (UC08)**
-  - [ ] Implementar Route Handler `POST /api/events` com validação Zod.
-  - [ ] Implementar formulário de criação em `src/app/(organizer)/organizer/events/create/page.tsx`.
-- [ ] **Task 2.10: Criação de Evento com Mapa de Assentos Numerados (UC09)**
-  - [ ] Adicionar gerador de grade de assentos por fileiras e poltronas (A1..A10, B1..B10...).
-  - [ ] Persistir registros de `Seat` com status `AVAILABLE`.
+- [x] **Task 2.7: Integração TMDb com Catálogo Fallback Mock (UC06)**
+  - [x] Implementar Route Handler `GET /api/external-catalog/tmdb`.
+  - [x] Implementar catálogo mock embutido com filmes populares caso `TMDB_API_KEY` esteja ausente.
+  - [x] Integrar modal de busca debounced no formulário de eventos.
+- [x] **Task 2.8: Integração Ticketmaster com Catálogo Fallback Mock (UC07)**
+  - [x] Implementar Route Handler `GET /api/external-catalog/ticketmaster`.
+  - [x] Implementar catálogo mock embutido de shows/turnês caso `TICKETMASTER_API_KEY` esteja ausente.
+  - [x] Integrar modal de busca debounced no formulário de eventos.
+- [x] **Task 2.9: Criação de Evento com Setores de Pista (UC08)**
+  - [x] Implementar Route Handler `POST /api/events` com validação Zod.
+  - [x] Implementar formulário de criação em `src/app/(organizer)/organizer/events/create/page.tsx`.
+- [x] **Task 2.10: Criação de Evento com Mapa de Assentos Numerados (UC09)**
+  - [x] Adicionar gerador de grade de assentos por fileiras e poltronas (A1..A10, B1..B10...).
+  - [x] Persistir registros de `Seat` com status `AVAILABLE`.
 - [ ] **Task 2.11: Painel de Gestão do Organizador (UC10)**
   - [ ] Implementar tela `src/app/(organizer)/organizer/page.tsx` listando eventos criados com badges de status e botão para novo evento.
 

@@ -1,12 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { Ticket, Menu, X } from "lucide-react";
+import { Ticket, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
 
-export function Navbar() {
+type UserPayload = {
+  id: string;
+  email: string;
+  role: string;
+};
+
+export function Navbar({ user }: { user: UserPayload | null }) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const { success, error } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        success("Sessão encerrada com sucesso.");
+        router.push('/');
+        router.refresh();
+      } else {
+        error("Erro ao encerrar sessão.");
+      }
+    } catch (err) {
+      error("Erro ao encerrar sessão.");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-main/80 backdrop-blur-md">
@@ -21,12 +46,21 @@ export function Navbar() {
           <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Eventos</Link>
           <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Meus Ingressos</Link>
           <div className="flex items-center gap-3 ml-4">
-            <Link href="/login">
-              <Button variant="ghost">Entrar</Button>
-            </Link>
-            <Link href="/register">
-              <Button variant="primary">Criar Conta</Button>
-            </Link>
+            {user ? (
+              <Button variant="ghost" onClick={handleLogout} className="gap-2">
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost">Entrar</Button>
+                </Link>
+                <Link href="/register">
+                  <Button variant="primary">Criar Conta</Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 
@@ -43,12 +77,21 @@ export function Navbar() {
             <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Eventos</Link>
             <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Meus Ingressos</Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-border-subtle">
-              <Link href="/login" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-center">Entrar</Button>
-              </Link>
-              <Link href="/register" onClick={() => setIsOpen(false)}>
-                <Button variant="primary" className="w-full justify-center">Criar Conta</Button>
-              </Link>
+              {user ? (
+                <Button variant="ghost" onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full justify-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Sair
+                </Button>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-center">Entrar</Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsOpen(false)}>
+                    <Button variant="primary" className="w-full justify-center">Criar Conta</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

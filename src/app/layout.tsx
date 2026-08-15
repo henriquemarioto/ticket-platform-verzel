@@ -16,7 +16,10 @@ export const metadata: Metadata = {
   description: "Plataforma de Eventos e Ingressos",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import { getSession } from "@/lib/auth";
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getSession();
   return (
     <html
       lang="pt-BR"
@@ -24,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-full flex flex-col font-sans">
         <ToastProvider>
-          <Navbar />
+          <Navbar user={session} />
           <main className="flex-1">
             {children}
           </main>
