@@ -1,0 +1,240 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ORGANIZER
+  CUSTOMER
+  GATEKEEPER
+}
+
+enum EventCategory {
+  SHOW
+  MOVIE
+  THEATER
+  FESTIVAL
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  FINISHED
+  CANCELLED
+}
+
+enum SectorType {
+  GENERAL_ADMISSION // Pista (quantidade livre até capacidade)
+  NUMBERED_SEATS    // Assentos numerados por fileira/número
+}
+
+enum SeatStatus {
+  AVAILABLE
+  RESERVED          // Bloqueio temporário (10 minutos)
+  SOLD
+  BLOCKED
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+enum ReservationStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum ValidationResult {
+  VALID
+  ALREADY_USED
+  WRONG_EVENT
+  INVALID_CODE
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  events       Event[]
+  orders       Order[]
+  tickets      Ticket[]
+  reservations Reservation[]
+  validations  TicketValidationLog[]
+
+  @@map("users")
+}
+
+model Event {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  category     EventCategory @default(SHOW)
+  bannerUrl    String
+  locationName String
+  city         String
+  eventDate    DateTime
+  status       EventStatus   @default(PUBLISHED)
+  externalId   String?
+  
+  organizerId  String
+  organizer    User          @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  
+  sectors      Sector[]
+  tickets      Ticket[]
+  reservations Reservation[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("events")
+}
+
+model Sector {
+  id                String     @id @default(cuid())
+  eventId           String
+  event             Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name              String
+  type              SectorType @default(GENERAL_ADMISSION)
+  price             Float
+  totalCapacity     Int
+  availableCapacity Int
+
+  seats             Seat[]
+  tickets           Ticket[]
+  reservationItems  ReservationItem[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@map("sectors")
+}
+
+model Seat {
+  id               String            @id @default(cuid())
+  sectorId         String
+  sector           Sector            @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  row              String            // "A", "B", "C"
+  number           Int               // 1, 2, 3...
+  status           SeatStatus        @default(AVAILABLE)
+  
+  reservedById     String?
+  reservedUntil    DateTime?
+  
+  tickets          Ticket[]
+  reservationItems ReservationItem[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([sectorId, row, number])
+  @@map("seats")
+}
+
+model Reservation {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId     String
+  event       Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status      ReservationStatus @default(PENDING)
+  expiresAt   DateTime
+  
+  items       ReservationItem[]
+  orders      Order[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("reservations")
+}
+
+model ReservationItem {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  sectorId      String
+  sector        Sector      @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  seatId        String?
+  seat          Seat?       @relation(fields: [seatId], references: [id], onDelete: SetNull)
+  quantity      Int         @default(1)
+  unitPrice     Float
+
+  @@map("reservation_items")
+}
+
+model Order {
+  id             String       @id @default(cuid())
+  customerId     String
+  customer       User         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  reservationId  String?
+  reservation    Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  totalAmount    Float
+  status         OrderStatus  @default(PENDING)
+  paymentMethod  String       @default("SIMULATED_CREDIT_CARD")
+  paymentDetails String?
+  
+  tickets        Ticket[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("orders")
+}
+
+model Ticket {
+  id             String       @id @default(cuid())
+  orderId        String
+  order          Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  eventId        String
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sectorId       String
+  sector         Sector       @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  seatId         String?
+  seat           Seat?        @relation(fields: [seatId], references: [id], onDelete: SetNull)
+  customerId     String
+  customer       User         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  ticketCode     String       @unique
+  qrPayload      String       @unique // Payload completo assinado: v1:{ticketCode}:{eventId}:{timestamp}:{signature}
+  secureToken    String       @unique // Assinatura HMAC-SHA256 para QR Code
+  shareToken     String       @unique // Token público seguro para link compartilhado
+  status         TicketStatus @default(ACTIVE)
+  usedAt         DateTime?
+
+  validationLogs TicketValidationLog[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("tickets")
+}
+
+model TicketValidationLog {
+  id           String           @id @default(cuid())
+  ticketId     String?
+  ticket       Ticket?          @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  gatekeeperId String
+  gatekeeper   User             @relation(fields: [gatekeeperId], references: [id], onDelete: Cascade)
+  result       ValidationResult
+  rawPayload   String
+  message      String
+  validatedAt  DateTime         @default(now())
+
+  @@map("ticket_validation_logs")
+}

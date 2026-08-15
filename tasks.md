@@ -17,23 +17,23 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Criar `.env.example` com todas as variáveis obrigatórias documentadas (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `QR_HMAC_SECRET`, `TMDB_API_KEY`, `TICKETMASTER_API_KEY`).
   - [x] Critério de Aceite: `docker compose up -d postgres` inicializa o banco na porta 5433 (modificado devido a conflito de porta).
 
-- [ ] **Task 1.3: Modelagem Declarativa Prisma e Conexões Dual-URL**
-  - [ ] Criar `prisma/schema.prisma` com os enums e modelos (`User`, `Event`, `Sector`, `Seat`, `Reservation`, `ReservationItem`, `Order`, `Ticket`, `TicketValidationLog`).
-  - [ ] Configurar `DATABASE_URL` (pooler) e `DIRECT_URL` (migrações).
-  - [ ] Implementar singleton do Prisma em `src/lib/prisma.ts` ancorado no `globalThis`.
-  - [ ] Executar migração inicial (`npx prisma migrate dev --name init`).
-  - [ ] Critério de Aceite: Tabelas e enums criados no PostgreSQL local com integridade referencial.
+- [x] **Task 1.3: Modelagem Declarativa Prisma e Conexões Dual-URL**
+  - [x] Criar `prisma/schema.prisma` com os enums e modelos (`User`, `Event`, `Sector`, `Seat`, `Reservation`, `ReservationItem`, `Order`, `Ticket`, `TicketValidationLog`).
+  - [x] Configurar `DATABASE_URL` (pooler) e `DIRECT_URL` (migrações).
+  - [x] Implementar singleton do Prisma em `src/lib/prisma.ts` ancorado no `globalThis`.
+  - [x] Executar migração inicial (`npx prisma migrate dev --name init`).
+  - [x] Critério de Aceite: Tabelas e enums criados no PostgreSQL local com integridade referencial.
 
-- [ ] **Task 1.4: Design System & Componentes Atômicos UI (TailwindCSS 4 + @theme)**
-  - [ ] Configurar tokens semânticos HSL no bloco `@theme` em `src/app/globals.css`.
-  - [ ] Implementar componentes base em `src/components/ui/`:
-    - [ ] `Button` (variantes: primary, secondary, danger, outline, ghost; suporte a loading e disabled).
-    - [ ] `Input` (estados de erro Zod, anel de foco e ícones).
-    - [ ] `Badge` (estados: success, warning, danger, neutral).
-    - [ ] `Modal` (backdrop blur, acessibilidade com tecla Escape e trava de scroll).
-    - [ ] `ToastProvider` & hook `useToast` (feedback: success, error, warning, info).
-    - [ ] `Skeleton` (indicadores pulsantes para prevenção de CLS).
-  - [ ] Critério de Aceite: Componentes renderizam visualmente refinados conforme [`docs/03-design/DESIGN-SYSTEM.md`](./docs/03-design/DESIGN-SYSTEM.md).
+- [x] **Task 1.4: Design System & Componentes Atômicos UI (TailwindCSS 4 + @theme)**
+  - [x] Configurar tokens semânticos HSL no bloco `@theme` em `src/app/globals.css`.
+  - [x] Implementar componentes base em `src/components/ui/`:
+    - [x] `Button` (variantes: primary, secondary, danger, outline, ghost; suporte a loading e disabled).
+    - [x] `Input` (estados de erro Zod, anel de foco e ícones).
+    - [x] `Badge` (estados: success, warning, danger, neutral).
+    - [x] `Modal` (backdrop blur, acessibilidade com tecla Escape e trava de scroll).
+    - [x] `ToastProvider` & hook `useToast` (feedback: success, error, warning, info).
+    - [x] `Skeleton` (indicadores pulsantes para prevenção de CLS).
+  - [x] Critério de Aceite: Componentes renderizam visualmente refinados conforme [`docs/03-design/DESIGN-SYSTEM.md`](./docs/03-design/DESIGN-SYSTEM.md).
 
 - [ ] **Task 1.5: Layout Raiz, Navbar e Quick Role Switcher**
   - [ ] Implementar `src/app/layout.tsx` com `ToastProvider`, fonte `Plus Jakarta Sans` e tema escuro.
