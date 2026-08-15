@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/toast";
 import { loginSchema } from "@/lib/validations/auth";
 import { Mail, Lock } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { success, error: toastError } = useToast();
@@ -71,6 +71,65 @@ export default function LoginPage() {
   };
 
   return (
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+            E-mail
+          </label>
+          <Input
+            type="email"
+            placeholder="seu@email.com"
+            icon={<Mail />}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+            disabled={isLoading}
+          />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+            Senha
+          </label>
+          <Input
+            type="password"
+            placeholder="••••••••"
+            icon={<Lock />}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+            disabled={isLoading}
+          />
+        </div>
+
+        <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
+          Entrar
+        </Button>
+      </form>
+
+      <div className="mt-8 border-t border-slate-700 pt-6">
+        <p className="mb-4 text-center text-sm font-medium text-slate-400">
+          Acesso Rápido (Ambiente de Teste)
+        </p>
+        <div className="flex flex-col gap-2">
+          <Button variant="outline" size="sm" onClick={() => handlePrefill("ORGANIZER")} type="button">
+            Preencher como Organizador
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER")} type="button">
+            Preencher como Cliente
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handlePrefill("GATEKEEPER")} type="button">
+            Preencher como Portaria
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
       <div className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-800/50 p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-8 text-center">
@@ -78,58 +137,9 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-slate-400">Faça login para acessar sua conta</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-200">
-              E-mail
-            </label>
-            <Input
-              type="email"
-              placeholder="seu@email.com"
-              icon={<Mail />}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-slate-200">
-              Senha
-            </label>
-            <Input
-              type="password"
-              placeholder="••••••••"
-              icon={<Lock />}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-              disabled={isLoading}
-            />
-          </div>
-
-          <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
-            Entrar
-          </Button>
-        </form>
-
-        <div className="mt-8 border-t border-slate-700 pt-6">
-          <p className="mb-4 text-center text-sm font-medium text-slate-400">
-            Acesso Rápido (Ambiente de Teste)
-          </p>
-          <div className="flex flex-col gap-2">
-            <Button variant="outline" size="sm" onClick={() => handlePrefill("ORGANIZER")} type="button">
-              Preencher como Organizador
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER")} type="button">
-              Preencher como Cliente
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handlePrefill("GATEKEEPER")} type="button">
-              Preencher como Portaria
-            </Button>
-          </div>
-        </div>
+        <Suspense fallback={<div className="text-center text-slate-400">Carregando formulário...</div>}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
