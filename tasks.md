@@ -12,10 +12,10 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Configurar TailwindCSS 4 com `@import "tailwindcss";` e `prettier-plugin-tailwindcss`.
   - [x] Critério de Aceite: `npm run build` executa sem erros de compilação ou linter.
 
-- [ ] **Task 1.2: Infraestrutura Local Docker**
-  - [ ] Criar `docker-compose.yml` com serviço PostgreSQL 16 Alpine e volume de persistência.
-  - [ ] Criar `.env.example` com todas as variáveis obrigatórias documentadas (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `QR_HMAC_SECRET`, `TMDB_API_KEY`, `TICKETMASTER_API_KEY`).
-  - [ ] Critério de Aceite: `docker compose up -d postgres` inicializa o banco na porta 5432.
+- [x] **Task 1.2: Infraestrutura Local Docker**
+  - [x] Criar `docker-compose.yml` com serviço PostgreSQL 16 Alpine e volume de persistência.
+  - [x] Criar `.env.example` com todas as variáveis obrigatórias documentadas (`DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `QR_HMAC_SECRET`, `TMDB_API_KEY`, `TICKETMASTER_API_KEY`).
+  - [x] Critério de Aceite: `docker compose up -d postgres` inicializa o banco na porta 5433 (modificado devido a conflito de porta).
 
 - [ ] **Task 1.3: Modelagem Declarativa Prisma e Conexões Dual-URL**
   - [ ] Criar `prisma/schema.prisma` com os enums e modelos (`User`, `Event`, `Sector`, `Seat`, `Reservation`, `ReservationItem`, `Order`, `Ticket`, `TicketValidationLog`).

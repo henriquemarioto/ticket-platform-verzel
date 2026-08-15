@@ -335,8 +335,8 @@ Para conciliar a execução em escala serverless com a segurança nas migraçõe
 No ambiente local, ambas as variáveis podem apontar para o PostgreSQL rodando no Docker local:
 ```env
 # .env (Ambiente Local)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ticket_platform?schema=public"
-DIRECT_URL="postgresql://postgres:postgres@localhost:5432/ticket_platform?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/ticket_platform?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5433/ticket_platform?schema=public"
 ```
 
 #### B. Ambiente de Produção / Staging (Vercel + Supabase)

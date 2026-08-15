@@ -40,8 +40,8 @@ cp .env.example .env
 
 #### Exemplo 1: Ambiente Local (Docker PostgreSQL)
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ticket_platform?schema=public"
-DIRECT_URL="postgresql://postgres:postgres@localhost:5432/ticket_platform?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/ticket_platform?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5433/ticket_platform?schema=public"
 AUTH_SECRET="dev-super-secret-jwt-key-minimum-32-chars-long"
 QR_HMAC_SECRET="dev-super-secret-hmac-key-minimum-32-chars-long"
 TMDB_API_KEY=""
@@ -117,7 +117,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-ticket_platform}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
