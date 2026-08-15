@@ -1,0 +1,494 @@
+openapi: 3.0.3
+info:
+  title: Plataforma de Eventos e Ingressos API
+  description: API REST para comercialização de ingressos, controle de assentos sem double-booking, importação de catálogos TMDb/Ticketmaster e validação criptográfica na portaria.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor de Desenvolvimento Local
+
+paths:
+  /auth/login:
+    post:
+      summary: Autentica um usuário e cria cookie de sessão JWT
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: organizador@verzel.com.br
+                password:
+                  type: string
+                  example: "Senha123!"
+      responses:
+        '200':
+          description: Login realizado com sucesso
+        '401':
+          description: Credenciais inválidas
+
+  /auth/register:
+    post:
+      summary: Cadastra um novo usuário (CUSTOMER ou ORGANIZER)
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, confirmPassword, role]
+              properties:
+                name:
+                  type: string
+                  example: Maria Silva
+                email:
+                  type: string
+                  format: email
+                  example: maria@exemplo.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: "Senha123!"
+                confirmPassword:
+                  type: string
+                  example: "Senha123!"
+                role:
+                  type: string
+                  enum: [CUSTOMER, ORGANIZER]
+                  example: CUSTOMER
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+        '409':
+          description: E-mail já cadastrado
+
+  /auth/logout:
+    post:
+      summary: Encerra a sessão ativa e expira o cookie httpOnly
+      tags: [Autenticação]
+      responses:
+        '200':
+          description: Logout realizado com sucesso
+
+  /auth/me:
+    get:
+      summary: Retorna os dados do usuário autenticado na sessão atual
+      tags: [Autenticação]
+      responses:
+        '200':
+          description: Dados do usuário retornado
+        '401':
+          description: Não autenticado
+
+  /events:
+    get:
+      summary: Lista todos os eventos publicados com cálculo de preço mínimo
+      tags: [Eventos]
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Termo de busca por título ou cidade
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [SHOW, MOVIE, THEATER, FESTIVAL]
+        - in: query
+          name: city
+          schema:
+            type: string
+        - in: query
+          name: minPrice
+          schema:
+            type: number
+        - in: query
+          name: maxPrice
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [date_asc, price_asc, price_desc, name_asc]
+      responses:
+        '200':
+          description: Lista de eventos retornada com sucesso
+    post:
+      summary: Cria um novo evento com setores e assentos (Requer ORGANIZER)
+      tags: [Eventos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, category, bannerUrl, locationName, city, eventDate, sectors]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum: [SHOW, MOVIE, THEATER, FESTIVAL]
+                bannerUrl:
+                  type: string
+                  format: uri
+                locationName:
+                  type: string
+                city:
+                  type: string
+                eventDate:
+                  type: string
+                  format: date-time
+                sectors:
+                  type: array
+                  items:
+                    type: object
+                    required: [name, type, price, totalCapacity]
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                        enum: [GENERAL_ADMISSION, NUMBERED_SEATS]
+                      price:
+                        type: number
+                      totalCapacity:
+                        type: integer
+                      rowsCount:
+                        type: integer
+                      seatsPerRow:
+                        type: integer
+      responses:
+        '201':
+          description: Evento criado com sucesso
+        '403':
+          description: Não autorizado
+
+  /events/{id}:
+    get:
+      summary: Retorna detalhes completos do evento e seus setores
+      tags: [Eventos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do evento
+        '404':
+          description: Evento não encontrado
+
+  /events/{id}/seats:
+    get:
+      summary: Retorna mapa de assentos atualizado com lazy expiration
+      tags: [Eventos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de assentos com status AVAILABLE, RESERVED, SOLD
+
+  /external-catalog/tmdb:
+    get:
+      summary: Pesquisa filmes na API do TMDb com fallback mock embutido
+      tags: [Catálogos Externos]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          example: Inception
+      responses:
+        '200':
+          description: Lista de filmes encontrados
+
+  /external-catalog/ticketmaster:
+    get:
+      summary: Pesquisa shows na Ticketmaster Discovery API com fallback mock embutido
+      tags: [Catálogos Externos]
+      parameters:
+        - in: query
+          name: keyword
+          required: true
+          schema:
+            type: string
+          example: Coldplay
+      responses:
+        '200':
+          description: Lista de atrações encontradas
+
+  /seats/reserve:
+    post:
+      summary: Bloqueio atômico de assentos numerados (Anti-Double Booking com TTL 10m)
+      tags: [Reservas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [seatIds]
+              properties:
+                eventId:
+                  type: string
+                sectorId:
+                  type: string
+                seatIds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["cuid_seat_1", "cuid_seat_2"]
+      responses:
+        '200':
+          description: Assentos bloqueados com sucesso (retorna reservationId e expiresAt)
+        '409':
+          description: Conflito de concorrência - um ou mais assentos já foram reservados
+
+  /reservations/general-admission:
+    post:
+      summary: Reserva atômica de ingressos de pista por quantidade (TTL 10m)
+      tags: [Reservas]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eventId, sectorId, quantity]
+              properties:
+                eventId:
+                  type: string
+                sectorId:
+                  type: string
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 6
+                  example: 2
+      responses:
+        '201':
+          description: Quantidade reservada com sucesso (retorna reservationId e expiresAt)
+        '409':
+          description: Capacidade insuficiente no setor
+
+  /checkout/process:
+    post:
+      summary: Processa checkout e pagamento simulado (Aprovação / Recusa)
+      tags: [Checkout & Pagamento]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reservationId]
+              properties:
+                reservationId:
+                  type: string
+                paymentMethod:
+                  type: string
+                  enum: [SIMULATED_CREDIT_CARD, SIMULATED_PIX]
+                  default: SIMULATED_CREDIT_CARD
+                action:
+                  type: string
+                  enum: [APPROVE, REJECT]
+                  default: APPROVE
+                reason:
+                  type: string
+                  description: Motivo opcional da recusa simulada
+      responses:
+        '200':
+          description: Pedido processado (retorna Order, Tickets e QR Codes se APPROVED, ou erro e liberação se REJECT)
+        '410':
+          description: Reserva expirada por tempo limite
+
+  /my-tickets:
+    get:
+      summary: Retorna todos os ingressos do cliente autenticado agrupados por status
+      tags: [Ingressos]
+      responses:
+        '200':
+          description: Ingressos futuros e histórico de ingressos utilizados
+        '401':
+          description: Não autenticado
+
+  /tickets/share:
+    post:
+      summary: Gera link público tokenizado para compartilhamento de ingresso individual
+      tags: [Ingressos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ticketId]
+              properties:
+                ticketId:
+                  type: string
+      responses:
+        '200':
+          description: Token de compartilhamento e URL gerados com sucesso
+
+  /tickets/share/{token}:
+    get:
+      summary: Consulta pública de voucher por token seguro compartilhado (Sem autenticação)
+      tags: [Ingressos Públicos]
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Voucher higienizado sem dados confidenciais do comprador
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ticketCode, qrPayload, status, sectorName, event]
+                properties:
+                  ticketCode:
+                    type: string
+                  qrPayload:
+                    type: string
+                  status:
+                    type: string
+                    enum: [ACTIVE, USED, CANCELLED]
+                  seatInfo:
+                    type: string
+                  sectorName:
+                    type: string
+                  event:
+                    type: object
+                    required: [title, eventDate, locationName, city, bannerUrl]
+                    properties:
+                      title:
+                        type: string
+                      eventDate:
+                        type: string
+                        format: date-time
+                      locationName:
+                        type: string
+                      city:
+                        type: string
+                      bannerUrl:
+                        type: string
+        '404':
+          description: Link de ingresso não encontrado ou expirado
+
+  /gate/events:
+    get:
+      summary: Retorna lista de eventos ativos para seleção pelo operador da portaria
+      tags: [Portaria]
+      responses:
+        '200':
+          description: Lista de eventos com contadores de check-in em tempo real
+        '403':
+          description: Requer perfil GATEKEEPER
+
+  /gate/validate:
+    post:
+      summary: Motor de validação de ingressos na portaria com 4 retornos estritos (QR Code ou Código)
+      tags: [Portaria]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eventId]
+              properties:
+                eventId:
+                  type: string
+                  example: "evt_rock2026"
+                payload:
+                  type: string
+                  description: Payload do QR Code com HMAC ou código curto alfanumérico
+                  example: "v1:ELT-4819:evt_rock2026:1786579200:e9f1a238b76c8d4e9901ac88f4e2b10a"
+                qrPayload:
+                  type: string
+                  description: Payload completo do QR Code
+                ticketCode:
+                  type: string
+                  description: Código curto alfanumérico do ingresso
+      responses:
+        '200':
+          description: Resultado da validação em um dos 4 estados (VALID, ALREADY_USED, WRONG_EVENT, INVALID_CODE)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [result, message]
+                properties:
+                  result:
+                    type: string
+                    enum: [VALID, ALREADY_USED, WRONG_EVENT, INVALID_CODE]
+                  message:
+                    type: string
+                  ticket:
+                    type: object
+
+  /gate/validate-manual:
+    post:
+      summary: Validação de ingresso por digitação manual de código alfanumérico
+      tags: [Portaria]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [eventId, ticketCode]
+              properties:
+                eventId:
+                  type: string
+                  example: "evt_rock2026"
+                ticketCode:
+                  type: string
+                  example: "ELT-4819"
+      responses:
+        '200':
+          description: Resultado da validação em um dos 4 estados (VALID, ALREADY_USED, WRONG_EVENT, INVALID_CODE)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [result, message]
+                properties:
+                  result:
+                    type: string
+                    enum: [VALID, ALREADY_USED, WRONG_EVENT, INVALID_CODE]
+                  message:
+                    type: string
+                  ticket:
+                    type: object
+
+  /organizer/analytics:
+    get:
+      summary: Retorna métricas consolidadas de vendas e taxa de ocupação para o organizador
+      tags: [Organizador]
+      responses:
+        '200':
+          description: KPIs de faturamento, ingressos vendidos e ocupação por evento
+        '403':
+          description: Requer perfil ORGANIZER
