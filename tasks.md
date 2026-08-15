@@ -46,13 +46,13 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ## 🎯 Fase 2: Casos de Uso Core (Obrigatórios)
 
 ### Módulo 1: Autenticação, RBAC e Carga de Testes (UC01 a UC05)
-- [ ] **Task 2.1: Serviços de Criptografia de Senha e Sessão JWT**
-  - [ ] Implementar `src/lib/auth.ts` com hash bcrypt/argon2 e geração/verificação de JWT stateless (`jose`).
-  - [ ] Implementar helpers para manipulação de cookies `httpOnly`, `SameSite=Lax` e `Secure`.
-- [ ] **Task 2.2: Login de Usuários com RBAC (UC01)**
-  - [ ] Implementar Route Handler `POST /api/auth/login`.
-  - [ ] Implementar tela `src/app/(auth)/login/page.tsx` com formulário Zod e botões de atalho com credenciais pré-preenchidas.
-  - [ ] Redirecionamento contextual: `ORGANIZER` -> `/organizer`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/` ou `returnUrl`.
+- [x] **Task 2.1: Serviços de Criptografia de Senha e Sessão JWT**
+  - [x] Implementar `src/lib/auth.ts` com hash bcrypt/argon2 e geração/verificação de JWT stateless (`jose`).
+  - [x] Implementar helpers para manipulação de cookies `httpOnly`, `SameSite=Lax` e `Secure`.
+- [x] **Task 2.2: Login de Usuários com RBAC (UC01)**
+  - [x] Implementar Route Handler `POST /api/auth/login`.
+  - [x] Implementar tela `src/app/(auth)/login/page.tsx` com formulário Zod e botões de atalho com credenciais pré-preenchidas.
+  - [x] Redirecionamento contextual: `ORGANIZER` -> `/organizer`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/` ou `returnUrl`.
 - [ ] **Task 2.3: Cadastro de Novos Usuários (UC02)**
   - [ ] Implementar Route Handler `POST /api/auth/register` com validação de unicidade de e-mail.
   - [ ] Implementar tela `src/app/(auth)/register/page.tsx` com seleção de papel (`CUSTOMER` ou `ORGANIZER`).
