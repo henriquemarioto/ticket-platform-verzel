@@ -35,11 +35,11 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
     - [x] `Skeleton` (indicadores pulsantes para prevenção de CLS).
   - [x] Critério de Aceite: Componentes renderizam visualmente refinados conforme [`docs/03-design/DESIGN-SYSTEM.md`](./docs/03-design/DESIGN-SYSTEM.md).
 
-- [ ] **Task 1.5: Layout Raiz, Navbar e Quick Role Switcher**
-  - [ ] Implementar `src/app/layout.tsx` com `ToastProvider`, fonte `Plus Jakarta Sans` e tema escuro.
-  - [ ] Implementar `Navbar` responsiva e `Footer`.
-  - [ ] Criar componente auxiliar `QuickRoleSwitcher` (atalho no rodapé/header para alternar entre Organizador, Cliente 1, Cliente 2 e Portaria).
-  - [ ] Critério de Aceite: Navegação fluida em telas mobile, tablet e desktop.
+- [x] **Task 1.5: Layout Raiz, Navbar e Quick Role Switcher**
+  - [x] Implementar `src/app/layout.tsx` com `ToastProvider`, fonte `Plus Jakarta Sans` e tema escuro.
+  - [x] Implementar `Navbar` responsiva e `Footer`.
+  - [x] Criar componente auxiliar `QuickRoleSwitcher` (atalho no rodapé/header para alternar entre Organizador, Cliente 1, Cliente 2 e Portaria).
+  - [x] Critério de Aceite: Navegação fluida em telas mobile, tablet e desktop.
 
 ---
 
