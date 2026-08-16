@@ -33,8 +33,8 @@
 
 ## 🤖 Agents, Skills e Workflows Disponíveis
 
-### Subagents
-- `frontend-expert`: Especialista em UI/UX, Design System, TailwindCSS 4 e componentes atômicos.
+### Subagents (`.agents/agents/`)
+- `frontend-expert`: Especialista em UI/UX, Design System, TailwindCSS 4 e componentes atômicos, sempre consulta o documento de design.
 - `backend-acid-expert`: Especialista em Route Handlers, Server Actions, Prisma e transações ACID anti-double booking.
 - `qa-code-auditor`: Auditor de qualidade, simplicidade de código, conformidade de critérios e testes.
 

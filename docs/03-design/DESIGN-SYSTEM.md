@@ -195,3 +195,34 @@ flowchart LR
 
 ---
 
+# Checklist de Qualidade e Profissionalismo (UX/UI)
+
+Para garantir que a aplicação transmita confiança e um aspecto *premium*, os seguintes detalhes devem ser aplicados em todas as entregas:
+
+## 1. Feedback e Estados de Carregamento (Loading States)
+- **Skeleton Screens (Shimmer):** Ao carregar dados, exibir esqueletos pulsantes em vez de telas brancas ou spinners grandes para evitar saltos de layout (CLS).
+- **Botões com Loading:** Ações de submissão (ex: "Salvar", "Comprar") devem desabilitar o botão e exibir um *spinner* interno, evitando duplos cliques.
+- **Toast Notifications:** Utilizar toasts não obstrusivos (sucesso, erro, aviso) para feedback rápido de ações concluídas.
+- **Barra de Progresso Global:** Utilizar um indicador no topo da tela durante a navegação entre rotas pesadas.
+
+## 2. Tratamento de Erros e Estados Vazios (Empty States)
+- **Páginas 404 e 500 Personalizadas:** Telas amigáveis com Call to Actions claros ("Voltar ao Início") em vez das páginas de erro padrão do servidor.
+- **Empty States Elegantes:** Listas vazias (ex: "Meus Ingressos") devem exibir uma ilustração/ícone condizente com a marca e um botão para a principal ação relacionada.
+- **Validação Inline:** Erros de formulário devem aparecer sob o campo durante a digitação ou no `onBlur`, em vermelho, antes da submissão final.
+
+## 3. Microinterações e Refinamento Visual
+- **Estados de Interação:** Todo elemento interativo deve possuir estados claros de `hover`, `active` e `focus` (essencial para navegação por teclado).
+- **Transições Suaves:** Mudanças de estado (cores, abertura de menus) devem possuir transições CSS (`150ms` a `300ms`).
+- **Modais Seguros:** Devem possuir *backdrop blur*, bloquear o scroll do *body* e fechar com a tecla `Escape` ou clique fora da área útil.
+- **Tooltips:** Utilizados em ícones sem label explícita ou em textos truncados.
+
+## 4. Prevenção de Erros (UX Defensiva)
+- **Danger Modals:** Ações destrutivas (excluir, cancelar pedido) exigem confirmação explícita em um modal secundário.
+- **Bloqueio de Duplo Clique:** Desabilitar botões imediatamente após a primeira interação para prevenir envios duplicados, especialmente em checkout.
+- **Máscaras de Input:** Formatação automática (CPF, telefone, CEP, moeda) durante a digitação.
+
+## 5. Acessibilidade e Identidade
+- **Favicon e Apple Touch Icon:** Ícones da plataforma configurados corretamente.
+- **Meta Tags (Open Graph):** Título, descrição e imagem de preview configurados para compartilhamento em redes sociais e mensageiros.
+- **Contraste de Cores:** Garantir contraste adequado (WCAG) entre textos e fundos escuros/claros.
+- **Alvos de Toque (Touch Targets):** Mínimo de 48x48px para botões e elementos interativos no mobile.
