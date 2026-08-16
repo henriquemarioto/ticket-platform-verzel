@@ -1,0 +1,117 @@
+"use client";
+
+import { useState } from "react";
+import { TicketCard } from "./ticket-card";
+import { Modal } from "@/components/ui/modal";
+import { QRCodeSVG } from "qrcode.react";
+import { Badge } from "@/components/ui/badge";
+
+type TicketTabsProps = {
+  upcomingTickets: any[];
+  pastTickets: any[];
+};
+
+export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
+  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+
+  const activeTicketsList = activeTab === "upcoming" ? upcomingTickets : pastTickets;
+
+  return (
+    <div>
+      {/* Abas */}
+      <div className="flex border-b border-border-subtle mb-6">
+        <button
+          className={`pb-4 px-4 font-medium text-sm transition-colors relative ${
+            activeTab === "upcoming" ? "text-primary" : "text-text-muted hover:text-text-primary"
+          }`}
+          onClick={() => setActiveTab("upcoming")}
+        >
+          Próximos Eventos
+          {upcomingTickets.length > 0 && (
+            <span className="ml-2 bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full">
+              {upcomingTickets.length}
+            </span>
+          )}
+          {activeTab === "upcoming" && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+          )}
+        </button>
+        <button
+          className={`pb-4 px-4 font-medium text-sm transition-colors relative ${
+            activeTab === "past" ? "text-primary" : "text-text-muted hover:text-text-primary"
+          }`}
+          onClick={() => setActiveTab("past")}
+        >
+          Histórico / Passados
+          {activeTab === "past" && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+          )}
+        </button>
+      </div>
+
+      {/* Lista de Ingressos */}
+      {activeTicketsList.length === 0 ? (
+        <div className="text-center py-12 border border-dashed border-border-subtle rounded-xl bg-bg-surface/50">
+          <p className="text-text-muted mb-4">
+            Você ainda não possui ingressos {activeTab === "upcoming" ? "para os próximos eventos" : "no histórico"}.
+          </p>
+          {activeTab === "upcoming" && (
+            <a href="/" className="text-primary hover:underline font-medium">
+              Explorar Eventos
+            </a>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {activeTicketsList.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} onShowQR={setSelectedTicket} />
+          ))}
+        </div>
+      )}
+
+      {/* Modal do QR Code */}
+      <Modal
+        isOpen={!!selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+        title="QR Code para Entrada"
+      >
+        {selectedTicket && (
+          <div className="flex flex-col items-center">
+            <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
+              <QRCodeSVG
+                value={selectedTicket.qrPayload || `v1:${selectedTicket.ticketCode}:${selectedTicket.eventId}`}
+                size={240}
+                level="M"
+                includeMargin={false}
+              />
+            </div>
+            
+            <h3 className="font-semibold text-lg mb-1 text-center">{selectedTicket.event.title}</h3>
+            
+            <div className="flex flex-col gap-2 w-full mt-4 bg-bg-main p-4 rounded-lg border border-border-subtle text-sm">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+                <span className="text-text-muted">Setor</span>
+                <span className="font-medium">{selectedTicket.sector.name}</span>
+              </div>
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+                <span className="text-text-muted">Assento</span>
+                <span className="font-medium">
+                  {selectedTicket.seat ? `${selectedTicket.seat.row}${selectedTicket.seat.number}` : "Pista"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted">Código</span>
+                <span className="font-mono text-primary font-bold">{selectedTicket.ticketCode}</span>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center text-xs text-text-muted">
+              Apresente este QR Code na tela do seu celular com o brilho no máximo ao chegar na portaria do evento.
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
+}

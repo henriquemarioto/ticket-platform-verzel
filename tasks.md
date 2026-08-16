@@ -111,8 +111,8 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 - [x] **Task 2.18: Simulação de Pagamento Recusado (UC17)**
   - [x] Adicionar botão explícito "Simular Pagamento Recusado" no checkout.
   - [x] Registrar pedido como `REJECTED`, liberar assentos imediatamente e exibir feedback com botão de nova tentativa.
-- [ ] **Task 2.19: Painel Meus Ingressos (UC18)**
-  - [ ] Implementar tela `src/app/(customer)/my-tickets/page.tsx` listando vouchers ativos e passados com botões de ação.
+- [x] **Task 2.19: Painel Meus Ingressos (UC18)**
+  - [x] Implementar tela `src/app/(customer)/my-tickets/page.tsx` listando vouchers ativos e passados com botões de ação.
 - [ ] **Task 2.20: Geração e Assinatura HMAC de QR Code (UC19)**
   - [ ] Implementar `src/lib/crypto.ts` com assinatura HMAC-SHA256 (`v1:{ticketCode}:{eventId}:{timestamp}:{signature}`).
   - [ ] Renderizar QR Code em SVG de alta nitidez com nível de correção de erro `M`.
