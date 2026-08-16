@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, QrCode, Share2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
+import { Calendar, MapPin, QrCode, Share2, Loader2 } from "lucide-react";
 
 type TicketCardProps = {
   ticket: any;
@@ -9,6 +11,27 @@ type TicketCardProps = {
 
 export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
   const { event, sector, seat } = ticket;
+  const { success, error: showError } = useToast();
+  const [isSharing, setIsSharing] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      setIsSharing(true);
+      const res = await fetch(`/api/tickets/${ticket.id}/share`, { method: "POST" });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Erro ao compartilhar");
+
+      const url = `${window.location.origin}${data.shareUrl}`;
+      await navigator.clipboard.writeText(url);
+      
+      success("Link copiado para a área de transferência.");
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   const dateStr = new Date(event.eventDate).toLocaleDateString("pt-BR", {
     weekday: "long",
@@ -97,8 +120,13 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
             <QrCode className="w-4 h-4" />
             Exibir QR Code
           </Button>
-          <Button variant="outline" className="flex items-center justify-center gap-2 px-3">
-            <Share2 className="w-4 h-4" />
+          <Button 
+            variant="outline" 
+            className="flex items-center justify-center gap-2 px-3"
+            onClick={handleShare}
+            disabled={isSharing}
+          >
+            {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
             <span className="sr-only">Compartilhar</span>
           </Button>
         </div>

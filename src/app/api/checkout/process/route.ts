@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { checkoutSchema } from "@/lib/validations/checkout";
+import { generateTicketQRPayload } from "@/lib/crypto";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -77,8 +78,8 @@ export async function POST(req: Request) {
           for (let i = 0; i < item.quantity; i++) {
             const ticketCode = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
             const shareToken = crypto.randomUUID();
-            const secureToken = crypto.randomBytes(16).toString("hex");
-            const qrPayload = `v1:${ticketCode}:${reservation.eventId}:${Math.floor(Date.now() / 1000)}:${secureToken}`;
+            const timestamp = Math.floor(Date.now() / 1000);
+            const { secureToken, qrPayload } = generateTicketQRPayload(ticketCode, reservation.eventId, timestamp);
 
             const ticket = await tx.ticket.create({
               data: {

@@ -113,12 +113,12 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Registrar pedido como `REJECTED`, liberar assentos imediatamente e exibir feedback com botão de nova tentativa.
 - [x] **Task 2.19: Painel Meus Ingressos (UC18)**
   - [x] Implementar tela `src/app/(customer)/my-tickets/page.tsx` listando vouchers ativos e passados com botões de ação.
-- [ ] **Task 2.20: Geração e Assinatura HMAC de QR Code (UC19)**
-  - [ ] Implementar `src/lib/crypto.ts` com assinatura HMAC-SHA256 (`v1:{ticketCode}:{eventId}:{timestamp}:{signature}`).
-  - [ ] Renderizar QR Code em SVG de alta nitidez com nível de correção de erro `M`.
-- [ ] **Task 2.21: Compartilhamento por Link Público Tokenizado (UC20)**
-  - [ ] Implementar Route Handler `POST /api/tickets/[id]/share` gerando `shareToken`.
-  - [ ] Implementar página pública `src/app/(customer)/tickets/share/[token]/page.tsx` acessível sem autenticação e sem dados confidenciais do titular.
+- [x] **Task 2.20: Geração e Assinatura HMAC de QR Code (UC19)**
+  - [x] Implementar `src/lib/crypto.ts` com assinatura HMAC-SHA256 (`v1:{ticketCode}:{eventId}:{timestamp}:{signature}`).
+  - [x] Renderizar QR Code em SVG de alta nitidez com nível de correção de erro `M`.
+- [x] **Task 2.21: Compartilhamento por Link Público Tokenizado (UC20)**
+  - [x] Implementar Route Handler `POST /api/tickets/[id]/share` gerando `shareToken`.
+  - [x] Implementar página pública `src/app/(customer)/tickets/share/[token]/page.tsx` acessível sem autenticação e sem dados confidenciais do titular.
 
 ---
 

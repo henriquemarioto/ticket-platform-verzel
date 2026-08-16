@@ -1296,16 +1296,16 @@ sequenceDiagram
     participant DB as PostgreSQL (Prisma)
 
     Owner->>UI: Clica em "Compartilhar Ingresso" no card
-    UI->>API: POST /api/tickets/:id/share
-    API->>DB: Gera shareToken criptográfico (cuid/nanoid) se não existir
-    DB-->>API: Retorna shareToken
-    API-->>UI: 200 OK { shareUrl: "https://.../tickets/share/stk_8f9a2b" }
+    API->>DB: POST /api/tickets/:id/share
+    DB-->>API: Recupera shareToken existente
+    API->>API: Calcula passcode (HMAC do shareToken)
+    API-->>UI: 200 OK { shareUrl: "https://.../tickets/share/stk_8f9a2b?key=a1b2c3" }
     UI->>Owner: Copia link para o clipboard e exibe toast "Link copiado!"
     
     Owner->>Guest: Envia o link via WhatsApp / Mensagem
-    Guest->>SharePage: Abre link /tickets/share/stk_8f9a2b no navegador do smartphone
-    SharePage->>API: GET /api/tickets/share/stk_8f9a2b
-    API->>DB: Busca ticket pelo shareToken (sem dados de pagamento/titular)
+    Guest->>SharePage: Abre link /tickets/share/stk_8f9a2b?key=a1b2c3 no navegador do smartphone
+    SharePage->>SharePage: Valida `key` na URL (Passcode HMAC)
+    SharePage->>DB: Busca ticket pelo shareToken (sem dados de pagamento/titular)
     DB-->>API: Retorna dados do evento, assento e QR Code
     SharePage->>Guest: Renderiza Voucher Digital limpo com QR Code para entrada
 ```
@@ -1317,9 +1317,9 @@ sequenceDiagram
 1. O comprador acessa `/my-tickets` e localiza o ingresso desejado.
 2. Clica no botão **"Compartilhar Ingresso"**.
 3. O front-end aciona `POST /api/tickets/:id/share` (ou `POST /api/tickets/share` com `{ ticketId }`).
-4. O backend valida a titularidade do usuário, gera um token randômico de 32 caracteres (`shareToken`) e salva no registro do `Ticket`.
-5. O link completo (ex: `https://dominio.com/tickets/share/stk_91af23...`) é retornado e copiado automaticamente para a área de transferência do usuário com feedback toast.
-6. O convidado abre o link no navegador de qualquer dispositivo móvel.
+4. O backend valida a titularidade do usuário, recupera o `shareToken` e gera um `passcode` criptográfico (HMAC) de 6 caracteres baseado no token.
+5. O link completo com a palavra-chave na URL (ex: `https://dominio.com/tickets/share/stk_91af23...?key=a1b2c3`) é retornado e copiado automaticamente para a área de transferência do usuário com feedback toast.
+6. O convidado abre o link no navegador de qualquer dispositivo móvel. A página valida a `key` e, se correta, exibe o ingresso.
 7. A página pública renderiza:
    - Capa e nome do evento.
    - Data, horário e endereço do local.
@@ -1358,11 +1358,11 @@ sequenceDiagram
 {
   "success": true,
   "shareToken": "stk_91af238c11e247b9a",
-  "shareUrl": "/tickets/share/stk_91af238c11e247b9a"
+  "shareUrl": "/tickets/share/stk_91af238c11e247b9a?key=a1b2c3"
 }
 ```
 
-### Requisição Pública: `GET /api/tickets/share/stk_91af238c11e247b9a`
+### Requisição Pública: `GET /api/tickets/share/stk_91af238c11e247b9a?key=a1b2c3`
 
 ### Resposta Pública: `HTTP 200 OK`
 ```json
@@ -1398,14 +1398,19 @@ Funcionalidade: Compartilhamento de Ingresso por Link Público
   Cenário: Geração do link de compartilhamento
     Dado que possuo um ingresso ativo no meu painel "/my-tickets"
     Quando eu clico em "Compartilhar Ingresso"
-    Então o sistema deve gerar um token único de compartilhamento
-    E deve copiar a URL pública "/tickets/share/:token" para minha área de transferência
+    Então o sistema deve gerar um token único de compartilhamento e uma palavra-chave (passcode)
+    E deve copiar a URL pública "/tickets/share/:token?key=:passcode" para minha área de transferência
 
   Cenário: Acesso do convidado pelo link público
-    Dado que o convidado abre o link público no navegador sem estar autenticado
+    Dado que o convidado abre o link público no navegador com a palavra-chave correta na URL
     Então o sistema deve exibir os dados do evento, o assento e o QR Code oficial
     E não deve exigir login
     E não deve exibir os dados pessoais ou financeiros do comprador titular
+
+  Cenário: Acesso bloqueado com palavra-chave incorreta
+    Dado que alguém tenta acessar o link público com uma palavra-chave incorreta ou ausente
+    Então o sistema deve retornar erro ou tela de "Acesso Negado"
+    E não deve renderizar nenhum dado do ingresso
 ```
 
 
