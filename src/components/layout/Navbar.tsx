@@ -44,7 +44,9 @@ export function Navbar({ user }: { user: UserPayload | null }) {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Eventos</Link>
-          <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Meus Ingressos</Link>
+          {user && (
+            <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Meus Ingressos</Link>
+          )}
           <div className="flex items-center gap-3 ml-4">
             {user ? (
               <Button variant="ghost" onClick={handleLogout} className="gap-2">
@@ -75,7 +77,9 @@ export function Navbar({ user }: { user: UserPayload | null }) {
         <div className="md:hidden border-t border-border-subtle bg-bg-surface p-4">
           <nav className="flex flex-col gap-4">
             <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Eventos</Link>
-            <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Meus Ingressos</Link>
+            {user && (
+              <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Meus Ingressos</Link>
+            )}
             <div className="flex flex-col gap-2 pt-4 border-t border-border-subtle">
               {user ? (
                 <Button variant="ghost" onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full justify-center gap-2">

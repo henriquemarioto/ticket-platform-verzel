@@ -49,6 +49,7 @@ function RegisterForm() {
 
       success("Cadastro realizado com sucesso!");
       router.push(result.data.redirectUrl);
+      router.refresh();
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};

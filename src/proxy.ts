@@ -13,6 +13,7 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = 
     publicRoutes.includes(pathname) || 
     pathname.startsWith("/api/auth/") || 
+    pathname.startsWith("/api/events/") || 
     pathname.startsWith("/events/") || 
     pathname.startsWith("/tickets/share/");
 
@@ -33,6 +34,10 @@ export async function proxy(request: NextRequest) {
 
   // Se a rota for protegida e o usuário não estiver logado
   if (!payload && !isPublicRoute) {
+    // Se for uma requisição para a API, retorna 401 ao invés de redirecionar
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
     // Redireciona para o login salvando a URL de retorno
     const loginUrl = new URL("/login", request.url);
     if (pathname !== "/") {

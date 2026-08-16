@@ -90,27 +90,27 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ---
 
 ### Módulo 3: Vitrine, Reserva Anti-Double Booking, Checkout e Ingressos (UC11 a UC20)
-- [ ] **Task 2.12: Vitrine Pública de Eventos (UC11)**
-  - [ ] Implementar `src/app/(customer)/page.tsx` com banner hero, pílulas de categoria e busca rápida.
-  - [ ] Calcular `minPrice` dinâmico por setor.
-- [ ] **Task 2.13: Visualização Detalhada do Evento (UC12)**
-  - [ ] Implementar `src/app/(customer)/events/[id]/page.tsx` com sinopse, informações de local/data e tabela de setores.
-- [ ] **Task 2.14: Reserva Atômica em Setores de Pista (UC13)**
-  - [ ] Implementar Route Handler `POST /api/reservations/general-admission`.
-  - [ ] Executar lock condicional decrementando `availableCapacity` e gerando registro `Reservation` (TTL 10m).
-- [ ] **Task 2.15: Mapa de Assentos Interativo & Anti-Double Booking (UC14)**
-  - [ ] Implementar componente interativo `SeatMap` com indicação de assentos livres, selecionados, em reserva e ocupados.
-  - [ ] Implementar Route Handler `POST /api/seats/reserve` com transação atômica serializada (`WHERE status = 'AVAILABLE'`).
-- [ ] **Task 2.16: Expiração de TTL e Liberação de Assentos (UC15)**
-  - [ ] Implementar rotina de *lazy expiration* nas consultas de assentos (`GET /api/events/[id]/seats`).
-  - [ ] Restaurar assentos expirados para `AVAILABLE` e devolver cotas de pista ao estoque.
-- [ ] **Task 2.17: Checkout e Pagamento Simulado Aprovado (UC16)**
-  - [ ] Implementar tela `src/app/(customer)/checkout/page.tsx` com cronômetro regressivo de 10 minutos sincronizado.
-  - [ ] Implementar Route Handler `POST /api/checkout/process` com emissão transacional de `Order`, `Ticket` e conversão para `SOLD`.
-  - [ ] Criar página de sucesso `src/app/(customer)/checkout/success/page.tsx`.
-- [ ] **Task 2.18: Simulação de Pagamento Recusado (UC17)**
-  - [ ] Adicionar botão explícito "Simular Pagamento Recusado" no checkout.
-  - [ ] Registrar pedido como `REJECTED`, liberar assentos imediatamente e exibir feedback com botão de nova tentativa.
+- [x] **Task 2.12: Vitrine Pública de Eventos (UC11)**
+  - [x] Implementar `src/app/(customer)/page.tsx` com banner hero, pílulas de categoria e busca rápida.
+  - [x] Calcular `minPrice` dinâmico por setor.
+- [x] **Task 2.13: Visualização Detalhada do Evento (UC12)**
+  - [x] Implementar `src/app/(customer)/events/[id]/page.tsx` com sinopse, informações de local/data e tabela de setores.
+- [x] **Task 2.14: Reserva Atômica em Setores de Pista (UC13)**
+  - [x] Implementar Route Handler `POST /api/reservations/general-admission`.
+  - [x] Executar lock condicional decrementando `availableCapacity` e gerando registro `Reservation` (TTL 10m).
+- [x] **Task 2.15: Mapa de Assentos Interativo & Anti-Double Booking (UC14)**
+  - [x] Implementar componente interativo `SeatMap` com indicação de assentos livres, selecionados, em reserva e ocupados.
+  - [x] Implementar Route Handler `POST /api/seats/reserve` com transação atômica serializada (`WHERE status = 'AVAILABLE'`).
+- [x] **Task 2.16: Expiração de TTL e Liberação de Assentos (UC15)**
+  - [x] Implementar rotina de *lazy expiration* nas consultas de assentos (`GET /api/events/[id]/seats`).
+  - [x] Restaurar assentos expirados para `AVAILABLE` e devolver cotas de pista ao estoque.
+- [x] **Task 2.17: Checkout e Pagamento Simulado Aprovado (UC16)**
+  - [x] Implementar tela `src/app/(customer)/checkout/page.tsx` com cronômetro regressivo de 10 minutos sincronizado.
+  - [x] Implementar Route Handler `POST /api/checkout/process` com emissão transacional de `Order`, `Ticket` e conversão para `SOLD`.
+  - [x] Criar página de sucesso `src/app/(customer)/checkout/success/page.tsx`.
+- [x] **Task 2.18: Simulação de Pagamento Recusado (UC17)**
+  - [x] Adicionar botão explícito "Simular Pagamento Recusado" no checkout.
+  - [x] Registrar pedido como `REJECTED`, liberar assentos imediatamente e exibir feedback com botão de nova tentativa.
 - [ ] **Task 2.19: Painel Meus Ingressos (UC18)**
   - [ ] Implementar tela `src/app/(customer)/my-tickets/page.tsx` listando vouchers ativos e passados com botões de ação.
 - [ ] **Task 2.20: Geração e Assinatura HMAC de QR Code (UC19)**

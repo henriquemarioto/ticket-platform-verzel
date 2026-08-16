@@ -42,6 +42,7 @@ function LoginForm() {
 
       success("Login realizado com sucesso!");
       router.push(result.data.redirectUrl);
+      router.refresh();
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: { email?: string; password?: string } = {};
