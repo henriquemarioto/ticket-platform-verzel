@@ -1,0 +1,152 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
+
+export default async function OrganizerDashboardPage() {
+  const headersList = await headers();
+  const userId = headersList.get("x-user-id");
+  const userRole = headersList.get("x-user-role");
+
+  if (!userId || userRole !== "ORGANIZER") {
+    redirect("/login");
+  }
+
+  const events = await prisma.event.findMany({
+    where: { organizerId: userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      sectors: true,
+      _count: {
+        select: { tickets: true }
+      }
+    }
+  });
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "PUBLISHED": return "success";
+      case "CLOSED": return "warning";
+      case "CANCELLED": return "danger";
+      default: return "neutral";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "DRAFT": return "Rascunho";
+      case "PUBLISHED": return "Publicado";
+      case "CLOSED": return "Encerrado";
+      case "FINISHED": return "Finalizado";
+      case "CANCELLED": return "Cancelado";
+      default: return status;
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Meus Eventos</h1>
+          <p className="text-muted mt-1">Gerencie os eventos que você organiza.</p>
+        </div>
+        <Link href="/organizer/events/create">
+          <Button>Criar Novo Evento</Button>
+        </Link>
+      </div>
+
+      {events.length === 0 ? (
+        <div className="text-center py-16 bg-bg-surface rounded-xl border border-border-subtle">
+          <p className="text-muted mb-4">Você ainda não possui eventos cadastrados.</p>
+          <Link href="/organizer/events/create">
+            <Button variant="outline">Começar agora</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-border-subtle bg-bg-surface">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-bg-main border-b border-border-subtle text-muted">
+              <tr>
+                <th className="px-6 py-4 font-semibold">Evento</th>
+                <th className="px-6 py-4 font-semibold">Data</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold">Ocupação</th>
+                <th className="px-6 py-4 font-semibold text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border-subtle">
+              {events.map((event) => {
+                const totalCapacity = event.sectors.reduce((acc, sector) => acc + sector.totalCapacity, 0);
+                const soldTickets = event._count.tickets;
+                
+                return (
+                  <tr key={event.id} className="hover:bg-surface-hover/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        {event.bannerUrl ? (
+                          <img 
+                            src={event.bannerUrl} 
+                            alt={event.title}
+                            className="w-12 h-12 rounded object-cover border border-border-subtle"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded bg-bg-main border border-border-subtle flex items-center justify-center">
+                            <span className="text-xs text-muted">Sem Img</span>
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-text-primary">{event.title}</p>
+                          <p className="text-xs text-muted">{event.category}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-text-primary">
+                      {new Date(event.eventDate).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <Badge variant={getStatusBadgeVariant(event.status) as any}>
+                        {getStatusLabel(event.status)}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-1 w-32">
+                        <span className="font-medium text-text-primary">
+                          {soldTickets} / {totalCapacity}
+                        </span>
+                        <div className="w-full h-1.5 bg-bg-main rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary"
+                            style={{ width: `${totalCapacity > 0 ? Math.min(100, (soldTickets / totalCapacity) * 100) : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {event.status === "DRAFT" && (
+                          <Link href={`/organizer/events/${event.id}/edit`}>
+                            <Button variant="ghost" size="sm">Editar</Button>
+                          </Link>
+                        )}
+                        <EventStatusActions eventId={event.id} currentStatus={event.status} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

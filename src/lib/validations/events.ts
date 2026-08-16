@@ -38,3 +38,9 @@ export const createEventSchema = z.object({
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type CreateSectorInput = z.infer<typeof createSectorSchema>;
+
+export const updateEventStatusSchema = z.object({
+  status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "FINISHED", "CANCELLED"]),
+});
+
+export type UpdateEventStatusInput = z.infer<typeof updateEventStatusSchema>;

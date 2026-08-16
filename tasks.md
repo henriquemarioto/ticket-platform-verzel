@@ -84,8 +84,8 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 - [x] **Task 2.10: Criação de Evento com Mapa de Assentos Numerados (UC09)**
   - [x] Adicionar gerador de grade de assentos por fileiras e poltronas (A1..A10, B1..B10...).
   - [x] Persistir registros de `Seat` com status `AVAILABLE`.
-- [ ] **Task 2.11: Painel de Gestão do Organizador (UC10)**
-  - [ ] Implementar tela `src/app/(organizer)/organizer/page.tsx` listando eventos criados com badges de status e botão para novo evento.
+- [x] **Task 2.11: Painel de Gestão do Organizador (UC10)**
+  - [x] Implementar tela `src/app/(organizer)/organizer/page.tsx` listando eventos criados com badges de status e botão para novo evento.
 
 ---
 
