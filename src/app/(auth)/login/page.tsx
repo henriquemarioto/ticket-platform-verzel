@@ -59,15 +59,19 @@ function LoginForm() {
   };
 
   const handlePrefill = (role: string) => {
+    setErrors({});
     if (role === "ORGANIZER") {
-      setEmail("organizador@verzel.com");
-      setPassword("senha123");
+      setEmail("organizador@verzel.com.br");
+      setPassword("Senha123!");
     } else if (role === "GATEKEEPER") {
-      setEmail("portaria@verzel.com");
-      setPassword("senha123");
+      setEmail("portaria@verzel.com.br");
+      setPassword("Senha123!");
+    } else if (role === "CUSTOMER_2") {
+      setEmail("cliente2@verzel.com.br");
+      setPassword("Senha123!");
     } else {
-      setEmail("cliente1@verzel.com");
-      setPassword("senha123");
+      setEmail("cliente1@verzel.com.br");
+      setPassword("Senha123!");
     }
   };
 
@@ -113,15 +117,18 @@ function LoginForm() {
         <p className="mb-4 text-center text-sm font-medium text-text-muted">
           Acesso Rápido (Ambiente de Teste)
         </p>
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button variant="outline" size="sm" onClick={() => handlePrefill("ORGANIZER")} type="button">
-            Preencher como Organizador
+            Organizador
           </Button>
           <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER")} type="button">
-            Preencher como Cliente
+            Cliente 1 (Lucas)
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER_2")} type="button">
+            Cliente 2 (Camila)
           </Button>
           <Button variant="outline" size="sm" onClick={() => handlePrefill("GATEKEEPER")} type="button">
-            Preencher como Portaria
+            Portaria (Roberto)
           </Button>
         </div>
       </div>

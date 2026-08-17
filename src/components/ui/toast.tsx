@@ -86,7 +86,7 @@ function ToastItem({ toast, onClose }: { toast: ToastMessage, onClose: () => voi
       </div>
       <button
         onClick={onClose}
-        className="absolute right-2 top-2 rounded-md p-1 opacity-50 transition-opacity hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2"
+        className="absolute right-2 top-2 rounded-md p-1 opacity-50 transition-opacity hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 cursor-pointer"
       >
         <X className="h-4 w-4" />
       </button>

@@ -24,3 +24,26 @@ body {
   color: var(--color-text-primary);
   font-family: var(--font-sans), sans-serif;
 }
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+select:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="reset"]:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+input[type="file"]:not(:disabled),
+summary,
+a {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+[disabled] {
+  cursor: not-allowed;
+}
+

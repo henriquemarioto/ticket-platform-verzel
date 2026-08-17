@@ -167,7 +167,7 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
                 let seatClass = "w-8 h-8 sm:w-10 sm:h-10 rounded-t-lg rounded-b-sm flex items-center justify-center text-xs font-medium transition-all ";
                 
                 if (isSelected) {
-                  seatClass += "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(16,185,129,0.5)] transform scale-110";
+                  seatClass += "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(16,185,129,0.5)] transform scale-110 cursor-pointer";
                 } else if (seat.status === "AVAILABLE") {
                   seatClass += "bg-surface border border-subtle hover:border-primary/50 hover:bg-surface-hover cursor-pointer text-text-primary";
                 } else if (seat.status === "RESERVED") {

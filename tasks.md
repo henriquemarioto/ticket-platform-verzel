@@ -122,21 +122,21 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ---
 
 ### Módulo 4: Portaria e Controle de Acesso (UC21 a UC24)
-- [ ] **Task 2.22: Painel Operacional da Portaria (UC21)**
-  - [ ] Implementar tela `src/app/(gatekeeper)/gatekeeper/page.tsx` com seletor de evento e contadores de check-in em tempo real.
-- [ ] **Task 2.23: Scanner Contínuo de Câmera WebRTC (UC22)**
-  - [ ] Implementar leitor contínuo WebRTC com mira gráfica, alternância de câmera e feedback multissensorial (áudio e vibração).
-  - [ ] Adicionar tratamento de permissões e contexto seguro (HTTPS / Localhost).
-- [ ] **Task 2.24: Validação por Digitação Manual (UC23)**
-  - [ ] Implementar aba de contingência com input alfanumérico e envio por Enter/botão.
-- [ ] **Task 2.25: Motor de Validação e os 4 Estados Claros (UC24)**
-  - [ ] Implementar Route Handler `POST /api/gate/validate` avaliando:
-    - [ ] `VALID` (Acesso Liberado - Verde)
-    - [ ] `ALREADY_USED` (Já Utilizado com data do 1º check-in - Laranja)
-    - [ ] `WRONG_EVENT` (Evento Incorreto - Vermelho)
-    - [ ] `INVALID_CODE` (Código Inválido ou HMAC Adulterado - Vermelho Escuro)
-  - [ ] Garantir anti-duplicação concorrente entre múltiplas catracas (`updateMany WHERE status = 'ACTIVE'`).
-  - [ ] Persistir histórico na tabela `ticket_validation_logs`.
+- [x] **Task 2.22: Painel Operacional da Portaria (UC21)**
+  - [x] Implementar tela `src/app/(gatekeeper)/gatekeeper/page.tsx` com seletor de evento e contadores de check-in em tempo real.
+- [x] **Task 2.23: Scanner Contínuo de Câmera WebRTC (UC22)**
+  - [x] Implementar leitor contínuo WebRTC com mira gráfica, alternância de câmera e feedback multissensorial (áudio e vibração).
+  - [x] Adicionar tratamento de permissões e contexto seguro (HTTPS / Localhost).
+- [x] **Task 2.24: Validação por Digitação Manual (UC23)**
+  - [x] Implementar aba de contingência com input alfanumérico e envio por Enter/botão.
+- [x] **Task 2.25: Motor de Validação e os 4 Estados Claros (UC24)**
+  - [x] Implementar Route Handler `POST /api/gate/validate` avaliando:
+    - [x] `VALID` (Acesso Liberado - Verde)
+    - [x] `ALREADY_USED` (Já Utilizado com data do 1º check-in - Laranja)
+    - [x] `WRONG_EVENT` (Evento Incorreto - Vermelho)
+    - [x] `INVALID_CODE` (Código Inválido ou HMAC Adulterado - Vermelho Escuro)
+  - [x] Garantir anti-duplicação concorrente entre múltiplas catracas (`updateMany WHERE status = 'ACTIVE'`).
+  - [x] Persistir histórico na tabela `ticket_validation_logs`.
 
 ---
 

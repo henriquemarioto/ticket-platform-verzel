@@ -119,7 +119,7 @@ export function ExternalCatalogModal({ isOpen, onClose, provider, onSelect }: Ex
                     onSelect(item);
                     onClose();
                   }}
-                  className="flex gap-4 p-3 rounded-lg border border-border-subtle bg-bg-surface hover:bg-bg-surface-hover hover:border-primary/50 transition-all text-left focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="flex gap-4 p-3 rounded-lg border border-border-subtle bg-bg-surface hover:bg-bg-surface-hover hover:border-primary/50 transition-all text-left focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
                 >
                   {image ? (
                     <img 

@@ -44,8 +44,14 @@ export function Navbar({ user }: { user: UserPayload | null }) {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Eventos</Link>
-          {user && (
+          {user && user.role === "CUSTOMER" && (
             <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Meus Ingressos</Link>
+          )}
+          {user && user.role === "GATEKEEPER" && (
+            <Link href="/gatekeeper" className="text-sm font-medium text-primary hover:text-primary-hover transition-colors font-semibold">Portaria</Link>
+          )}
+          {user && user.role === "ORGANIZER" && (
+            <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Painel do Organizador</Link>
           )}
           <div className="flex items-center gap-3 ml-4">
             {user ? (
@@ -77,8 +83,14 @@ export function Navbar({ user }: { user: UserPayload | null }) {
         <div className="md:hidden border-t border-border-subtle bg-bg-surface p-4">
           <nav className="flex flex-col gap-4">
             <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Eventos</Link>
-            {user && (
+            {user && user.role === "CUSTOMER" && (
               <Link href="/my-tickets" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Meus Ingressos</Link>
+            )}
+            {user && user.role === "GATEKEEPER" && (
+              <Link href="/gatekeeper" className="text-sm font-medium text-primary font-semibold" onClick={() => setIsOpen(false)}>Portaria</Link>
+            )}
+            {user && user.role === "ORGANIZER" && (
+              <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Painel do Organizador</Link>
             )}
             <div className="flex flex-col gap-2 pt-4 border-t border-border-subtle">
               {user ? (

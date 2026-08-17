@@ -24,7 +24,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
       {/* Abas */}
       <div className="flex border-b border-border-subtle mb-6">
         <button
-          className={`pb-4 px-4 font-medium text-sm transition-colors relative ${
+          className={`pb-4 px-4 font-medium text-sm transition-colors relative cursor-pointer ${
             activeTab === "upcoming" ? "text-primary" : "text-text-muted hover:text-text-primary"
           }`}
           onClick={() => setActiveTab("upcoming")}
@@ -40,7 +40,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
           )}
         </button>
         <button
-          className={`pb-4 px-4 font-medium text-sm transition-colors relative ${
+          className={`pb-4 px-4 font-medium text-sm transition-colors relative cursor-pointer ${
             activeTab === "past" ? "text-primary" : "text-text-muted hover:text-text-primary"
           }`}
           onClick={() => setActiveTab("past")}

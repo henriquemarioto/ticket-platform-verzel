@@ -47,7 +47,7 @@ const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HT
       <div className="flex flex-col gap-1 w-full">
         <select
           className={cn(
-            "flex h-10 w-full rounded-md border border-border-subtle bg-bg-surface px-3 py-2 text-sm text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full rounded-md border border-border-subtle bg-bg-surface px-3 py-2 text-sm text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
             error && "border-danger focus-visible:ring-danger/50",
             className
           )}
