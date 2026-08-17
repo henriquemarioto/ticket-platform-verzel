@@ -12,7 +12,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       success: "bg-success/20 text-success border-success/30",
       warning: "bg-warning/20 text-warning border-warning/30",
       danger: "bg-danger/20 text-danger border-danger/30",
-      neutral: "bg-slate-800 text-slate-300 border-slate-700",
+      neutral: "bg-bg-surface text-text-muted border-border-subtle",
     }
 
     return (

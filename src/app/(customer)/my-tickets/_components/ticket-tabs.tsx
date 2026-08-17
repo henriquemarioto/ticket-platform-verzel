@@ -5,6 +5,8 @@ import { TicketCard } from "./ticket-card";
 import { Modal } from "@/components/ui/modal";
 import { QRCodeSVG } from "qrcode.react";
 import { Badge } from "@/components/ui/badge";
+import { TicketX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type TicketTabsProps = {
   upcomingTickets: any[];
@@ -52,13 +54,19 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
 
       {/* Lista de Ingressos */}
       {activeTicketsList.length === 0 ? (
-        <div className="text-center py-12 border border-dashed border-border-subtle rounded-xl bg-bg-surface/50">
-          <p className="text-text-muted mb-4">
+        <div className="flex flex-col items-center text-center py-12 px-4 border border-dashed border-border-subtle rounded-xl bg-bg-surface/50">
+          <div className="bg-bg-surface p-3 rounded-full mb-4">
+            <TicketX className="w-8 h-8 text-text-muted" />
+          </div>
+          <h3 className="text-lg font-medium text-text-primary mb-2">
+            Nenhum ingresso encontrado
+          </h3>
+          <p className="text-text-muted mb-6 max-w-sm">
             Você ainda não possui ingressos {activeTab === "upcoming" ? "para os próximos eventos" : "no histórico"}.
           </p>
           {activeTab === "upcoming" && (
-            <a href="/" className="text-primary hover:underline font-medium">
-              Explorar Eventos
+            <a href="/" className="inline-flex">
+              <Button variant="outline">Explorar Eventos</Button>
             </a>
           )}
         </div>

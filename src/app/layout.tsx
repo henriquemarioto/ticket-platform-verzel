@@ -4,7 +4,6 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { QuickRoleSwitcher } from "@/components/layout/QuickRoleSwitcher";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -14,6 +13,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Ticket Platform Verzel",
   description: "Plataforma de Eventos e Ingressos",
+  openGraph: {
+    title: "Ticket Platform Verzel",
+    description: "Plataforma de Eventos e Ingressos",
+    url: "https://verzel-tickets.com.br",
+    siteName: "Ticket Platform Verzel",
+    locale: "pt_BR",
+    type: "website",
+  },
 };
 
 import { getSession } from "@/lib/auth";
@@ -32,7 +39,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {children}
           </main>
           <Footer />
-          <QuickRoleSwitcher />
         </ToastProvider>
       </body>
     </html>

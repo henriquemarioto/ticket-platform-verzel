@@ -203,7 +203,6 @@ Para garantir que a aplicação transmita confiança e um aspecto *premium*, os 
 - **Skeleton Screens (Shimmer):** Ao carregar dados, exibir esqueletos pulsantes em vez de telas brancas ou spinners grandes para evitar saltos de layout (CLS).
 - **Botões com Loading:** Ações de submissão (ex: "Salvar", "Comprar") devem desabilitar o botão e exibir um *spinner* interno, evitando duplos cliques.
 - **Toast Notifications:** Utilizar toasts não obstrusivos (sucesso, erro, aviso) para feedback rápido de ações concluídas.
-- **Barra de Progresso Global:** Utilizar um indicador no topo da tela durante a navegação entre rotas pesadas.
 
 ## 2. Tratamento de Erros e Estados Vazios (Empty States)
 - **Páginas 404 e 500 Personalizadas:** Telas amigáveis com Call to Actions claros ("Voltar ao Início") em vez das páginas de erro padrão do servidor.

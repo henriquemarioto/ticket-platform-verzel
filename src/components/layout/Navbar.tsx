@@ -67,9 +67,9 @@ export function Navbar({ user }: { user: UserPayload | null }) {
         </nav>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden p-2 text-text-muted hover:text-text-primary" onClick={() => setIsOpen(!isOpen)}>
+        <Button variant="ghost" size="icon" className="md:hidden text-text-muted hover:text-text-primary" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        </Button>
       </div>
 
       {/* Mobile Nav */}

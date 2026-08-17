@@ -69,7 +69,7 @@ function RegisterForm() {
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             Nome
           </label>
           <Input
@@ -84,7 +84,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             E-mail
           </label>
           <Input
@@ -99,7 +99,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             Senha
           </label>
           <Input
@@ -114,7 +114,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             Confirmar Senha
           </label>
           <Input
@@ -129,7 +129,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             Tipo de Conta
           </label>
           <Select 
@@ -148,7 +148,7 @@ function RegisterForm() {
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-text-muted">
           Já tem uma conta?{" "}
           <Link href="/login" className="font-medium text-primary hover:text-primary-hover hover:underline">
             Faça login
@@ -162,13 +162,13 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-800/50 p-8 shadow-xl backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-slate-100">Criar uma conta</h1>
-          <p className="mt-2 text-sm text-slate-400">Preencha os dados abaixo para se cadastrar</p>
+          <h1 className="text-2xl font-bold text-text-primary">Criar uma conta</h1>
+          <p className="mt-2 text-sm text-text-muted">Preencha os dados abaixo para se cadastrar</p>
         </div>
 
-        <Suspense fallback={<div className="text-center text-slate-400">Carregando formulário...</div>}>
+        <Suspense fallback={<div className="text-center text-text-muted">Carregando formulário...</div>}>
           <RegisterForm />
         </Suspense>
       </div>

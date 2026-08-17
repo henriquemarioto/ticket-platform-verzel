@@ -75,7 +75,7 @@ function LoginForm() {
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             E-mail
           </label>
           <Input
@@ -90,7 +90,7 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-200">
+          <label className="mb-1.5 block text-sm font-medium text-text-primary">
             Senha
           </label>
           <Input
@@ -109,8 +109,8 @@ function LoginForm() {
         </Button>
       </form>
 
-      <div className="mt-8 border-t border-slate-700 pt-6">
-        <p className="mb-4 text-center text-sm font-medium text-slate-400">
+      <div className="mt-8 border-t border-border-subtle pt-6">
+        <p className="mb-4 text-center text-sm font-medium text-text-muted">
           Acesso Rápido (Ambiente de Teste)
         </p>
         <div className="flex flex-col gap-2">
@@ -132,13 +132,13 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border border-slate-700 bg-slate-800/50 p-8 shadow-xl backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-slate-100">Bem-vindo de volta</h1>
-          <p className="mt-2 text-sm text-slate-400">Faça login para acessar sua conta</p>
+          <h1 className="text-2xl font-bold text-text-primary">Bem-vindo de volta</h1>
+          <p className="mt-2 text-sm text-text-muted">Faça login para acessar sua conta</p>
         </div>
 
-        <Suspense fallback={<div className="text-center text-slate-400">Carregando formulário...</div>}>
+        <Suspense fallback={<div className="text-center text-text-muted">Carregando formulário...</div>}>
           <LoginForm />
         </Suspense>
       </div>
