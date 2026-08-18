@@ -37,7 +37,7 @@ export default async function MyTicketsPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-2">Meus Ingressos</h1>
       <p className="text-text-muted mb-8">
         Visualize seus vouchers, apresente seu QR Code na entrada ou consulte seu histórico de eventos.

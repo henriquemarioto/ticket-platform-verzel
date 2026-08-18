@@ -71,7 +71,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeTicketsList.map((ticket) => (
             <TicketCard key={ticket.id} ticket={ticket} onShowQR={setSelectedTicket} />
           ))}
