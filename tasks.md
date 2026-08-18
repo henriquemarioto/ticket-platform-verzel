@@ -96,6 +96,9 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Garantir acesso 100% público sem necessidade de login para busca textual (`q`) e filtros por categoria (`CategoryPills`).
   - [x] Adicionar estados visuais de hover refinados (`hover:bg-surface-hover`, `hover:border-primary/40`, `hover:text-primary`) aos botões de filtro de categoria.
   - [x] Calcular `minPrice` dinâmico por setor.
+  - [x] Implementar animação typewriter no título Hero (`TypewriterHeroTitle` / `TypewriterText`) alternando entre as 9 frases com retenção de 3s e apagamento suave.
+  - [x] Adicionar suporte a termos dinâmicos com cores temáticas exclusivas para a 3ª palavra/termo-chave de cada frase no `TypewriterText`.
+  - [x] Calibrar altura fixa estável no container do título Hero (`h-[...]`) para eliminar qualquer alteração de altura da página entre 1 e 2 linhas.
 - [x] **Task 2.13: Visualização Detalhada do Evento (UC12)**
   - [x] Implementar `src/app/(customer)/events/[id]/page.tsx` com sinopse, informações de local/data e tabela de setores.
 - [x] **Task 2.14: Reserva Atômica em Setores de Pista (UC13)**

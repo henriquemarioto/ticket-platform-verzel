@@ -62,3 +62,17 @@ select:disabled,
   cursor: not-allowed;
 }
 
+@keyframes cursor-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-cursor-blink {
+  animation: cursor-blink 0.8s infinite;
+}
+
+

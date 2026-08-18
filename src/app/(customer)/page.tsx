@@ -4,6 +4,19 @@ import { CategoryPills } from "@/components/modules/events/category-pills";
 import { EventCard } from "@/components/modules/events/event-card";
 import { EventCarousel } from "@/components/modules/events/event-carousel";
 import { ViewAllCard } from "@/components/modules/events/view-all-card";
+import { TypewriterText, type TypewriterPhraseItem } from "@/components/ui/typewriter-text";
+
+const HERO_TYPEWRITER_PHRASES: TypewriterPhraseItem[] = [
+  { prefix: "Seu próximo ", highlight: "show", highlightColor: "text-[#0057ff]", suffix: " começa aqui." },
+  { prefix: "Seu próximo ", highlight: "filme", highlightColor: "text-[#731be5]", suffix: " começa aqui." },
+  { prefix: "Sua próxima ", highlight: "festa", highlightColor: "text-[#e11d48]", suffix: " começa aqui." },
+  { prefix: "Sua próxima ", highlight: "peça de teatro", highlightColor: "text-[#d97706]", suffix: " começa aqui." },
+  { prefix: "Sua próxima ", highlight: "palestra", highlightColor: "text-[#059669]", suffix: " começa aqui." },
+  { prefix: "Seu próximo ", highlight: "workshop", highlightColor: "text-[#0891b2]", suffix: " começa aqui." },
+  { prefix: "Seu próximo ", highlight: "networking", highlightColor: "text-[#4f46e5]", suffix: " começa aqui." },
+  { prefix: "Sua próxima ", highlight: "história", highlightColor: "text-[#dc2626]", suffix: " começa aqui." },
+  { prefix: "Sua próxima ", highlight: "experiência", highlightColor: "text-[#0d9488]", suffix: " começa aqui." },
+];
 
 export default async function CustomerHomePage() {
   const allEvents = await prisma.event.findMany({
@@ -76,12 +89,18 @@ export default async function CustomerHomePage() {
       {/* Hero Section */}
       <section className="relative flex min-h-[300px] flex-col items-center justify-center bg-surface-hover px-4 py-16 text-center sm:min-h-[400px]">
         <div className="absolute inset-0 bg-main/50" />
-        <div className="relative z-10 mx-auto max-w-3xl space-y-6">
-          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl lg:text-6xl">
-            Sua próxima experiência começa aqui
+        <div className="relative z-10 mx-auto max-w-4xl space-y-6">
+          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl lg:text-6xl h-[96px] sm:h-[128px] lg:h-[152px] flex items-center justify-center text-center leading-tight">
+            <TypewriterText
+              phrases={HERO_TYPEWRITER_PHRASES}
+              typingSpeed={70}
+              deletingSpeed={35}
+              pauseDuration={3000}
+              pauseBetweenPhrases={300}
+            />
           </h1>
           <p className="text-lg text-text-muted sm:text-xl">
-            Descubra shows, teatros, cinemas e festivais imperdíveis acontecendo perto de você.
+            Descubra shows, teatros, cinemas, festivais e muito mais acontecendo perto de você.
           </p>
           <div className="pt-4 flex flex-col items-center gap-6">
             <EventSearchBar />

@@ -66,7 +66,17 @@ sequenceDiagram
    - Carrega eventos futuros com status `PUBLISHED`.
    - Calcula o menor preço entre os setores ativos para cada evento (`minPrice`).
 3. A página inicial exibe:
-   - **Hero Banner**: Destaque para o principal evento em cartaz com imagem ampla, título e botão de ação rápida. Logo abaixo da barra de pesquisa, exibe os **Filtros Rápidos de Categoria** (Pílulas interativas).
+   - **Hero Banner**: Destaque com headline interativa utilizando animação de digitação (*typewriter effect*), alternando ciclicamente entre 9 frases, onde a palavra/termo-chave dinâmico é destacado com uma cor temática exclusiva para cada categoria:
+     1. *"Seu próximo <span style="color:#0057ff">show</span> começa aqui."* (Azul Action Blue `#0057ff`)
+     2. *"Seu próximo <span style="color:#731be5">filme</span> começa aqui."* (Roxo Vibrant Purple `#731be5`)
+     3. *"Sua próxima <span style="color:#e11d48">festa</span> começa aqui."* (Rosa/Rose `#e11d48`)
+     4. *"Sua próxima <span style="color:#f59e0b">peça de teatro</span> começa aqui."* (Âmbar/Teatro `#f59e0b`)
+     5. *"Sua próxima <span style="color:#059669">palestra</span> começa aqui."* (Verde Esmeralda `#059669`)
+     6. *"Seu próximo <span style="color:#0891b2">workshop</span> começa aqui."* (Ciano `#0891b2`)
+     7. *"Seu próximo <span style="color:#4f46e5">networking</span> começa aqui."* (Índigo `#4f46e5`)
+     8. *"Sua próxima <span style="color:#dc2626">história</span> começa aqui."* (Vermelho `#dc2626`)
+     9. *"Sua próxima <span style="color:#0d9488">experiência</span> começa aqui."* (Teal/Turquesa `#0d9488`)
+     A animação digita a frase progressivamente simulando uma pessoa digitando, mantém o texto por 3 segundos (3000ms), apaga suavemente e avança para a próxima frase. O container do título possui altura fixa calibrada responsivamente para acomodar 1 ou 2 linhas sem qualquer variação de altura ou pulo na página. Logo abaixo da barra de pesquisa, exibe os **Filtros Rápidos de Categoria** (Pílulas interativas).
    - **Navegação de Categorias**: Ao clicar em uma pílula de categoria específica (ex: "Shows"), o visitante é redirecionado para a página do catálogo (`/events`) exibindo apenas aqueles eventos. Ao clicar em "Todos", retorna para a vitrine inicial padrão (`/`).
    - **Barra de Busca Rápida**: Campo de texto com busca instantânea por título, artista ou cidade. Redireciona buscas do contexto principal para a página de catálogo.
    - **Grade de Destaques (2 Fileiras)**: Grade responsiva exibindo até 7 eventos. No 8º slot, é exibido um card de chamada de ação dinâmico "Ver todos os eventos", redirecionando o cliente para a página de catálogo `/events`.

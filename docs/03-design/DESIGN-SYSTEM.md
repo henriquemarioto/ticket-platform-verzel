@@ -140,6 +140,17 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 - `maskBRL(value)`: Formatação monetária em Real Brasileiro (`R$ 1.250,00`)
 - `formatDateLong(date)`: Data legível por extenso (ex: *"20 de Novembro de 2026 às 20:00"*).
 
+---
+
+## 10. `TypewriterText` (`src/components/ui/typewriter-text.tsx`)
+- Animação de máquina de escrever (*typewriter effect*) fluida com suporte a termos dinâmicos destacados em cores específicas para cada frase, cursor piscante (*blink*) e posicionamento inline natural para quebras em múltiplas linhas.
+- Ciclo de animação: digitação caractere a caractere (~60-80ms), retenção do texto completo por 3 segundos (3000ms), apagamento suave (~30-40ms) e transição para a próxima frase da lista cíclica.
+- Destaque colorido dinâmico: suporte a segmentos estruturados (`prefix`, `highlight`, `highlightColor`, `suffix`) permitindo que a palavra-chave central (ex: *"show"*, *"filme"*, *"festa"*, *"peça de teatro"*, etc.) seja renderizada em cor distinta enquanto o restante mantém o tom principal.
+- Cursor piscante: animação CSS `@keyframes cursor-blink` com ciclo de alternância limpa (0.8s), renderizado em fluxo `inline` diretamente após o último caractere, sem desalinhamento quando o texto ocupa 2 ou mais linhas.
+- Estabilidade de Layout (Zero CLS): container com altura fixa calibrada responsivamente (`h-[96px] sm:h-[120px] lg:h-[140px] flex items-center justify-center`) impedindo qualquer variação de altura ou pulo de layout quando o texto varia entre 1 e 2 linhas.
+- Acessibilidade: suporte a `prefers-reduced-motion` e atributos ARIA para leitores de tela sem causar deslocamentos bruscos de layout (CLS).
+
+
 
 ---
 
