@@ -53,6 +53,7 @@
 - Não inventar requisitos ou fluxos não descritos nos documentos de requisitos.
 - Não adicionar bibliotecas pesadas de estado global ou camadas desnecessárias de repositórios.
 - Não alterar comportamento de regras de negócio sem atualizar a respectiva documentação em `/docs`.
+- Nunca em hipótese alguma inseria o valor do env do código
 
 <!-- BEGIN:nextjs-agent-rules -->
 
