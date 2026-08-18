@@ -22,7 +22,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
   return (
     <div>
       {/* Abas */}
-      <div className="flex shadow-sm mb-6">
+      <div className="flex mb-6">
         <button
           className={`pb-4 px-4 font-medium text-sm transition-colors relative cursor-pointer ${
             activeTab === "upcoming" ? "text-primary" : "text-text-muted hover:text-text-primary"
@@ -84,6 +84,9 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
         onClose={() => setSelectedTicket(null)}
         title="QR Code para Entrada"
       >
+        <p className="mb-2 text-center text-sm text-text-muted">
+          Apresente este QR Code na tela do seu celular com o brilho no máximo ao chegar na portaria do evento.
+        </p>
         {selectedTicket && (
           <div className="flex flex-col items-center">
             <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
@@ -98,11 +101,11 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
             <h3 className="font-semibold text-lg mb-1 text-center">{selectedTicket.event.title}</h3>
             
             <div className="flex flex-col gap-2 w-full mt-4 bg-bg-main p-4 rounded-lg shadow-sm text-sm">
-              <div className="flex justify-between items-center pb-2 shadow-sm">
+              <div className="flex justify-between items-center pb-2">
                 <span className="text-text-muted">Setor</span>
                 <span className="font-medium">{selectedTicket.sector.name}</span>
               </div>
-              <div className="flex justify-between items-center pb-2 shadow-sm">
+              <div className="flex justify-between items-center pb-2">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
                   {selectedTicket.seat ? `${selectedTicket.seat.row}${selectedTicket.seat.number}` : "Pista"}
@@ -112,10 +115,6 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
                 <span className="text-text-muted">Código</span>
                 <span className="font-mono text-primary font-bold">{selectedTicket.ticketCode}</span>
               </div>
-            </div>
-
-            <div className="mt-6 text-center text-xs text-text-muted">
-              Apresente este QR Code na tela do seu celular com o brilho no máximo ao chegar na portaria do evento.
             </div>
           </div>
         )}
