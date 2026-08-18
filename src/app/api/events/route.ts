@@ -1,6 +1,75 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createEventSchema } from "@/lib/validations/events";
+import { EventCategory, EventStatus } from "@prisma/client";
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = req.nextUrl;
+    const q = searchParams.get("q") || searchParams.get("query") || undefined;
+    const category = searchParams.get("category") || undefined;
+    const status = (searchParams.get("status") as EventStatus) || "PUBLISHED";
+
+    const events = await prisma.event.findMany({
+      where: {
+        status,
+        eventDate: {
+          gte: new Date(),
+        },
+        ...(q && {
+          OR: [
+            { title: { contains: q, mode: "insensitive" } },
+            { description: { contains: q, mode: "insensitive" } },
+            { city: { contains: q, mode: "insensitive" } },
+            { locationName: { contains: q, mode: "insensitive" } },
+          ],
+        }),
+        ...(category && {
+          category: category as EventCategory,
+        }),
+      },
+      include: {
+        sectors: true,
+      },
+      orderBy: {
+        eventDate: "asc",
+      },
+    });
+
+    const formattedEvents = events.map((event) => {
+      const minPrice =
+        event.sectors.length > 0
+          ? Math.min(...event.sectors.map((s) => s.price))
+          : 0;
+
+      return {
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        category: event.category,
+        bannerUrl: event.bannerUrl,
+        locationName: event.locationName,
+        city: event.city,
+        eventDate: event.eventDate,
+        minPrice,
+        status: event.status,
+        sectors: event.sectors,
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      total: formattedEvents.length,
+      events: formattedEvents,
+    });
+  } catch (error: unknown) {
+    console.error("Erro ao listar eventos:", error);
+    return NextResponse.json(
+      { error: "Erro interno no servidor ao listar eventos." },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -105,7 +174,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Erro ao criar evento:", error);
     return NextResponse.json(
       { error: "Erro interno no servidor ao criar evento." },

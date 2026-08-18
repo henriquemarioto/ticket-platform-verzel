@@ -93,6 +93,8 @@ sequenceDiagram
 - **RN01 - Ocultação de Eventos Não Publicados**: Eventos em status `DRAFT` ou `CANCELLED` nunca devem ser listados na vitrine pública.
 - **RN02 - Cálculo do Preço Mínimo**: O valor exibido no card ("A partir de R$ XX") deve corresponder ao menor preço unitário ativo entre todos os setores daquele evento.
 - **RN03 - Ordenação Padrão**: Os eventos devem ser ordenados cronologicamente pela data de realização mais próxima (`eventDate ASC`).
+- **RN04 - Busca e Filtros Públicos sem Autenticação**: A vitrine (`/`), a página de catálogo completo (`/events`), a busca por termo (`q`) e as pílulas de filtro de categoria (`CategoryPills`) devem ser 100% acessíveis publicamente sem necessidade de login.
+- **RN05 - Interatividade Visual (Hover & Feedback)**: Os botões de filtro de categoria possuem estados visuais claros de hover (`hover:bg-surface-hover`, `hover:border-primary/40`, `hover:text-primary`), transição suave de cores e feedback ao clique.
 
 ---
 
@@ -127,20 +129,21 @@ sequenceDiagram
 
 ```gherkin
 Funcionalidade: Vitrine Pública de Eventos
-  Como um visitante da plataforma
-  Eu quero visualizar os eventos em cartaz na página inicial
-  Para escolher um evento e comprar ingressos
+  Como um visitante da plataforma sem login
+  Eu quero pesquisar e filtrar eventos por categoria
+  Para escolher um evento e visualizar seus detalhes sem precisar autenticar
 
-  Cenário: Visualização de cards na página inicial
-    Dado que existem eventos publicados cadastrados no banco
-    Quando eu acesso a URL raiz "/"
+  Cenário: Visualização de cards e filtros na página inicial sem login
+    Dado que não estou autenticado na plataforma
+    Quando eu acesso a URL raiz "/" ou "/events"
     Então eu devo ver a lista de eventos com título, data, local e preço "A partir de R$ XX"
-    E apenas eventos futuros com status "PUBLISHED" devem ser exibidos
+    E devo poder passar o cursor sobre as pílulas de categoria vendo o efeito de hover
+    E ao clicar em uma categoria (ex: "Shows"), devo visualizar os eventos filtrados sem redirecionamento para login
 
-  Cenário: Filtragem por termo de busca
-    Dado que a vitrine exibe múltiplos eventos
+  Cenário: Busca textual por evento sem login
+    Dado que estou na página inicial "/" como visitante anônimo
     Quando eu digito "Indie" no campo de busca rápida
-    Então a grade deve filtrar e exibir apenas eventos contendo "Indie" no título
+    Então a aplicação deve realizar a busca e exibir os eventos correspondentes sem exigir autenticação
 ```
 
 

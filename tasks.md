@@ -93,6 +93,8 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Implementar `src/app/(customer)/page.tsx` com banner hero, destaques em 2 fileiras e carrosséis horizontais por categoria.
   - [x] Criar componente `ViewAllCard` interativo.
   - [x] Implementar a página de catálogo completo `src/app/(customer)/events/page.tsx` com busca e filtros `CategoryPills`.
+  - [x] Garantir acesso 100% público sem necessidade de login para busca textual (`q`) e filtros por categoria (`CategoryPills`).
+  - [x] Adicionar estados visuais de hover refinados (`hover:bg-surface-hover`, `hover:border-primary/40`, `hover:text-primary`) aos botões de filtro de categoria.
   - [x] Calcular `minPrice` dinâmico por setor.
 - [x] **Task 2.13: Visualização Detalhada do Evento (UC12)**
   - [x] Implementar `src/app/(customer)/events/[id]/page.tsx` com sinopse, informações de local/data e tabela de setores.

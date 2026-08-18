@@ -90,12 +90,15 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 
 ---
 
-## 3. `Badge` (`src/components/ui/badge.tsx`)
-- Indicador visual compacto para status de ingressos, eventos e pedidos:
-  - `success`: Fundo verde suave com texto escuro (`bg-emerald-50 text-emerald-800 border-emerald-200`).
-  - `warning`: Fundo âmbar suave com texto escuro (`bg-amber-50 text-amber-800 border-amber-200`).
-  - `danger`: Fundo vermelho suave com texto escuro (`bg-red-50 text-red-800 border-red-200`).
-  - `neutral`: Fundo cinza suave (`bg-slate-100 text-slate-700 border-slate-200`).
+## 3. `Badge` & Pílulas de Filtro (`src/components/ui/badge.tsx`, `CategoryPills`)
+- Indicador visual compacto para status de ingressos, eventos e botões de filtro interativo:
+  - `success`: Fundo verde suave com texto escuro (`bg-success/20 text-success`).
+  - `warning`: Fundo âmbar suave com texto escuro (`bg-warning/20 text-warning`).
+  - `danger`: Fundo vermelho suave com texto escuro (`bg-danger/20 text-danger`).
+  - `neutral`: Fundo branco/superfície com texto suave (`bg-surface text-text-muted border border-border-subtle`).
+- **Pílulas de Filtro de Categoria (`CategoryPills`)**:
+  - Estado Inativo: `bg-surface text-text-muted border border-border-subtle hover:bg-surface-hover hover:text-text-primary hover:border-primary/40 transition-all duration-150`.
+  - Estado Ativo: `bg-primary text-primary-foreground border border-primary hover:bg-primary-hover shadow-sm font-semibold`.
 
 ---
 

@@ -21,10 +21,12 @@ export default async function EventsCatalogPage({
         gte: new Date(),
       },
       ...(query && {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
+        OR: [
+          { title: { contains: query, mode: "insensitive" } },
+          { city: { contains: query, mode: "insensitive" } },
+          { locationName: { contains: query, mode: "insensitive" } },
+          { description: { contains: query, mode: "insensitive" } },
+        ],
       }),
       ...(category && {
         category: category as import("@prisma/client").EventCategory,

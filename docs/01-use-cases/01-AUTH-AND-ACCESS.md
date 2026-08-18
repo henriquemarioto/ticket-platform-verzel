@@ -409,8 +409,11 @@ Funcionalidade: Cadastro de Novos Usuários
 | Rota / Endpoint | Atores Permitidos | Comportamento se Anônimo | Comportamento se Papel Inválido |
 | :--- | :--- | :--- | :--- |
 | `/` (Vitrine de Eventos) | Todos (Público) | Acesso Permitido | Acesso Permitido |
+| `/events` (Catálogo e Busca de Eventos) | Todos (Público) | Acesso Permitido (Busca e Filtros livres) | Acesso Permitido |
 | `/events/:id` (Detalhes) | Todos (Público) | Acesso Permitido | Acesso Permitido |
 | `/tickets/share/:token` | Todos (Público) | Acesso Permitido | Acesso Permitido |
+| `GET /api/events` (Consulta/Busca) | Todos (Público) | Acesso Permitido | Acesso Permitido |
+| `GET /api/events/:id/seats` | Todos (Público) | Acesso Permitido | Acesso Permitido |
 | `/login` / `/register` | Anônimo apenas | Acesso Permitido | Redireciona para Dashboard da Role |
 | `/my-tickets` | `CUSTOMER`, `ORGANIZER` | Redireciona `/login` | N/A |
 | `/checkout` | `CUSTOMER`, `ORGANIZER` | Redireciona `/login` | Bloqueia Portaria (Redireciona `/gatekeeper`) |
@@ -431,7 +434,7 @@ flowchart TD
     
     ExtractToken --> HasToken{"Token existe e assinatura é válida?"}
     
-    HasToken -- "Não" --> IsPublic{"A rota pertence à lista pública?<br/>(/, /login, /register, /events/*, /tickets/share/*)"}
+    HasToken -- "Não" --> IsPublic{"A rota pertence à lista pública?<br/>(/, /login, /register, /events, /events/*, /api/events, /api/events/*, /tickets/share/*)"}
     IsPublic -- "Sim" --> PassPublic
     IsPublic -- "Não" --> IsApi{"É uma chamada de API (/api/*)?"}
     IsApi -- "Sim" --> Resp401["Responder HTTP 401 Unauthorized"]

@@ -10,13 +10,21 @@ export function EventSearchBar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
+  const currentQ = searchParams.get("q") || "";
+  const [searchTerm, setSearchTerm] = useState(currentQ);
+  const [prevQ, setPrevQ] = useState(currentQ);
+
+  if (prevQ !== currentQ) {
+    setPrevQ(currentQ);
+    setSearchTerm(currentQ);
+  }
 
   useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
-      if (searchTerm) {
-        params.set("q", searchTerm);
+      const trimmed = searchTerm.trim();
+      if (trimmed) {
+        params.set("q", trimmed);
       } else {
         params.delete("q");
       }

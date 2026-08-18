@@ -7,7 +7,7 @@ const SECRET = process.env.AUTH_SECRET;
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const publicRoutes = ["/", "/login", "/register", "/forbidden"];
+  const publicRoutes = ["/", "/events", "/login", "/register", "/forbidden", "/api/events"];
   
   // Rotas que não exigem auth específica mas podem ter
   const isPublicRoute = 
@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
       const secret = new TextEncoder().encode(SECRET);
       const verified = await jwtVerify(sessionToken, secret);
       payload = verified.payload as { id: string; email: string; role: string };
-    } catch (error) {
+    } catch (_error) {
       // Token inválido
       payload = null;
     }

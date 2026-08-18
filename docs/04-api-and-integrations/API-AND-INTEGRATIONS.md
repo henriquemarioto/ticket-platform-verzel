@@ -147,7 +147,38 @@ export type UpdateEventStatusInput = z.infer<typeof updateEventStatusSchema>;
 
 ---
 
-## 3. Consulta de Mapa de Assentos (`GET /api/events/[id]/seats`)
+## 3. Consulta e Busca Pública de Eventos (`GET /api/events`)
+
+Endpoint público que lista eventos publicados, suportando filtros por termo textual (`q`) e categoria (`category`):
+
+- **Query Params**:
+  - `q`: string (termo de busca em título, descrição ou cidade)
+  - `category`: `SHOW` | `MOVIE` | `THEATER` | `FESTIVAL`
+  - `status`: padrão `PUBLISHED`
+- **Acesso**: Público (sem necessidade de autenticação)
+
+```typescript
+export interface EventsListResponse {
+  success: boolean;
+  total: number;
+  events: Array<{
+    id: string;
+    title: string;
+    description: string;
+    category: "SHOW" | "MOVIE" | "THEATER" | "FESTIVAL";
+    bannerUrl: string;
+    locationName: string;
+    city: string;
+    eventDate: string;
+    minPrice: number;
+    status: string;
+  }>;
+}
+```
+
+---
+
+## 4. Consulta de Mapa de Assentos (`GET /api/events/[id]/seats`)
 
 Executa *lazy expiration* de bloqueios temporários expirados (`reservedUntil < NOW()`) e retorna o grid atualizado:
 
