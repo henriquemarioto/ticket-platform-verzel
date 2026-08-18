@@ -33,40 +33,40 @@ gantt
 ## 2. Detalhamento dos Marcos
 
 ### 🏗️ Marco 1: Fase 1 - Estruturação da Base Técnica e Infraestrutura
-- [ ] **Setup & Estrutura**: Setup Next.js 16 (App Router), TypeScript `strict`, ESLint e Prettier ([`docs/02-architecture/PROJECT-STRUCTURE.md`](../02-architecture/PROJECT-STRUCTURE.md)).
-- [ ] **Infraestrutura**: Containerização Docker e topologia Supabase + Vercel com pooler Supavisor ([`docs/05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md`](../05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md)).
-- [ ] **Design System & Tema**: Layout raiz, `ToastProvider`, tema escuro, tokens HSL e biblioteca atômica de UI ([`docs/03-design/DESIGN-SYSTEM.md`](../03-design/DESIGN-SYSTEM.md)).
-- [ ] **Banco de Dados**: Modelagem `schema.prisma`, conexões dual-URL e client singleton ([`docs/02-architecture/DATABASE-MODELING.md`](../02-architecture/DATABASE-MODELING.md)).
+- [x] **Setup & Estrutura**: Setup Next.js 16 (App Router), TypeScript `strict`, ESLint e Prettier ([`docs/02-architecture/PROJECT-STRUCTURE.md`](../02-architecture/PROJECT-STRUCTURE.md)).
+- [x] **Infraestrutura**: Containerização Docker e topologia Supabase + Vercel com pooler Supavisor ([`docs/05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md`](../05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md)).
+- [x] **Design System & Tema**: Layout raiz, `ToastProvider`, paleta Kinetic Pulse, tokens HEX no `@theme` e biblioteca atômica de UI ([`docs/03-design/DESIGN-SYSTEM.md`](../03-design/DESIGN-SYSTEM.md)).
+- [x] **Banco de Dados**: Modelagem `schema.prisma`, conexões dual-URL e client singleton ([`docs/02-architecture/DATABASE-MODELING.md`](../02-architecture/DATABASE-MODELING.md)).
 
 ### 🎯 Marco 2: Fase 2 - Desenvolvimento dos Casos de Uso Core (Obrigatórios)
-- [ ] **Módulo 1: Autenticação & Acesso (UC01 a UC05)**: [`docs/01-use-cases/01-AUTH-AND-ACCESS.md`](../01-use-cases/01-AUTH-AND-ACCESS.md)
-  - UC01: Autenticação e Login com Perfis RBAC
-  - UC02: Cadastro e Registro de Novos Usuários
-  - UC03: Controle de Acesso e Proteção de Rotas (RBAC)
-  - UC04: Pipeline de Carga de Dados de Teste (Seed)
-  - UC05: Encerramento de Sessão (Logout) e Invalidação de Cookie
-- [ ] **Módulo 2: Eventos e Catálogo (UC06 a UC10)**: [`docs/01-use-cases/02-EVENTS-AND-CATALOG.md`](../01-use-cases/02-EVENTS-AND-CATALOG.md)
-  - UC06: Integração e Busca de Filmes no Catálogo Externo TMDb
-  - UC07: Integração e Busca de Shows na Ticketmaster Discovery API
-  - UC08: Criação de Evento com Setor de Pista (Lotação Geral)
-  - UC09: Criação de Evento com Mapa de Assentos Numerados
-  - UC10: Gestão, Edição e Controle de Status de Eventos
-- [ ] **Módulo 3: Venda, Reserva e Ingressos (UC11 a UC20)**: [`docs/01-use-cases/03-SALES-AND-TICKETS.md`](../01-use-cases/03-SALES-AND-TICKETS.md)
-  - UC11: Vitrine Pública, Navegação e Busca Rápida de Eventos
-  - UC12: Visualização Detalhada do Evento
-  - UC13: Seleção de Quantidade e Reserva em Setores de Pista
-  - UC14: Seleção no Mapa de Assentos com Bloqueio Atômico Anti-Double Booking
-  - UC15: Expiração por Tempo Limite (TTL) e Liberação de Assentos
-  - UC16: Checkout e Simulação de Pagamento Aprovado
-  - UC17: Checkout e Simulação de Pagamento Recusado
-  - UC18: Visualização e Gestão no Painel Meus Ingressos
-  - UC19: Geração e Assinatura Criptográfica de QR Code (HMAC-SHA256)
-  - UC20: Compartilhamento por Link Público Tokenizado
-- [ ] **Módulo 4: Portaria e Controle de Acesso (UC21 a UC24)**: [`docs/01-use-cases/04-GATE-AND-CHECKIN.md`](../01-use-cases/04-GATE-AND-CHECKIN.md)
-  - UC21: Seleção de Evento e Painel Operacional da Portaria
-  - UC22: Validação via Scanner Contínuo de Câmera (WebRTC)
-  - UC23: Validação por Digitação Manual de Código
-  - UC24: Motor de Validação da Portaria e os 4 Estados Claros
+- [x] **Módulo 1: Autenticação & Acesso (UC01 a UC05)**: [`docs/01-use-cases/01-AUTH-AND-ACCESS.md`](../01-use-cases/01-AUTH-AND-ACCESS.md)
+  - [x] UC01: Autenticação e Login com Perfis RBAC
+  - [x] UC02: Cadastro e Registro de Novos Usuários
+  - [x] UC03: Controle de Acesso e Proteção de Rotas (RBAC via Edge Proxy)
+  - [x] UC04: Pipeline de Carga de Dados de Teste (Seed)
+  - [x] UC05: Encerramento de Sessão (Logout) e Invalidação de Cookie
+- [x] **Módulo 2: Eventos e Catálogo (UC06 a UC10)**: [`docs/01-use-cases/02-EVENTS-AND-CATALOG.md`](../01-use-cases/02-EVENTS-AND-CATALOG.md)
+  - [x] UC06: Integração e Busca de Filmes no Catálogo Externo TMDb com Fallback Mock
+  - [x] UC07: Integração e Busca de Shows na Ticketmaster Discovery API com Fallback Mock
+  - [x] UC08: Criação de Evento com Setor de Pista (Lotação Geral)
+  - [x] UC09: Criação de Evento com Mapa de Assentos Numerados
+  - [x] UC10: Gestão, Edição e Controle de Status de Eventos
+- [x] **Módulo 3: Venda, Reserva e Ingressos (UC11 a UC20)**: [`docs/01-use-cases/03-SALES-AND-TICKETS.md`](../01-use-cases/03-SALES-AND-TICKETS.md)
+  - [x] UC11: Vitrine Pública, Navegação e Busca Rápida de Eventos
+  - [x] UC12: Visualização Detalhada do Evento com Google Maps Embed Gratuito
+  - [x] UC13: Seleção de Quantidade e Reserva em Setores de Pista
+  - [x] UC14: Seleção no Mapa de Assentos com Bloqueio Atômico Anti-Double Booking
+  - [x] UC15: Expiração por Tempo Limite (TTL) e Liberação de Assentos (Lazy Expiration)
+  - [x] UC16: Checkout e Simulação de Pagamento Aprovado
+  - [x] UC17: Checkout e Simulação de Pagamento Recusado
+  - [x] UC18: Visualização e Gestão no Painel Meus Ingressos (Abas Ativos / Histórico)
+  - [x] UC19: Geração e Assinatura Criptográfica de QR Code (HMAC-SHA256)
+  - [x] UC20: Compartilhamento por Link Público Tokenizado com Passcode HMAC
+- [x] **Módulo 4: Portaria e Controle de Acesso (UC21 a UC24)**: [`docs/01-use-cases/04-GATE-AND-CHECKIN.md`](../01-use-cases/04-GATE-AND-CHECKIN.md)
+  - [x] UC21: Seleção de Evento e Painel Operacional da Portaria
+  - [x] UC22: Validação via Scanner Contínuo de Câmera (WebRTC com áudio e vibração)
+  - [x] UC23: Validação por Digitação Manual de Código
+  - [x] UC24: Motor de Validação da Portaria e os 4 Estados Claros (com Anti-Duplicação Concorrente)
 
 ### 🌟 Marco 3: Fase 3 - Diferenciais de Escala e Excelência (Opcionais)
 - [ ] **Módulo 5: Analytics e Recursos Avançados (UC25 a UC30)**: [`docs/01-use-cases/05-ANALYTICS-AND-ADVANCED.md`](../01-use-cases/05-ANALYTICS-AND-ADVANCED.md)

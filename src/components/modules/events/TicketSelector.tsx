@@ -60,44 +60,48 @@ export function TicketSelector({ sectorId, price, availableCapacity }: TicketSel
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 rounded-lg bg-surface-hover/30 p-4">
-      <div className="flex flex-col items-center sm:items-start gap-2">
-        <span className="text-sm font-medium text-text-muted">Quantidade</span>
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-4 rounded-xl border border-subtle bg-surface-hover/50 p-4">
+      {/* Quantity Row */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-text-primary">Quantidade</span>
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            className="h-10 w-10 p-0 rounded-full"
+            className="h-8 w-8 p-0 rounded-full"
             onClick={decrement}
             disabled={quantity <= 1 || loading}
           >
-            <Minus className="h-4 w-4" />
+            <Minus className="h-3 w-3" />
           </Button>
-          <span className="text-xl font-bold w-6 text-center text-text-primary">{quantity}</span>
+          <span className="text-sm font-bold w-6 text-center text-text-primary">{quantity}</span>
           <Button
             variant="outline"
-            className="h-10 w-10 p-0 rounded-full"
+            className="h-8 w-8 p-0 rounded-full"
             onClick={increment}
             disabled={quantity >= maxAllowed || loading}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-        <div className="text-center sm:text-right">
-          <span className="text-sm font-medium text-text-muted block">Valor Total</span>
-          <span className="text-2xl font-bold text-primary">{formattedTotal}</span>
+      <div className="h-px w-full bg-subtle/50" />
+
+      {/* Total and Button */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-text-muted">Valor Total</span>
+          <span className="text-lg font-bold text-primary">{formattedTotal}</span>
         </div>
         <Button 
           variant="primary" 
-          className="w-full sm:w-auto h-12 px-8" 
+          className="w-full h-10" 
           onClick={handleReserve}
           disabled={loading}
         >
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processando...
             </>
           ) : (

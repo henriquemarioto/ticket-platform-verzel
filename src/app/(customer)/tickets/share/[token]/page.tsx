@@ -99,7 +99,7 @@ export default async function ShareTicketPage({
           <p className="text-text-muted">Voucher Digital</p>
         </div>
 
-        <div className="bg-bg-surface border border-border-subtle rounded-2xl overflow-hidden shadow-xl relative">
+        <div className="bg-bg-surface shadow-sm rounded-2xl overflow-hidden shadow-xl relative">
           {ticket.status !== "ACTIVE" && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm pointer-events-none p-6 text-center">
               <span className="text-4xl font-black uppercase text-white transform -rotate-12 mb-4 drop-shadow-lg">
@@ -114,7 +114,7 @@ export default async function ShareTicketPage({
           )}
 
           <div 
-            className="w-full h-48 bg-cover bg-center border-b border-border-subtle" 
+            className="w-full h-48 bg-cover bg-center shadow-sm" 
             style={{ backgroundImage: `url(${event.bannerUrl})` }} 
           />
           
@@ -146,12 +146,12 @@ export default async function ShareTicketPage({
               </div>
             </div>
 
-            <div className="bg-bg-main p-4 rounded-xl border border-border-subtle space-y-3 text-sm">
-              <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
+            <div className="bg-bg-main p-4 rounded-xl shadow-sm space-y-3 text-sm">
+              <div className="flex justify-between items-center pb-3 shadow-sm">
                 <span className="text-text-muted">Setor</span>
                 <span className="font-medium">{sector.name}</span>
               </div>
-              <div className="flex justify-between items-center pb-3 border-b border-border-subtle">
+              <div className="flex justify-between items-center pb-3 shadow-sm">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
                   {seat ? `${seat.row}${seat.number}` : "Pista"}
@@ -163,7 +163,7 @@ export default async function ShareTicketPage({
               </div>
             </div>
 
-            <div className="mt-6 flex items-start gap-3 p-4 bg-primary/10 rounded-xl text-xs text-primary/90 border border-primary/20">
+            <div className="mt-6 flex items-start gap-3 p-4 bg-primary/10 rounded-xl text-xs text-primary/90 shadow-sm ring-1 ring-primary/20">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <p>
                 Este ingresso confere direito a uma única entrada. Não compartilhe o link, não tire prints e apresente esta tela na portaria com o brilho do celular no máximo.

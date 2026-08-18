@@ -41,6 +41,18 @@ Este documento detalha as integrações com APIs e serviços externos.
 
 ---
 
+## 4. Google Maps Embed & Deep Links de Navegação
+- **Finalidade**: Exibição interativa e visualização espacial do local físico do evento em `/events/:id`.
+- **Mecanismo Gratuito**:
+  - Utiliza o endpoint público de iframe: `https://maps.google.com/maps?q={encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`.
+  - Zero dependência de chaves de API restritas (`GOOGLE_MAPS_API_KEY`) ou cadastros pagos.
+- **Deep Links Externos Integrados**:
+  - **Google Maps**: `https://www.google.com/maps/dir/?api=1&destination={encodedLocation}`
+  - **Waze**: `https://waze.com/ul?q={encodedLocation}`
+  - **Apple Maps**: `https://maps.apple.com/?daddr={encodedLocation}`
+
+---
+
 # Contratos de Autenticação (DTOs e Schemas Zod)
 
 Este documento define os schemas e tipos de dados utilizados nos fluxos de autenticação.
@@ -83,12 +95,11 @@ export const registerSchema = z
 export type RegisterInput = z.infer<typeof registerSchema>;
 ```
 
-
 ---
 
 # Contratos de Eventos e Setores (DTOs e Schemas Zod)
 
-Este documento estabelece os contratos de criação e consulta de eventos.
+Este documento estabelece os contratos de criação, gestão de status e consulta de mapa de assentos.
 
 ---
 
@@ -120,12 +131,52 @@ export const createEventSchema = z.object({
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 ```
 
+---
+
+## 2. Schema de Alteração de Status (`updateEventStatusSchema`)
+
+```typescript
+import { z } from "zod";
+
+export const updateEventStatusSchema = z.object({
+  status: z.enum(["DRAFT", "PUBLISHED", "CLOSED", "CANCELLED"]),
+});
+
+export type UpdateEventStatusInput = z.infer<typeof updateEventStatusSchema>;
+```
 
 ---
 
-# Contratos de Ingressos, Reservas, Checkout e Validação
+## 3. Consulta de Mapa de Assentos (`GET /api/events/[id]/seats`)
 
-Este documento estabelece os contratos de reserva temporária, checkout e validação na portaria.
+Executa *lazy expiration* de bloqueios temporários expirados (`reservedUntil < NOW()`) e retorna o grid atualizado:
+
+```typescript
+export interface EventSeatsResponse {
+  sectors: Array<{
+    id: string;
+    name: string;
+    type: "GENERAL_ADMISSION" | "NUMBERED_SEATS";
+    price: number;
+    totalCapacity: number;
+    availableCapacity: number;
+    seats: Array<{
+      id: string;
+      row: string;
+      number: number;
+      status: "AVAILABLE" | "RESERVED" | "SOLD" | "BLOCKED";
+      reservedUntil: string | null;
+      isMine?: boolean;
+    }>;
+  }>;
+}
+```
+
+---
+
+# Contratos de Ingressos, Reservas, Checkout e Portaria
+
+Este documento estabelece os contratos de reserva temporária, checkout, gestão de vouchers e validação na portaria.
 
 ---
 
@@ -170,32 +221,72 @@ export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
 ---
 
-## 3. Schema de Compartilhamento de Ingresso (`GET /api/tickets/share/[token]`)
-
-Permite consulta pública e higienizada do voucher por qualquer pessoa com o link de compartilhamento, sem expor dados pessoais do comprador (como e-mail ou documento).
+## 3. Painel Meus Ingressos (`GET /api/my-tickets`)
 
 ```typescript
-import { z } from "zod";
+export interface MyTicketsResponse {
+  activeTickets: Array<TicketItem>;
+  pastTickets: Array<TicketItem>;
+}
 
-export interface SharedTicketResponse {
+export interface TicketItem {
+  id: string;
   ticketCode: string;
   qrPayload: string;
   status: "ACTIVE" | "USED" | "CANCELLED";
-  seatInfo?: string;
-  sectorName: string;
+  shareToken: string;
   event: {
+    id: string;
     title: string;
     eventDate: string;
     locationName: string;
     city: string;
     bannerUrl: string;
   };
+  sector: {
+    name: string;
+    price: number;
+  };
+  seat?: {
+    row: string;
+    number: number;
+  } | null;
 }
 ```
 
 ---
 
-## 4. Schema de Validação de Portaria (`validateTicketSchema`)
+## 4. Compartilhamento Seguro (`POST /api/tickets/[id]/share`)
+
+```typescript
+export interface ShareTicketResponse {
+  success: boolean;
+  shareToken: string;
+  shareUrl: string; // Ex: /tickets/share/stk_abc123?key=f4d9a1
+  passcode: string;
+}
+```
+
+---
+
+## 5. Eventos Operacionais da Portaria (`GET /api/gate/events`)
+
+```typescript
+export interface GatekeeperEventItem {
+  id: string;
+  title: string;
+  eventDate: string;
+  locationName: string;
+  city: string;
+  status: string;
+  totalSold: number;
+  totalValidated: number;
+}
+```
+
+---
+
+## 6. Schema de Validação de Portaria (`validateTicketSchema`)
 
 ```typescript
 import { z } from "zod";
@@ -223,7 +314,4 @@ export interface ValidateTicketResponse {
   };
 }
 ```
-
-
----
 

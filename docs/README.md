@@ -28,19 +28,19 @@ docs/
 ├── 02-architecture/
 │   ├── ARCHITECTURE-OVERVIEW.md       # Visão C4 Model (Contexto e Contêineres) e Stack Tecnológica
 │   ├── DATABASE-MODELING.md           # Schema Prisma, pooler Supavisor (Porta 6543) e conexão direta (Porta 5432)
-│   ├── PROJECT-STRUCTURE.md           # Estrutura modular de pastas Next.js 16 App Router
-│   ├── ADRS.md                        # Architecture Decision Records (ADRs 0001 a 0005)
+│   ├── PROJECT-STRUCTURE.md           # Estrutura modular de pastas Next.js 16 App Router com Edge Proxy
+│   ├── ADRS.md                        # Architecture Decision Records (ADRs 0001 a 0009)
 │   └── diagrams/                      # Diagramas C4, ERD e Fluxos de Dados
 │
 ├── 03-design/
-│   └── DESIGN-SYSTEM.md               # Tokens HSL, Diretrizes Anti-AI Slop, Componentes Atômicos e Fluxos
+│   └── DESIGN-SYSTEM.md               # Tokens Kinetic Pulse, Diretrizes Anti-AI Slop, Componentes Atômicos e Fluxos
 │
 ├── 04-api-and-integrations/
-│   ├── OPENAPI-SPEC.yaml              # Especificação Swagger / OpenAPI 3.0 testável
-│   └── API-AND-INTEGRATIONS.md        # Integrações TMDb/Ticketmaster, Gateway Simulado e Schemas Zod
+│   ├── OPENAPI-SPEC.yaml              # Especificação Swagger / OpenAPI 3.0 testável com todos os endpoints
+│   └── API-AND-INTEGRATIONS.md        # Integrações TMDb/Ticketmaster/Maps, Gateway Simulado e Schemas Zod
 │
 ├── 05-devops-and-operations/
-│   ├── ENVIRONMENT-AND-INFRASTRUCTURE.md # Setup Local (Docker), Nuvem (Vercel + Supabase) e CI/CD
+│   ├── ENVIRONMENT-AND-INFRASTRUCTURE.md # Setup Local (Docker Porta 5433), Nuvem (Vercel + Supabase) e CI/CD
 │   └── OPERATIONS-RUNBOOK.md          # Runbook de Rollback de Migrações (DIRECT_URL) e Logs
 │
 ├── 06-quality-and-testing/

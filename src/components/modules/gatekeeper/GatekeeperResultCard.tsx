@@ -19,20 +19,20 @@ interface GatekeeperResultCardProps {
 }
 
 export function GatekeeperResultCard({ result, details, onClear }: GatekeeperResultCardProps) {
-  let bgColor = "bg-bg-surface border-border-subtle";
+  let bgColor = "bg-bg-surface shadow-sm";
   let icon = null;
   let title = "";
 
   if (result === "VALID") {
-    bgColor = "bg-emerald-500/10 border-emerald-500/50";
+    bgColor = "bg-emerald-500/10";
     icon = <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />;
     title = "ACESSO LIBERADO";
   } else if (result === "ALREADY_USED") {
-    bgColor = "bg-orange-500/10 border-orange-500/50";
+    bgColor = "bg-orange-500/10";
     icon = <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto" />;
     title = "INGRESSO JÁ UTILIZADO";
   } else if (result === "WRONG_EVENT") {
-    bgColor = "bg-red-500/10 border-red-500/50";
+    bgColor = "bg-red-500/10";
     icon = <AlertOctagon className="w-12 h-12 text-red-500 mx-auto" />;
     title = "EVENTO INCORRETO";
   } else if (result === "INVALID_CODE") {
@@ -42,7 +42,7 @@ export function GatekeeperResultCard({ result, details, onClear }: GatekeeperRes
   }
 
   return (
-    <div className={`p-6 rounded-xl border-2 text-center space-y-4 animate-in fade-in zoom-in duration-300 ${bgColor}`}>
+    <div className={`p-6 rounded-xl shadow-md border-0 text-center space-y-4 animate-in fade-in zoom-in duration-300 ${bgColor}`}>
       {icon}
       <h3 className="text-2xl font-bold tracking-tight text-text-primary">{title}</h3>
       

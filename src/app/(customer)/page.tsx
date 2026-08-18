@@ -48,7 +48,7 @@ export default async function CustomerHomePage({
             Sua próxima experiência começa aqui
           </h1>
           <p className="text-lg text-text-muted sm:text-xl">
-            Descubra shows, teatros e festivais imperdíveis acontecendo perto de você.
+            Descubra shows, teatros, cinemas e festivais imperdíveis acontecendo perto de você.
           </p>
           <div className="pt-4 flex justify-center">
             <EventSearchBar />

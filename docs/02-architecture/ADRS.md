@@ -141,3 +141,105 @@ Adotar um mecanismo de **Reserva Temporária Atômica com Lock Condicional** no 
 
 ---
 
+# ADR 0006: Visualização de Localização via Google Maps Embed Gratuito
+
+- **Status**: Aceito
+- **Data**: 2026-08-17
+- **Decisores**: Equipe de Engenharia / Candidato Elite Dev
+
+---
+
+## 1. Contexto
+A visualização do local físico do evento no detalhe (`/events/:id`) é crucial para a experiência do usuário. No entanto, o uso da Google Maps JavaScript API tradicional requer cadastro de cartão de crédito e chaves de API restritas (`GOOGLE_MAPS_API_KEY`), o que cria atrito na execução do projeto por avaliadores.
+
+## 2. Decisão
+Adotar a integração gratuita e universal via **Iframe Embed do Google Maps** (`https://maps.google.com/maps?q={encodedLocation}&t=&z=15&ie=UTF8&iwloc=&output=embed`), complementada por **deep links diretos** para aplicativos de navegação móvel (Google Maps, Waze e Apple Maps).
+
+## 3. Consequências
+- **Positivas**:
+  - Funciona imediatamente em qualquer ambiente (local, staging, produção) com zero custo e sem necessidade de credenciais.
+  - Renderiza um mapa interativo com zoom, visualização de satélite/rua e rota direta.
+  - Permite que o cliente abra a rota em seu aplicativo de navegação favorito com 1 clique.
+- **Negativas / Mitigações**:
+  - Personalização avançada de estilo de mapa (cores customizadas do vetor) é limitada pelo iframe padrão do Google.
+
+
+---
+
+# ADR 0007: Compartilhamento de Ingressos com Token Público e Passcode HMAC
+
+- **Status**: Aceito
+- **Data**: 2026-08-17
+- **Decisores**: Equipe de Engenharia / Candidato Elite Dev
+
+---
+
+## 1. Contexto
+Compradores frequentemente adquirem ingressos para terceiros (amigos/família) e precisam repassar o voucher para entrada sem fornecer sua senha pessoal ou expor dados de pagamento (CPF, cartão, e-mail). Ao mesmo tempo, o link de compartilhamento precisa de uma barreira contra força-bruta.
+
+## 2. Decisão
+1. Gerar um `shareToken` aleatório único vinculado ao ingresso no banco de dados.
+2. Derivar uma palavra-chave / passcode criptográfico seguro utilizando **HMAC-SHA256** do `shareToken` com o `QR_HMAC_SECRET`, truncado em 6 caracteres alfanuméricos (`?key=...`).
+3. Disponibilizar a rota pública `/tickets/share/[token]?key=...` que valida a chave e renderiza o voucher oficial com QR Code limpo de dados sensíveis do titular.
+
+## 3. Consequências
+- **Positivas**:
+  - Total conformidade com LGPD/privacidade: nenhum dado sensível do comprador é transmitido.
+  - Proteção contra enumeração/adivinhação de tokens sem o passcode assinado.
+  - Convidado acessa o QR Code oficial diretamente no smartphone sem necessidade de login.
+- **Negativas / Mitigações**:
+  - Se o comprador enviar o link para múltiplas pessoas, o primeiro que passar na catraca consumirá o ingresso (regra documentada em tela e no UC20).
+
+
+---
+
+# ADR 0008: Interceptação e Proteção Edge RBAC com `src/proxy.ts` no Next.js 16
+
+- **Status**: Aceito
+- **Data**: 2026-08-17
+- **Decisores**: Equipe de Engenharia / Candidato Elite Dev
+
+---
+
+## 1. Contexto
+No Next.js 16 (App Router), o controle de acesso precisa interceptar rotas de páginas (`/organizer/*`, `/gatekeeper/*`, `/checkout/*`, `/my-tickets/*`) e rotas de API antes da execução de componentes, validando a sessão JWT e o papel (`ORGANIZER`, `GATEKEEPER`, `CUSTOMER`) em milissegundos.
+
+## 2. Decisão
+Adotar o módulo `src/proxy.ts` (convenção de proxy/interceptor de alta performance) com extração de cookies `httpOnly`, validação stateless via `jose` e injeção de cabeçalhos downstream `x-user-id`, `x-user-role` e `x-user-email`, além de redirecionamento contextual e exibição da página `403 Forbidden` (`src/app/forbidden.tsx`).
+
+## 3. Consequências
+- **Positivas**:
+  - Isolamento estrito de rotas com tempo de resposta sub-milissegundo.
+  - Backend/Route Handlers podem consumir `headers().get('x-user-id')` de forma confiável.
+- **Negativas / Mitigações**:
+  - Exige manter atualizada a lista de rotas públicas e rotas restritas por papel no proxy.
+
+
+---
+
+# ADR 0009: Design System Semântico "Kinetic Pulse" com TailwindCSS 4
+
+- **Status**: Aceito
+- **Data**: 2026-08-17
+- **Decisores**: Equipe de Engenharia / Candidato Elite Dev
+
+---
+
+## 1. Contexto
+A plataforma necessita de uma identidade visual moderna, de alto contraste e profissional, que garanta legibilidade tanto em ambientes de compra quanto sob luz solar direta no trabalho da portaria, sem apelar para clichês genéricos de IA (*anti-AI slop*).
+
+## 2. Decisão
+Adotar a paleta **Kinetic Pulse** declarada via `@theme` no TailwindCSS 4 em `src/app/globals.css`:
+- **Fundo Principal (`bg-main`)**: `#faf8ff` (White Soft / Lilac Tint).
+- **Superfícies (`bg-surface`)**: `#ffffff` (Pure White) com elevação e bordas sutis `#e2e8f0`.
+- **Ação Primária (`primary`)**: `#0057ff` (Action Blue vibrante) e hover `#0043c8`.
+- **Destaque Secundário (`secondary`)**: `#731be5` (Vibrant Purple).
+- **Tipografia de Alto Contraste**: `#131b2e` (Deep Slate) e `#434656` (Muted Slate).
+- **Semânticas de Status**: `#005d3f` (Sucesso/Válido), `#f59e0b` (Aviso/Usado), `#ba1a1a` (Perigo/Inválido), `#93000a` (Fraude/Forjado).
+
+## 3. Consequências
+- **Positivas**:
+  - Contraste superior a 7:1 (excede WCAG 2.1 AAA para textos primários).
+  - Componentes atômicos reutilizáveis (`Button`, `Input`, `Badge`, `Modal`, `Toast`, `Tooltip`, `DangerModal`, `Skeleton`) consomem tokens semânticos sem duplicação de classes.
+- **Negativas / Mitigações**:
+  - Exige auditoria contínua para evitar o uso de cores inline fora da paleta do `@theme`.

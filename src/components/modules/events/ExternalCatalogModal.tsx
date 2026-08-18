@@ -100,7 +100,7 @@ export function ExternalCatalogModal({ isOpen, onClose, provider, onSelect }: Ex
         <div className="min-h-[300px] max-h-[400px] overflow-y-auto pr-2 flex flex-col gap-3">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex gap-4 p-2 rounded-lg border border-border-subtle">
+              <div key={i} className="flex gap-4 p-2 rounded-lg shadow-sm">
                 <Skeleton className="h-24 w-16 rounded-md" />
                 <div className="flex-1 space-y-2 py-1">
                   <Skeleton className="h-4 w-3/4" />
@@ -119,7 +119,7 @@ export function ExternalCatalogModal({ isOpen, onClose, provider, onSelect }: Ex
                     onSelect(item);
                     onClose();
                   }}
-                  className="flex gap-4 p-3 rounded-lg border border-border-subtle bg-bg-surface hover:bg-bg-surface-hover hover:border-primary/50 transition-all text-left focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+                  className="flex gap-4 p-3 rounded-lg shadow-sm bg-bg-surface hover:bg-bg-surface-hover hover:shadow-sm ring-1 ring-primary/50 transition-all text-left focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
                 >
                   {image ? (
                     <img 

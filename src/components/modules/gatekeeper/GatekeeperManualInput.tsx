@@ -26,11 +26,11 @@ export function GatekeeperManualInput({ onValidate, isProcessing }: GatekeeperMa
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const testCodes = [
-    { label: "Válido", code: "ELT-4819", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
-    { label: "Usado", code: "ELT-4820", color: "text-orange-400 bg-orange-400/10 border-orange-400/20" },
-    { label: "Outro Evento", code: "RCK-9921", color: "text-red-400 bg-red-400/10 border-red-400/20" },
-    { label: "Inválido", code: "XXX-0000", color: "text-rose-600 bg-rose-600/10 border-rose-600/20" },
+  const quickCodes = [
+    { label: "Válido", code: "ELT-4819", color: "text-emerald-400 bg-emerald-400/10 shadow-sm ring-1 ring-emerald-400/20" },
+    { label: "Usado", code: "ELT-4820", color: "text-orange-400 bg-orange-400/10 shadow-sm ring-1 ring-orange-400/20" },
+    { label: "Outro Evento", code: "RCK-9921", color: "text-red-400 bg-red-400/10 shadow-sm ring-1 ring-red-400/20" },
+    { label: "Inválido", code: "XXX-0000", color: "text-rose-600 bg-rose-600/10 shadow-sm ring-1 ring-rose-600/20" },
   ];
 
   return (
@@ -64,10 +64,10 @@ export function GatekeeperManualInput({ onValidate, isProcessing }: GatekeeperMa
         </div>
       </form>
 
-      <div className="border-t border-border-subtle pt-6">
+      <div className="shadow-sm pt-6">
         <p className="text-sm text-text-muted mb-4 text-center">Códigos para Teste Rápido</p>
         <div className="grid grid-cols-2 gap-3">
-          {testCodes.map((tc) => (
+          {quickCodes.map((tc) => (
             <button
               key={tc.code}
               type="button"

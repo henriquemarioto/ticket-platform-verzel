@@ -1,28 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-main: hsl(222, 47%, 11%);       /* #0B1329 */
-  --color-bg-surface: hsl(217, 33%, 17%);    /* #1E293B */
-  --color-bg-surface-hover: hsl(215, 28%, 23%);
-  --color-border-subtle: hsl(217, 20%, 27%);
+  --color-bg-main: #faf8ff;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-hover: #f2f3ff;
+  --color-border-subtle: #e2e8f0;
 
-  --color-primary: hsl(158, 85%, 45%);       /* #10B981 */
-  --color-primary-hover: hsl(158, 85%, 40%);
-  --color-primary-foreground: hsl(222, 47%, 11%);
+  --color-primary: #0057ff;
+  --color-primary-hover: #0043c8;
+  --color-primary-foreground: #ffffff;
 
-  --color-text-primary: hsl(210, 40%, 98%);
-  --color-text-muted: hsl(215, 20%, 65%);
+  --color-secondary: #731be5;
+  --color-secondary-foreground: #ffffff;
 
-  --color-success: hsl(142, 71%, 45%);
-  --color-warning: hsl(38, 92%, 50%);
-  --color-danger: hsl(0, 84%, 60%);
-  --color-danger-dark: hsl(0, 84%, 40%);
+  --color-text-primary: #131b2e;
+  --color-text-muted: #434656;
+
+  --color-success: #005d3f;
+  --color-warning: #f59e0b;
+  --color-danger: #ba1a1a;
+  --color-danger-dark: #93000a;
+
+  --font-sans: var(--font-inter), sans-serif;
+  --font-heading: var(--font-plus-jakarta-sans), sans-serif;
 }
 
 body {
   background-color: var(--color-bg-main);
   color: var(--color-text-primary);
   font-family: var(--font-sans), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), sans-serif;
+  letter-spacing: -0.01em;
 }
 
 button:not(:disabled),

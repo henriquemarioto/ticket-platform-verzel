@@ -19,30 +19,33 @@ Este documento estabelece as diretrizes de experiência de usuário (UX), princ�
 
 ---
 
-## 2. Paleta de Cores, Tokens Semânticos HSL & TailwindCSS 4
+## 2. Paleta de Cores, Tokens Semânticos & TailwindCSS 4
 
-No **TailwindCSS 4**, a configuração é declarada diretamente no `src/app/globals.css` utilizando `@import "tailwindcss";` e o bloco `@theme`:
+O design baseia-se na identidade "Kinetic Pulse" (Light Mode / Alto Contraste). No **TailwindCSS 4**, a configuração é declarada diretamente no `src/app/globals.css` utilizando `@import "tailwindcss";` e o bloco `@theme`:
 
 ```css
 @import "tailwindcss";
 
 @theme {
-  --color-bg-main: hsl(222, 47%, 11%);       /* #0B1329 - Azul meia-noite profundo */
-  --color-bg-surface: hsl(217, 33%, 17%);    /* #1E293B - Card e container */
-  --color-bg-surface-hover: hsl(215, 28%, 23%);
-  --color-border-subtle: hsl(217, 20%, 27%);
+  --color-bg-main: #faf8ff;                  /* Background principal */
+  --color-bg-surface: #ffffff;               /* Card e container (pure white) */
+  --color-bg-surface-hover: #f2f3ff;
+  --color-border-subtle: #e2e8f0;            /* Bordas sutis */
 
-  --color-primary: hsl(158, 85%, 45%);       /* #10B981 - Esmeralda vivo */
-  --color-primary-hover: hsl(158, 85%, 40%);
-  --color-primary-foreground: hsl(222, 47%, 11%);
+  --color-primary: #0057ff;                  /* Action Blue */
+  --color-primary-hover: #0043c8;
+  --color-primary-foreground: #ffffff;
 
-  --color-text-primary: hsl(210, 40%, 98%);  /* Branco gelo de alto contraste */
-  --color-text-muted: hsl(215, 20%, 65%);    /* Cinza azulado para legendas */
+  --color-secondary: #731be5;                /* Vibrant Purple */
+  --color-secondary-foreground: #ffffff;
 
-  --color-success: hsl(142, 71%, 45%);       /* Válido / Aprovado */
-  --color-warning: hsl(38, 92%, 50%);        /* Já Usado / Atenção */
-  --color-danger: hsl(0, 84%, 60%);          /* Inválido / Erro / Recusado */
-  --color-danger-dark: hsl(0, 84%, 40%);     /* Fraude / Forjado */
+  --color-text-primary: #131b2e;             /* Deep Slate (alto contraste) */
+  --color-text-muted: #434656;               /* Cinza para legendas */
+
+  --color-success: #005d3f;                  /* Válido / Aprovado */
+  --color-warning: #f59e0b;                  /* Já Usado / Atenção */
+  --color-danger: #ba1a1a;                   /* Inválido / Erro / Recusado */
+  --color-danger-dark: #93000a;              /* Fraude / Forjado */
 }
 ```
 
@@ -68,10 +71,11 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 
 ## 1. `Button` (`src/components/ui/button.tsx`)
 - **Variantes**:
-  - `primary`: Fundo Esmeralda vivo (`bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold`).
-  - `secondary`: Superfície Slate (`bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700`).
-  - `danger`: Ações destrutivas / recusa (`bg-rose-600 hover:bg-rose-700 text-white`).
-  - `outline` / `ghost`: Transparente com foco acessível.
+  - `primary`: Action Blue vibrante (`bg-primary hover:bg-primary-hover text-white font-semibold shadow-sm`).
+  - `secondary`: Superfície branca com borda sutil (`bg-surface hover:bg-surface-hover text-primary border border-subtle`).
+  - `danger`: Ações destrutivas / recusa (`bg-danger hover:bg-danger/90 text-white`).
+  - `outline`: Borda sutil com fundo transparente (`border border-subtle hover:bg-surface-hover text-primary`).
+  - `ghost`: Transparente com foco acessível (`hover:bg-surface-hover text-primary`).
 - **Propriedades Especiais**:
   - `loading`: Exibe spinner SVG integrado e desabilita novos cliques.
   - `disabled`: Desativa interação física e aplica `opacity-50 cursor-not-allowed`.
@@ -79,38 +83,59 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 ---
 
 ## 2. `Input` / `Select` / `Textarea` (`src/components/ui/input.tsx`)
-- Fundo escuro com borda suave (`bg-slate-900 border-slate-700 text-slate-100`).
-- Anel de foco: `focus-visible:ring-2 focus-visible:ring-emerald-500/50`.
+- Fundo branco limpo com borda sutil (`bg-surface border-subtle text-primary`).
+- Anel de foco acessível: `focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary`.
 - Suporte a ícones à esquerda (lupa, e-mail) e à direita (alternar senha).
-- Rótulo (`Label`) e mensagem de erro contextual em vermelho com ícone de exclamação.
+- Rótulo acessível (`Label`) e mensagem de erro contextual com ícone de alerta em tom semântico de perigo (`text-danger`).
 
 ---
 
 ## 3. `Badge` (`src/components/ui/badge.tsx`)
 - Indicador visual compacto para status de ingressos, eventos e pedidos:
-  - `success`: Verde esmeralda (Ativo, Válido, Aprovado).
-  - `warning`: Laranja âmbar (Já Utilizado, Em Reserva).
-  - `danger`: Vermelho carmesim (Inválido, Recusado, Cancelado).
-  - `neutral`: Cinza slate (Rascunho, Finalizado).
+  - `success`: Fundo verde suave com texto escuro (`bg-emerald-50 text-emerald-800 border-emerald-200`).
+  - `warning`: Fundo âmbar suave com texto escuro (`bg-amber-50 text-amber-800 border-amber-200`).
+  - `danger`: Fundo vermelho suave com texto escuro (`bg-red-50 text-red-800 border-red-200`).
+  - `neutral`: Fundo cinza suave (`bg-slate-100 text-slate-700 border-slate-200`).
 
 ---
 
 ## 4. `Modal` / `Dialog` (`src/components/ui/modal.tsx`)
-- Overlay escurecido com desfoque de fundo (`backdrop-blur-sm`).
+- Overlay escurecido com desfoque de fundo (`backdrop-blur-sm bg-black/40`).
 - Fechamento seguro via tecla `Escape`, clique no backdrop ou botão `X`.
 - Bloqueio automático do scroll do `body`.
 
 ---
 
-## 5. `Toast` (`src/components/ui/toast.tsx`)
+## 5. `DangerModal` (`src/components/ui/danger-modal.tsx`)
+- Diálogo especializado de UX defensiva para ações destrutivas (recusa de pagamento, cancelamentos, encerramento de vendas).
+- Exibe ícone de alerta destacado, texto explicativo das consequências e botões "Cancelar" e "Confirmar Ação Destrutiva" com variante `danger`.
+
+---
+
+## 6. `Tooltip` (`src/components/ui/tooltip.tsx`)
+- Dica de interface flutuante acessível para ícones de ação e textos truncados.
+- Renderizado com atraso configurável, fundo de alto contraste e transição suave de opacidade.
+
+---
+
+## 7. `Toast` (`src/components/ui/toast.tsx`)
 - Alertas flutuantes globais disparados via hook `useToast()`.
 - Suporta 4 tipos semânticos: `success`, `error`, `warning`, `info`.
 - Desaparece automaticamente após 4000ms com animação suave de fade/slide.
 
 ---
 
-## 6. `Skeleton` (`src/components/ui/skeleton.tsx`)
-- Indicadores de carregamento pulsantes (`animate-pulse bg-slate-800/80 rounded-md`) para evitar deslocamento de layout (*CLS*).
+## 8. `Skeleton` (`src/components/ui/skeleton.tsx`)
+- Indicadores de carregamento pulsantes (`animate-pulse bg-slate-200 rounded-md`) para evitar deslocamento de layout (*CLS*).
+
+---
+
+## 9. Utilitários de Máscaras e Formatação (`src/lib/masks.ts`)
+- `maskCPF(value)`: `000.000.000-00`
+- `maskCreditCard(value)`: `0000 0000 0000 0000`
+- `maskCardExpiry(value)`: `MM/AA`
+- `maskBRL(value)`: Formatação monetária em Real Brasileiro (`R$ 1.250,00`)
+- `formatDateLong(date)`: Data legível por extenso (ex: *"20 de Novembro de 2026 às 20:00"*).
 
 
 ---

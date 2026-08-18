@@ -121,7 +121,7 @@ export default function CheckoutClient({
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
       {/* Resumo do Pedido */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="rounded-xl border border-subtle bg-surface p-6">
+        <div className="rounded-xl shadow-sm bg-surface p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-text-primary">Resumo do Pedido</h2>
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${isExpired ? "bg-danger/10 text-danger" : "bg-warning/10 text-warning"}`}>
@@ -130,14 +130,14 @@ export default function CheckoutClient({
             </div>
           </div>
 
-          <div className="mb-6 pb-6 border-b border-subtle">
+          <div className="mb-6 pb-6 shadow-sm">
             <h3 className="font-medium text-text-primary mb-2">{eventName}</h3>
             <p className="text-sm text-text-muted">Revise os ingressos selecionados antes de prosseguir com o pagamento.</p>
           </div>
 
           <div className="space-y-4">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-2 border-b border-subtle last:border-0 last:pb-0">
+              <div key={item.id} className="flex items-center justify-between py-2 shadow-sm last:border-0 last:pb-0">
                 <div>
                   <p className="font-medium text-text-primary">{item.quantity}x {item.sector.name}</p>
                   {item.seat && (
@@ -160,7 +160,7 @@ export default function CheckoutClient({
         </div>
 
         {isExpired && (
-          <div className="rounded-xl border border-danger/30 bg-danger/5 p-6 text-center">
+          <div className="rounded-xl shadow-sm ring-1 ring-danger/30 bg-danger/5 p-6 text-center">
             <XCircle className="w-12 h-12 text-danger mx-auto mb-4" />
             <h3 className="text-lg font-bold text-text-primary mb-2">Reserva Expirada ou Cancelada</h3>
             <p className="text-text-muted mb-6">
@@ -175,7 +175,7 @@ export default function CheckoutClient({
 
       {/* Pagamento */}
       <div className="space-y-6">
-        <div className="rounded-xl border border-subtle bg-surface p-6 sticky top-6">
+        <div className="rounded-xl shadow-sm bg-surface p-6 sticky top-6">
           <h3 className="text-lg font-bold text-text-primary mb-6">Pagamento</h3>
           
           <div className="space-y-4 mb-8">
@@ -187,7 +187,7 @@ export default function CheckoutClient({
               <span>Taxa de Serviço</span>
               <span>R$ 0,00</span>
             </div>
-            <div className="flex justify-between text-lg font-bold text-text-primary border-t border-subtle pt-4">
+            <div className="flex justify-between text-lg font-bold text-text-primary shadow-sm pt-4">
               <span>Total a Pagar</span>
               <span>{formattedTotal}</span>
             </div>

@@ -27,7 +27,7 @@ export function GatekeeperHeader({
   }).format(new Date(event.eventDate));
 
   return (
-    <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
+    <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -53,7 +53,7 @@ export function GatekeeperHeader({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 border-border-subtle">
+        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 shadow-sm">
           <Button
             variant="outline"
             onClick={onRefresh}

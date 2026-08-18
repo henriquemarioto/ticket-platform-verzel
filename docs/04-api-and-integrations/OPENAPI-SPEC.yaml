@@ -205,6 +205,35 @@ paths:
         '200':
           description: Lista de assentos com status AVAILABLE, RESERVED, SOLD
 
+  /events/{id}/status:
+    patch:
+      summary: Altera o status do evento (DRAFT, PUBLISHED, CLOSED, CANCELLED) pelo Organizador
+      tags: [Eventos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [DRAFT, PUBLISHED, CLOSED, CANCELLED]
+      responses:
+        '200':
+          description: Status atualizado com sucesso
+        '403':
+          description: Acesso negado - apenas o organizador criador pode alterar o status
+        '404':
+          description: Evento não encontrado
+
   /external-catalog/tmdb:
     get:
       summary: Pesquisa filmes na API do TMDb com fallback mock embutido
@@ -330,23 +359,35 @@ paths:
         '401':
           description: Não autenticado
 
-  /tickets/share:
+  /tickets/{id}/share:
     post:
-      summary: Gera link público tokenizado para compartilhamento de ingresso individual
+      summary: Gera link público tokenizado com passcode HMAC para compartilhamento de ingresso individual
       tags: [Ingressos]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [ticketId]
-              properties:
-                ticketId:
-                  type: string
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único do ingresso a ser compartilhado
       responses:
         '200':
-          description: Token de compartilhamento e URL gerados com sucesso
+          description: Token de compartilhamento e URL gerados com sucesso (com passcode na query string)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, shareToken, shareUrl]
+                properties:
+                  success:
+                    type: boolean
+                  shareToken:
+                    type: string
+                  shareUrl:
+                    type: string
+                    example: "/tickets/share/stk_8f9a2b?key=a1b2c3"
+        '403':
+          description: Acesso negado - apenas o titular pode compartilhar o ingresso
 
   /tickets/share/{token}:
     get:

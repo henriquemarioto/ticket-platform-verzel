@@ -76,8 +76,7 @@ function ToastItem({ toast, onClose }: { toast: ToastMessage, onClose: () => voi
   return (
     <div 
       className={cn(
-        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border bg-bg-surface p-4 pr-8 shadow-lg transition-all mb-2 animate-in slide-in-from-bottom-full duration-300",
-        borders[toast.type]
+        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md shadow-md ring-1 ring-black/5 bg-bg-surface p-4 pr-8 transition-all mb-2 animate-in slide-in-from-bottom-full duration-300"
       )}
     >
       <div className="flex gap-3 items-center w-full">

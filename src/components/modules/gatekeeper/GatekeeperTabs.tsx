@@ -86,7 +86,7 @@ export function GatekeeperTabs({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-2 bg-bg-surface p-1.5 rounded-xl border border-border-subtle max-w-xl mx-auto">
+      <div className="grid grid-cols-2 gap-2 bg-bg-surface p-1.5 rounded-xl shadow-sm max-w-xl mx-auto">
         <button
           type="button"
           onClick={() => { onSelectMode("camera"); setResult(null); }}
@@ -118,7 +118,7 @@ export function GatekeeperTabs({
         </button>
       </div>
 
-      <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 sm:p-8 max-w-2xl mx-auto text-center relative overflow-hidden">
+      <div className="bg-bg-surface shadow-sm rounded-xl p-6 sm:p-8 max-w-2xl mx-auto text-center relative overflow-hidden">
         {result && (
           <div className="mb-6">
             <GatekeeperResultCard 

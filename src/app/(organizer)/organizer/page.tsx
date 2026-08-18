@@ -59,16 +59,16 @@ export default async function OrganizerDashboardPage() {
       </div>
 
       {events.length === 0 ? (
-        <div className="text-center py-16 bg-bg-surface rounded-xl border border-border-subtle">
+        <div className="text-center py-16 bg-bg-surface rounded-xl shadow-sm">
           <p className="text-muted mb-4">Você ainda não possui eventos cadastrados.</p>
           <Link href="/organizer/events/create">
             <Button variant="outline">Começar agora</Button>
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border-subtle bg-bg-surface">
+        <div className="overflow-x-auto rounded-xl shadow-sm bg-bg-surface">
           <table className="w-full text-left text-sm">
-            <thead className="bg-bg-main border-b border-border-subtle text-muted">
+            <thead className="bg-bg-main shadow-sm text-muted">
               <tr>
                 <th className="px-6 py-4 font-semibold">Evento</th>
                 <th className="px-6 py-4 font-semibold">Data</th>
@@ -77,7 +77,7 @@ export default async function OrganizerDashboardPage() {
                 <th className="px-6 py-4 font-semibold text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody className="divide-y divide-shadow-sm">
               {events.map((event) => {
                 const totalCapacity = event.sectors.reduce((acc, sector) => acc + sector.totalCapacity, 0);
                 const soldTickets = event._count.tickets;
@@ -90,10 +90,10 @@ export default async function OrganizerDashboardPage() {
                           <img 
                             src={event.bannerUrl} 
                             alt={event.title}
-                            className="w-12 h-12 rounded object-cover border border-border-subtle"
+                            className="w-12 h-12 rounded object-cover shadow-sm"
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded bg-bg-main border border-border-subtle flex items-center justify-center">
+                          <div className="w-12 h-12 rounded bg-bg-main shadow-sm flex items-center justify-center">
                             <span className="text-xs text-muted">Sem Img</span>
                           </div>
                         )}

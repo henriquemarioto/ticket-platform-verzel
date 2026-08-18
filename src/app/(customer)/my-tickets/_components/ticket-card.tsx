@@ -59,7 +59,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row border border-border-subtle rounded-xl overflow-hidden bg-bg-surface hover:bg-bg-surface-hover transition-colors">
+    <div className="flex flex-col sm:flex-row shadow-sm rounded-xl overflow-hidden bg-bg-surface hover:bg-bg-surface-hover transition-colors">
       <div 
         className="w-full sm:w-48 h-40 sm:h-auto bg-cover bg-center" 
         style={{ backgroundImage: `url(${event.bannerUrl})` }} 
@@ -92,7 +92,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
             </div>
           </div>
           
-          <div className="mt-4 p-3 bg-bg-main rounded-lg border border-border-subtle grid grid-cols-2 gap-2 text-sm">
+          <div className="mt-4 p-3 bg-bg-main rounded-lg shadow-sm grid grid-cols-2 gap-2 text-sm">
             <div>
               <p className="text-text-muted text-xs">Setor</p>
               <p className="font-medium">{sector.name}</p>
@@ -103,7 +103,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
                 {seat ? `${seat.row}${seat.number}` : "Pista (S/ Assento)"}
               </p>
             </div>
-            <div className="col-span-2 pt-2 mt-2 border-t border-border-subtle flex justify-between items-center">
+            <div className="col-span-2 pt-2 mt-2 shadow-sm flex justify-between items-center">
               <div>
                 <p className="text-text-muted text-xs">Código do Ingresso</p>
                 <p className="font-mono text-primary font-semibold tracking-wider">{ticket.ticketCode}</p>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TicketSelector } from "./TicketSelector";
 import { SeatMap } from "./SeatMap";
 import { Sector } from "@prisma/client";
+import { Modal } from "@/components/ui/modal";
 
 interface SectorItemProps {
   sector: Sector;
@@ -24,51 +25,52 @@ export function SectorItem({ sector, eventId }: SectorItemProps) {
   }).format(sector.price);
 
   return (
-    <div className="flex flex-col border-b border-subtle last:border-0 p-4 transition-colors hover:bg-surface-hover/50">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-        <div className="mb-4 sm:mb-0">
+    <div className="flex flex-col last:border-0 py-4 first:pt-0 last:pb-0 transition-colors hover:bg-surface-hover/50">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-bold text-text-primary">{sector.name}</h3>
-            {isSoldOut ? (
-              <Badge variant="danger" className="text-xs">Esgotado</Badge>
-            ) : (
-              <Badge variant="success" className="text-xs">Disponível</Badge>
-            )}
+            <h3 className="font-bold text-text-primary text-sm">{sector.name}</h3>
           </div>
-          <p className="text-sm text-text-muted">
-            Tipo: {isNumbered ? "Numerado" : "Pista Livre"}
+          <p className="text-xs text-text-muted mb-2">
+            {isNumbered ? "Numerado" : "Pista Livre"}
           </p>
-          {!isSoldOut && (
-            <p className="text-xs text-text-muted mt-1">
-              {sector.availableCapacity} ingressos restantes
-            </p>
-          )}
+          <span className="text-sm font-bold text-text-primary">{formattedPrice}</span>
         </div>
-        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-          <span className="text-xl font-bold text-primary">{formattedPrice}</span>
-          <Button
-            variant={isSoldOut ? "secondary" : (isExpanded ? "outline" : "primary")}
-            disabled={isSoldOut}
-            className="w-full sm:w-auto"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isSoldOut ? "Indisponível" : (isExpanded ? "Cancelar" : "Selecionar")}
-          </Button>
+        
+        <div className="flex flex-col items-end gap-2">
+          {isSoldOut ? (
+            <Badge variant="danger" className="text-[10px] px-1.5 py-0">Esgotado</Badge>
+          ) : (
+            <Button
+              variant={isExpanded && !isNumbered ? "outline" : "primary"}
+              className="h-10 px-4 text-md w-full sm:w-auto"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {isExpanded && !isNumbered ? "Cancelar" : "Selecionar"}
+            </Button>
+          )}
         </div>
       </div>
 
       {isExpanded && !isSoldOut && (
-        <div className="mt-6 border-t border-subtle pt-6">
-          {isNumbered ? (
+        isNumbered ? (
+          <Modal
+            isOpen={isExpanded}
+            onClose={() => setIsExpanded(false)}
+            title={`Selecionar Assento - ${sector.name}`}
+            className="max-w-4xl w-full"
+          >
             <SeatMap eventId={eventId} sectorId={sector.id} price={sector.price} />
-          ) : (
+          </Modal>
+        ) : (
+          <div className="mt-4 pt-4">
             <TicketSelector
               sectorId={sector.id}
               price={sector.price}
               availableCapacity={sector.availableCapacity}
             />
-          )}
-        </div>
+          </div>
+        )
       )}
     </div>
   );

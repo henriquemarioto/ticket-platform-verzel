@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { cn } from "@/lib/utils"
 import { X } from "lucide-react"
 
@@ -13,6 +14,11 @@ export interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
   
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -30,10 +36,10 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -46,11 +52,11 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative z-50 w-full max-w-lg rounded-xl border border-border-subtle bg-bg-surface p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200",
+          "relative z-[100] w-full max-w-lg rounded-xl shadow-xl ring-1 ring-black/5 bg-bg-surface flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200",
           className
         )}
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className={cn("flex items-center shrink-0 p-6", title ? "justify-between pb-4 shadow-sm" : "justify-end pb-2")}>
           {title && <h2 className="text-lg font-semibold tracking-tight">{title}</h2>}
           <button
             onClick={onClose}
@@ -60,10 +66,11 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="relative">
+        <div className="relative p-6 pt-4 overflow-y-auto min-h-0">
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

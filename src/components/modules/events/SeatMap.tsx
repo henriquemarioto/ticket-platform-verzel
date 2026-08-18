@@ -14,7 +14,8 @@ interface SeatMapProps {
 }
 
 export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
-  const [seats, setSeats] = useState<Seat[]>([]);
+  const [seats, setSeats] = useState<any[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reserving, setReserving] = useState(false);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
@@ -28,6 +29,10 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
         if (!res.ok) throw new Error("Erro ao carregar assentos");
         const data = await res.json();
         
+        if (data.currentUserId) {
+          setCurrentUserId(data.currentUserId);
+        }
+
         const sector = data.sectors.find((s: any) => s.id === sectorId);
         if (sector) {
           setSeats(sector.seats);
@@ -42,7 +47,15 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
     fetchSeats();
   }, [eventId, sectorId, toast]);
 
-  const toggleSeat = (seat: Seat) => {
+  const toggleSeat = (seat: any) => {
+    if (seat.status === "RESERVED" && currentUserId && seat.reservedById === currentUserId) {
+       const resId = seat.reservationItems?.[0]?.reservationId;
+       if (resId) {
+          router.push(`/checkout?reservationId=${resId}`);
+       }
+       return;
+    }
+
     if (seat.status !== "AVAILABLE") return;
 
     setSelectedSeatIds((prev) => {
@@ -132,7 +145,7 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
       {/* Legenda */}
       <div className="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-surface border border-subtle"></div>
+          <div className="w-4 h-4 rounded bg-surface shadow-sm"></div>
           <span className="text-text-muted">Livre</span>
         </div>
         <div className="flex items-center gap-2">
@@ -144,14 +157,22 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
           <span className="text-text-muted">Em Reserva</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-surface-hover opacity-50"></div>
+          <div className="w-4 h-4 rounded bg-gray-300 opacity-50"></div>
           <span className="text-text-muted">Ocupado</span>
         </div>
+        {currentUserId && (
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded bg-primary/20 shadow-md border-0 shadow-sm ring-1 ring-primary text-primary flex items-center justify-center">
+              <span className="text-[8px]">★</span>
+            </div>
+            <span className="text-text-muted">Sua Reserva</span>
+          </div>
+        )}
       </div>
 
       {/* Palco */}
       <div className="w-full max-w-md mx-auto mb-10 text-center">
-        <div className="h-8 w-full bg-gradient-to-t from-primary/20 to-transparent rounded-t-full border-b-2 border-primary/50 flex items-end justify-center pb-1">
+        <div className="h-8 w-full bg-gradient-to-t from-primary/20 to-transparent rounded-t-full shadow-sm flex items-end justify-center pb-1">
           <span className="text-xs uppercase tracking-widest text-text-muted font-bold">Palco / Tela</span>
         </div>
       </div>
@@ -164,27 +185,33 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
             <div className="flex gap-2">
               {rowSeats.map((seat) => {
                 const isSelected = selectedSeatIds.includes(seat.id);
+                const isMyReservation = seat.status === "RESERVED" && currentUserId && seat.reservedById === currentUserId;
+                
                 let seatClass = "w-8 h-8 sm:w-10 sm:h-10 rounded-t-lg rounded-b-sm flex items-center justify-center text-xs font-medium transition-all ";
+                let content: React.ReactNode = seat.number;
                 
                 if (isSelected) {
                   seatClass += "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(16,185,129,0.5)] transform scale-110 cursor-pointer";
                 } else if (seat.status === "AVAILABLE") {
-                  seatClass += "bg-surface border border-subtle hover:border-primary/50 hover:bg-surface-hover cursor-pointer text-text-primary";
+                  seatClass += "bg-surface shadow-sm hover:shadow-sm ring-1 ring-primary/50 hover:bg-surface-hover cursor-pointer text-text-primary";
+                } else if (isMyReservation) {
+                  seatClass += "bg-primary/20 shadow-md border-0 shadow-sm ring-1 ring-primary text-primary cursor-pointer hover:bg-primary/30";
+                  content = <span className="flex flex-col items-center leading-none"><span className="text-[10px]">★</span>{seat.number}</span>;
                 } else if (seat.status === "RESERVED") {
                   seatClass += "bg-yellow-500/80 text-white cursor-not-allowed";
                 } else {
-                  seatClass += "bg-surface-hover opacity-40 cursor-not-allowed text-transparent";
+                  seatClass += "bg-gray-300 opacity-50 cursor-not-allowed text-gray-500";
                 }
 
                 return (
                   <button
                     key={seat.id}
                     className={seatClass}
-                    disabled={seat.status !== "AVAILABLE" && !isSelected}
+                    disabled={seat.status !== "AVAILABLE" && !isSelected && !isMyReservation}
                     onClick={() => toggleSeat(seat)}
-                    title={`Assento ${seat.row}${seat.number}`}
+                    title={isMyReservation ? `Sua Reserva (Assento ${seat.row}${seat.number}) - Clique para pagar` : `Assento ${seat.row}${seat.number}`}
                   >
-                    {seat.number}
+                    {content}
                   </button>
                 );
               })}
@@ -195,7 +222,7 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
       </div>
 
       {/* Rodapé e Checkout */}
-      <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-subtle pt-6">
+      <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6">
         <div>
           <span className="block text-sm font-medium text-text-muted">
             {selectedSeatIds.length} assento(s) selecionado(s)

@@ -38,7 +38,7 @@ export function EventCard({
 
   return (
     <Link href={`/events/${id}`} className="group block h-full">
-      <article className="flex h-full flex-col overflow-hidden rounded-xl border border-subtle bg-surface transition-all duration-200 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+      <article className="flex h-full flex-col overflow-hidden rounded-xl shadow-sm ring-1 ring-black/5 bg-surface transition-all duration-200 hover:shadow-md hover:ring-primary/50">
         <div className="relative aspect-video w-full overflow-hidden bg-main">
           {bannerUrl ? (
             <Image

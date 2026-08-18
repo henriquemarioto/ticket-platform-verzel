@@ -16,7 +16,7 @@ export function GatekeeperMetrics({ event }: GatekeeperMetricsProps) {
     <div className="space-y-4 mb-8">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Ingressos Emitidos */}
-        <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 sm:p-5 flex flex-col justify-between">
+        <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-medium text-text-muted">Total Emitidos</span>
             <div className="w-8 h-8 rounded-lg bg-bg-surface-hover flex items-center justify-center text-text-primary">
@@ -32,7 +32,7 @@ export function GatekeeperMetrics({ event }: GatekeeperMetricsProps) {
         </div>
 
         {/* Entradas Validadas */}
-        <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 sm:p-5 flex flex-col justify-between">
+        <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-medium text-text-muted">Validados</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
@@ -48,7 +48,7 @@ export function GatekeeperMetrics({ event }: GatekeeperMetricsProps) {
         </div>
 
         {/* Entradas Pendentes */}
-        <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 sm:p-5 flex flex-col justify-between">
+        <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-medium text-text-muted">Pendentes</span>
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
@@ -64,7 +64,7 @@ export function GatekeeperMetrics({ event }: GatekeeperMetricsProps) {
         </div>
 
         {/* Taxa de Presença / Ocupação */}
-        <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 sm:p-5 flex flex-col justify-between">
+        <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-medium text-text-muted">Taxa de Presença</span>
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -81,7 +81,7 @@ export function GatekeeperMetrics({ event }: GatekeeperMetricsProps) {
       </div>
 
       {/* Barra de Progresso de Ocupação */}
-      <div className="bg-bg-surface border border-border-subtle rounded-xl p-4">
+      <div className="bg-bg-surface shadow-sm rounded-xl p-4">
         <div className="flex justify-between items-center text-xs sm:text-sm font-medium text-text-muted mb-2">
           <span>Progresso de Entrada no Evento</span>
           <span className="text-text-primary font-semibold">

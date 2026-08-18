@@ -35,7 +35,7 @@ export function EventSearchBar() {
   return (
     <div className="relative w-full max-w-md">
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search className="h-5 w-5 text-text-muted" aria-hidden="true" />
+        <Search className="h-5 w-5" aria-hidden="true" />
       </div>
       <Input
         type="search"

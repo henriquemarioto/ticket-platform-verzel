@@ -150,7 +150,7 @@ export default function CreateEventPage() {
         </div>
 
         {/* Integração de Catálogos (UC06 / UC07) */}
-        <div className="p-6 rounded-xl border border-border-subtle bg-bg-surface flex flex-col sm:flex-row gap-4 items-center">
+        <div className="p-6 rounded-xl shadow-sm bg-bg-surface flex flex-col sm:flex-row gap-4 items-center">
           <div className="flex-1">
             <h2 className="font-semibold mb-1">Preenchimento Inteligente</h2>
             <p className="text-sm text-text-muted">Busque por filmes ou shows para autopreencher o formulário abaixo.</p>
@@ -181,10 +181,10 @@ export default function CreateEventPage() {
         <form onSubmit={handleSubmit} className="space-y-8">
           
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold border-b border-border-subtle pb-2">Informações Básicas</h2>
+            <h2 className="text-xl font-semibold shadow-sm pb-2">Informações Básicas</h2>
 
             {bannerUrl && (
-              <div className="relative w-full h-64 rounded-xl overflow-hidden border border-border-subtle bg-black">
+              <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-sm bg-black">
                 <img src={bannerUrl} alt="Banner Preview" className="w-full h-full object-contain" />
                 <div className="absolute top-2 right-2">
                   <Button variant="danger" size="sm" type="button" onClick={() => setBannerUrl("")}>Remover Capa</Button>
@@ -271,7 +271,7 @@ export default function CreateEventPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+            <div className="flex items-center justify-between shadow-sm pb-2">
               <h2 className="text-xl font-semibold">Setores e Ingressos</h2>
               <Button type="button" variant="outline" size="sm" onClick={addSector}>
                 <Plus className="w-4 h-4 mr-1" /> Adicionar Setor
@@ -286,13 +286,13 @@ export default function CreateEventPage() {
             )}
 
             {sectors.length === 0 ? (
-              <div className="text-center p-8 border border-dashed border-border-subtle rounded-xl text-text-muted bg-bg-surface">
+              <div className="text-center p-8 border border-dashed shadow-sm rounded-xl text-text-muted bg-bg-surface">
                 Nenhum setor adicionado. Adicione ao menos um setor para vender ingressos.
               </div>
             ) : (
               <div className="space-y-4">
                 {sectors.map((sector, index) => (
-                  <div key={sector.id} className="p-5 border border-border-subtle rounded-xl bg-bg-surface space-y-4 relative">
+                  <div key={sector.id} className="p-5 shadow-sm rounded-xl bg-bg-surface space-y-4 relative">
                     <div className="absolute top-4 right-4">
                       <Button type="button" variant="ghost" size="sm" onClick={() => removeSector(sector.id)} className="text-danger hover:bg-danger/10">
                         <Trash className="w-4 h-4" />
@@ -347,7 +347,7 @@ export default function CreateEventPage() {
                         />
                       </div>
                     ) : (
-                      <div className="space-y-4 pt-2 border-t border-border-subtle">
+                      <div className="space-y-4 pt-2 shadow-sm">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <label className="text-xs text-text-muted">Letras das Fileiras (Separadas por vírgula)</label>
@@ -371,11 +371,11 @@ export default function CreateEventPage() {
                         </div>
 
                         {sector.rowsStr && sector.seatsPerRow && parseInt(sector.seatsPerRow) > 0 && (
-                          <div className="mt-4 p-4 bg-bg-main rounded-lg border border-border-subtle">
+                          <div className="mt-4 p-4 bg-bg-main rounded-lg shadow-sm">
                             <h4 className="text-sm font-medium mb-4 text-center">Preview do Mapa de Assentos</h4>
                             <div className="flex flex-col gap-2 overflow-x-auto pb-4 items-center">
                               {/* Palco */}
-                              <div className="w-3/4 h-8 bg-primary/20 border border-primary/50 rounded-t-full mb-6 flex items-center justify-center text-xs text-primary font-semibold">
+                              <div className="w-3/4 h-8 bg-primary/20 shadow-sm ring-1 ring-primary/50 rounded-t-full mb-6 flex items-center justify-center text-xs text-primary font-semibold">
                                 PALCO
                               </div>
                               
@@ -385,7 +385,7 @@ export default function CreateEventPage() {
                                   {Array.from({ length: Math.min(parseInt(sector.seatsPerRow), 50) }).map((_, i) => (
                                     <div 
                                       key={`${row}${i+1}`} 
-                                      className="w-8 h-8 rounded-t-lg bg-surface-hover border border-border-subtle flex items-center justify-center text-[10px] text-text-muted"
+                                      className="w-8 h-8 rounded-t-lg bg-surface-hover shadow-sm flex items-center justify-center text-[10px] text-text-muted"
                                       title={`Assento ${row}${i+1}`}
                                     >
                                       {row}{i+1}
@@ -411,7 +411,7 @@ export default function CreateEventPage() {
             )}
           </div>
 
-          <div className="flex justify-end pt-6 border-t border-border-subtle">
+          <div className="flex justify-end pt-6 shadow-sm">
             <Button type="submit" size="lg" loading={isSubmitting}>
               Publicar Evento
             </Button>

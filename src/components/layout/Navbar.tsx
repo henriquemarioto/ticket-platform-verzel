@@ -34,7 +34,7 @@ export function Navbar({ user }: { user: UserPayload | null }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-bg-main/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full shadow-sm bg-bg-main/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <Ticket className="h-6 w-6 text-primary" />
@@ -80,7 +80,7 @@ export function Navbar({ user }: { user: UserPayload | null }) {
 
       {/* Mobile Nav */}
       {isOpen && (
-        <div className="md:hidden border-t border-border-subtle bg-bg-surface p-4">
+        <div className="md:hidden shadow-sm bg-bg-surface p-4">
           <nav className="flex flex-col gap-4">
             <Link href="/" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Eventos</Link>
             {user && user.role === "CUSTOMER" && (
@@ -92,7 +92,7 @@ export function Navbar({ user }: { user: UserPayload | null }) {
             {user && user.role === "ORGANIZER" && (
               <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Painel do Organizador</Link>
             )}
-            <div className="flex flex-col gap-2 pt-4 border-t border-border-subtle">
+            <div className="flex flex-col gap-2 pt-4 shadow-sm">
               {user ? (
                 <Button variant="ghost" onClick={() => { handleLogout(); setIsOpen(false); }} className="w-full justify-center gap-2">
                   <LogOut className="h-4 w-4" />

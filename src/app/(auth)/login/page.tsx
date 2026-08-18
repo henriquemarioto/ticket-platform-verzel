@@ -113,7 +113,7 @@ function LoginForm() {
         </Button>
       </form>
 
-      <div className="mt-8 border-t border-border-subtle pt-6">
+      <div className="mt-8 shadow-sm pt-6">
         <p className="mb-4 text-center text-sm font-medium text-text-muted">
           Acesso Rápido (Ambiente de Teste)
         </p>
@@ -139,7 +139,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg shadow-sm bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-text-primary">Bem-vindo de volta</h1>
           <p className="mt-2 text-sm text-text-muted">Faça login para acessar sua conta</p>

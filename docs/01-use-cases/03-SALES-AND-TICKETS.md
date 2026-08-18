@@ -209,16 +209,19 @@ sequenceDiagram
 
 1. O cliente clica em um evento na vitrine ou acessa diretamente `/events/:id`.
 2. A página renderiza:
-   - **Hero Imersivo**: Imagem de fundo estilizada com gradiente escuro, título imponente, badge de categoria e organizador.
+   - **Hero Imersivo**: Imagem de fundo estilizada com gradiente e layout responsivo, título imponente, badge de categoria e organizador.
    - **Cartão de Informações Rápidas**:
-     - 📅 Data e horário com contagem regressiva ("Faltam 45 dias").
-     - 📍 Local físico e cidade (com link para mapa externo se desejado).
-     - 🎟️ Faixa de preços e formas de pagamento aceitas.
+     - 📅 Data e horário com contagem regressiva formatada.
+     - 📍 Local físico e cidade com botões de navegação para aplicativos externos (Google Maps, Waze, Apple Maps).
+     - 🎟️ Faixa de preços ("A partir de R$ XX") e formas de pagamento simuladas.
    - **Corpo Principal**:
-     - Sinopse completa / descrição do evento.
-     - Tabela de setores disponíveis, indicando tipo (`Pista Livre` ou `Assentos Numerados`), preço unitário e status de disponibilidade.
-   - **Painel Flutuante de Compra (Sticky CTA)**:
-     - Botão em destaque: **"Comprar Ingressos"**.
+     - Sinopse completa e descrição do evento.
+     - **Mapa Interativo Integrado (Google Maps Embed)**:
+       - Renderizado via iframe seguro (`maps.google.com/maps?q=...&output=embed`) sem necessidade de chave de API externa.
+       - Permite visualização espacial do local com zoom e modo satélite/rua.
+     - Tabela e seletor interativo de setores disponíveis (`Pista Livre` ou `Mapa de Assentos Numerados`), com cálculo em tempo real de vagas e subtotais.
+   - **Painel Flutuante / Sticky de Compra**:
+     - Botão em destaque: **"Comprar Ingressos"** ou **"Ver Assentos Disponíveis"**.
 3. O cliente clica em "Comprar Ingressos", iniciando a escolha entre seleção de quantidade (Pista) ou abertura do mapa interativo de assentos.
 
 ---
@@ -228,6 +231,10 @@ sequenceDiagram
 ### Fluxo Alternativo 1: Evento com Ingressos Esgotados
 - **Cenário**: Todos os setores estão com `availableCapacity = 0`.
 - **Comportamento**: O botão de compra é desabilitado exibindo o status *"Ingressos Esgotados"* em cinza, impedindo avanço para o checkout.
+
+### Fluxo Alternativo 2: Abertura de Rota em Aplicativo de Navegação
+- **Cenário**: O cliente clica no botão "Abrir no Waze" ou "Abrir no Google Maps".
+- **Comportamento**: Uma nova aba é aberta diretamente com as coordenadas/endereço do local (`https://waze.com/ul?q=...` ou `https://www.google.com/maps/dir/?api=1&destination=...`).
 
 ### Fluxo de Exceção 1: ID Inválido ou Evento Inexistente (404)
 - **Condição**: O ID na URL não existe no banco de dados.
@@ -239,6 +246,7 @@ sequenceDiagram
 
 - **RN01 - Exibição de Setores**: Apenas setores com capacidade maior que zero devem ser listados na área de seleção.
 - **RN02 - Formatação de Moeda**: Todos os valores monetários devem ser formatados no padrão brasileiro (`R$ 1.250,00`).
+- **RN03 - Mapa Embed Resiliente**: O componente de mapa deve codificar em URI o nome do local e cidade (`encodeURIComponent`), garantindo renderização instantânea mesmo para locais sem coordenadas GPS salvas.
 
 ---
 

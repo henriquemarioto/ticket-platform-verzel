@@ -9,7 +9,7 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
 
   return (
     <div className="min-h-screen bg-main flex flex-col items-center justify-center py-24 px-4">
-      <div className="max-w-md w-full bg-surface rounded-2xl border border-subtle p-8 text-center space-y-6">
+      <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm p-8 text-center space-y-6">
         <div className="flex justify-center">
           <div className="rounded-full bg-success/10 p-4">
             <CheckCircle className="w-16 h-16 text-success" />
@@ -24,7 +24,7 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
         </div>
 
         {orderId && (
-          <div className="bg-main/50 rounded-lg p-4 border border-subtle/50">
+          <div className="bg-main/50 rounded-lg p-4 shadow-sm/50">
             <p className="text-sm text-text-muted mb-1">Número do Pedido</p>
             <p className="font-mono text-white font-medium">{orderId}</p>
           </div>

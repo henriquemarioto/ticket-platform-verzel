@@ -22,7 +22,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
   return (
     <div>
       {/* Abas */}
-      <div className="flex border-b border-border-subtle mb-6">
+      <div className="flex shadow-sm mb-6">
         <button
           className={`pb-4 px-4 font-medium text-sm transition-colors relative cursor-pointer ${
             activeTab === "upcoming" ? "text-primary" : "text-text-muted hover:text-text-primary"
@@ -54,7 +54,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
 
       {/* Lista de Ingressos */}
       {activeTicketsList.length === 0 ? (
-        <div className="flex flex-col items-center text-center py-12 px-4 border border-dashed border-border-subtle rounded-xl bg-bg-surface/50">
+        <div className="flex flex-col items-center text-center py-12 px-4 border border-dashed shadow-sm rounded-xl bg-bg-surface/50">
           <div className="bg-bg-surface p-3 rounded-full mb-4">
             <TicketX className="w-8 h-8 text-text-muted" />
           </div>
@@ -97,12 +97,12 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
             
             <h3 className="font-semibold text-lg mb-1 text-center">{selectedTicket.event.title}</h3>
             
-            <div className="flex flex-col gap-2 w-full mt-4 bg-bg-main p-4 rounded-lg border border-border-subtle text-sm">
-              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+            <div className="flex flex-col gap-2 w-full mt-4 bg-bg-main p-4 rounded-lg shadow-sm text-sm">
+              <div className="flex justify-between items-center pb-2 shadow-sm">
                 <span className="text-text-muted">Setor</span>
                 <span className="font-medium">{selectedTicket.sector.name}</span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+              <div className="flex justify-between items-center pb-2 shadow-sm">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
                   {selectedTicket.seat ? `${selectedTicket.seat.row}${selectedTicket.seat.number}` : "Pista"}

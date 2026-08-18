@@ -32,7 +32,7 @@ export function GatekeeperEventSelector({
     <div className="space-y-6">
       {/* Cabeçalho do Seletor */}
       <div className="text-center max-w-2xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 shadow-sm ring-1 ring-primary/20 text-primary text-xs font-semibold mb-2">
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>Painel Operacional de Portaria</span>
         </div>
@@ -58,7 +58,7 @@ export function GatekeeperEventSelector({
 
       {/* Lista de Eventos Disponíveis */}
       {events.length === 0 ? (
-        <div className="text-center py-16 bg-bg-surface rounded-xl border border-border-subtle max-w-lg mx-auto p-6">
+        <div className="text-center py-16 bg-bg-surface rounded-xl shadow-sm max-w-lg mx-auto p-6">
           <div className="w-12 h-12 rounded-xl bg-bg-surface-hover mx-auto flex items-center justify-center text-text-muted mb-3">
             <Ticket className="w-6 h-6" />
           </div>
@@ -70,7 +70,7 @@ export function GatekeeperEventSelector({
           </p>
         </div>
       ) : filteredEvents.length === 0 ? (
-        <div className="text-center py-12 bg-bg-surface rounded-xl border border-border-subtle max-w-lg mx-auto p-6">
+        <div className="text-center py-12 bg-bg-surface rounded-xl shadow-sm max-w-lg mx-auto p-6">
           <p className="text-text-muted text-sm">
             Nenhum evento encontrado para o termo &ldquo;{searchTerm}&rdquo;.
           </p>
@@ -94,7 +94,7 @@ export function GatekeeperEventSelector({
             return (
               <div
                 key={event.id}
-                className="bg-bg-surface border border-border-subtle rounded-xl overflow-hidden hover:border-primary/50 transition-all flex flex-col justify-between group shadow-sm"
+                className="bg-bg-surface shadow-sm rounded-xl overflow-hidden hover:shadow-sm ring-1 ring-primary/50 transition-all flex flex-col justify-between group shadow-sm"
               >
                 {/* Banner / Imagem de Capa */}
                 {event.bannerUrl ? (
@@ -113,7 +113,7 @@ export function GatekeeperEventSelector({
                     </div>
                   </div>
                 ) : (
-                  <div className="h-28 w-full bg-bg-surface-hover flex items-center justify-between p-4 border-b border-border-subtle">
+                  <div className="h-28 w-full bg-bg-surface-hover flex items-center justify-between p-4 shadow-sm">
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
                       {event.category}
                     </span>
@@ -144,7 +144,7 @@ export function GatekeeperEventSelector({
                   </div>
 
                   {/* Resumo de Check-in */}
-                  <div className="bg-bg-main/60 rounded-lg p-3 border border-border-subtle grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-bg-main/60 rounded-lg p-3 shadow-sm grid grid-cols-2 gap-2 text-xs">
                     <div>
                       <span className="text-text-muted block">Emitidos</span>
                       <span className="font-bold text-text-primary flex items-center gap-1 mt-0.5">

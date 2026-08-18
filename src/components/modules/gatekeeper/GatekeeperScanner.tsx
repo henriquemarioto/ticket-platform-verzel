@@ -135,7 +135,7 @@ export function GatekeeperScanner({ eventId, onScan, onSwitchToManual, isProcess
 
   if (hasPermission === false) {
     return (
-      <div className="p-8 text-center bg-bg-surface border border-border-subtle rounded-xl max-w-sm mx-auto space-y-4">
+      <div className="p-8 text-center bg-bg-surface shadow-sm rounded-xl max-w-sm mx-auto space-y-4">
         <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
           <Camera className="w-8 h-8 text-red-500" />
         </div>
@@ -151,7 +151,7 @@ export function GatekeeperScanner({ eventId, onScan, onSwitchToManual, isProcess
   }
 
   return (
-    <div className="relative max-w-md mx-auto aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-lg border border-border-subtle group">
+    <div className="relative max-w-md mx-auto aspect-[4/3] bg-black rounded-xl overflow-hidden shadow-lg shadow-sm group">
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"

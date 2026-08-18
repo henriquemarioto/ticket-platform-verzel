@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { releaseExpiredReservations } from "@/lib/lazy-expiration";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +14,9 @@ export async function GET(
       return NextResponse.json({ error: "O ID do evento é obrigatório" }, { status: 400 });
     }
 
+    const session = await getSession();
+    const currentUserId = session?.id || null;
+
     // Lazy Expiration: Expira reservas pendentes e libera assentos antes de listar
     await releaseExpiredReservations(id);
 
@@ -24,7 +28,19 @@ export async function GET(
           orderBy: [
             { row: "asc" },
             { number: "asc" }
-          ]
+          ],
+          include: {
+            reservationItems: {
+              where: {
+                reservation: {
+                  status: "PENDING",
+                },
+              },
+              select: {
+                reservationId: true,
+              },
+            },
+          },
         },
       },
     });
@@ -33,7 +49,7 @@ export async function GET(
       return NextResponse.json({ error: "Evento não encontrado ou sem setores" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, sectors });
+    return NextResponse.json({ success: true, sectors, currentUserId });
   } catch (error) {
     console.error("[GET_SEATS_ERROR]", error);
     return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
