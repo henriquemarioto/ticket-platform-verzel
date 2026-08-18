@@ -21,6 +21,7 @@ type ReservationItem = {
 
 type CheckoutClientProps = {
   reservationId: string;
+  eventId: string;
   expiresAt: string;
   totalAmount: number;
   items: ReservationItem[];
@@ -29,6 +30,7 @@ type CheckoutClientProps = {
 
 export default function CheckoutClient({
   reservationId,
+  eventId,
   expiresAt,
   totalAmount,
   items,
@@ -65,7 +67,7 @@ export default function CheckoutClient({
   const handleCheckout = async (action: "APPROVE" | "REJECT") => {
     if (isExpired) {
       toast("error", "O tempo limite de 10 minutos foi atingido. Você precisa selecionar os ingressos novamente.");
-      router.push("/");
+      router.push(`/events/${eventId}`);
       return;
     }
 
@@ -166,8 +168,8 @@ export default function CheckoutClient({
             <p className="text-text-muted mb-6">
               Sua reserva expirou ou o pagamento foi recusado, e os assentos foram liberados para o público.
             </p>
-            <Button variant="primary" onClick={() => router.push("/")}>
-              Explorar Outros Eventos
+            <Button variant="primary" onClick={() => router.push(`/events/${eventId}`)}>
+              Voltar para o Evento
             </Button>
           </div>
         )}

@@ -1,33 +1,43 @@
 # AGENTS.md - Governança de Agentes e Desenvolvimento
 
 ## 🛠️ Stack Tecnológica
-- **Linguagem**: TypeScript 5 (`strict: true`)
-- **Framework Fullstack**: Next.js 16 (App Router, Server Actions, Route Handlers)
-- **Estilização**: TailwindCSS 4 (Tokens HSL no bloco `@theme`)
-- **Banco de Dados & ORM**: PostgreSQL (Supabase Dual-Connection) + Prisma ORM
+- Linguagem: TypeScript 5 (`strict: true`)
+- Framework Fullstack: Next.js 16 (App Router, Server Actions, Route Handlers)
+- Estilização: TailwindCSS 4 (Tokens HSL no bloco `@theme`)
+- Banco de Dados & ORM: PostgreSQL (Supabase Dual-Connection) + Prisma ORM
 
 ---
 
 ## 📜 Regras Gerais Obrigatórias
-- **Simplicidade & Legibilidade**: Código direto, autoexplicativo, sem comentários óbvios, sem overengineering (KISS & YAGNI).
-- **Consistência de UI (DRY)**: Reutilizar sempre os componentes em `src/components/ui/` (`Button`, `Input`, `Badge`, `Modal`, `Toast`, `Skeleton`). Proibido recriar botões ou estilos ad-hoc inline.
-- **Concorrência ACID**: Prevenção matemática contra double-booking com locks atômicos condicionais e TTL de 10 minutos (ADR 0005).
-- **Leitura Prévia**: Sempre consultar `/docs` antes de iniciar qualquer código.
-- **Rastreamento de Tarefas**: Executar e marcar o checklist em `tasks.md`.
-- **Validação de Critérios**: Nenhuma tarefa é concluída sem testes e critérios de aceitação validados (`TEST-PLAN-AND-CRITERIA.md`).
+- Verificação e Integridade de Docs (Primeiro Passo Absoluto):
+  - Sempre consultar `/docs` primeiro antes de qualquer implementação ou planejamento.
+  - Não descrito na doc: Se o pedido não estiver descrito em `/docs`, deve ser inserido/documentado formalmente no arquivo correspondente antes de codificar.
+  - Alteração de requisito: Se for uma modificação de regras existentes, a documentação em `/docs` deve ser atualizada.
+  - Conflito com a doc: Se o pedido entrar em conflito com o que está documentado, o agente DEVE pausar e questionar o usuário sobre qual comportamento adotar antes de qualquer alteração de código.
+- Uso Obrigatório de Subagentes para Codar:
+  - Para escrever, alterar ou auditar código, SEMPRE utilize os subagentes especializados (`frontend-expert`, `backend-acid-expert`, `qa-code-auditor`). O agente orquestrador não deve escrever código de implementação diretamente sem delegar para os subagentes via `invoke_subagent`.
+- Simplicidade & Legibilidade: Código direto, autoexplicativo, sem comentários óbvios, sem overengineering (KISS & YAGNI).
+- Consistência de UI (DRY): Reutilizar sempre os componentes em `src/components/ui/` (`Button`, `Input`, `Badge`, `Modal`, `Toast`, `Skeleton`). Proibido recriar botões ou estilos ad-hoc inline.
+- Concorrência ACID: Prevenção matemática contra double-booking com locks atômicos condicionais e TTL de 10 minutos (ADR 0005).
+- Rastreamento de Tarefas: Executar e marcar o checklist em `tasks.md`.
+- Validação de Critérios: Nenhuma tarefa é concluída sem testes e critérios de aceitação validados (`TEST-PLAN-AND-CRITERIA.md`).
 
 ---
 
 ## 🔄 Fluxo Obrigatório de Implementação
-1. **Verificar a Documentação**: Ler os casos de uso em `docs/01-use-cases/`, modelos em `docs/02-architecture/` e endpoints em `docs/04-api-and-integrations/`.
-2. **Consultar o `tasks.md`**: Selecionar a tarefa pendente e entender seu critério de aceite.
-3. **Implementar com Especialistas**:
-   - Para Telas & UI: usar a skill `ui-component-builder` / subagent `frontend-expert`.
-   - Para Backend & Concorrência: usar a skill `backend-feature-builder` / subagent `backend-acid-expert`.
-4. **Auditar e Validar Qualidade**:
-   - Executar a skill `code-review-and-quality` / subagent `qa-code-auditor`.
+1. Verificar a Documentação (`/docs`):
+   - Ler os casos de uso em `docs/01-use-cases/`, modelos em `docs/02-architecture/`, design em `docs/03-design/` e endpoints em `docs/04-api-and-integrations/`.
+   - Se o pedido não constar na doc: inserir a especificação na respectiva documentação.
+   - Se for uma alteração: atualizar a documentação correspondente em `/docs`.
+   - Se houver conflito com a doc: perguntar ao usuário como deseja proceder antes de seguir.
+2. Consultar o `tasks.md`: Selecionar ou registrar a tarefa pendente e entender seu critério de aceite.
+3. Implementar SEMPRE com Subagentes Especialistas:
+   - Para Telas & UI: delegar para o subagent `frontend-expert` (utilizando a skill `ui-component-builder`).
+   - Para Backend, Concorrência & APIs: delegar para o subagent `backend-acid-expert` (utilizando a skill `backend-feature-builder`).
+4. Auditar e Validar Qualidade:
+   - Delegar para o subagent `qa-code-auditor` (utilizando a skill `code-review-and-quality`).
    - Validar critérios de aceite, compilação TypeScript e ausência de overengineering.
-5. **Atualizar `tasks.md` e Documentação**: Marcar `[x]` na tarefa correspondente e registrar novas decisões se aplicável.
+5. Atualizar `tasks.md` e Documentação: Marcar `[x]` na tarefa correspondente e registrar novas decisões se aplicável.
 
 ---
 
@@ -50,10 +60,10 @@
 ---
 
 ## 🚫 Restrições
-- Não inventar requisitos ou fluxos não descritos nos documentos de requisitos.
+- Proibido codar diretamente sem acionar subagentes especializados.
+- Proibido implementar requisitos não documentados ou divergentes sem antes atualizar a doc ou consultar o usuário (em caso de conflito).
 - Não adicionar bibliotecas pesadas de estado global ou camadas desnecessárias de repositórios.
-- Não alterar comportamento de regras de negócio sem atualizar a respectiva documentação em `/docs`.
-- Nunca em hipótese alguma inseria o valor do env do código
+- Nunca em hipótese alguma inserir o valor do env no código.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

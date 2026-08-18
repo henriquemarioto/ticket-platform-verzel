@@ -54,6 +54,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Sea
         <h1 className="text-3xl font-bold text-white mb-8">Finalizar Compra</h1>
         <CheckoutClient
           reservationId={reservation.id}
+          eventId={reservation.eventId}
           expiresAt={reservation.expiresAt.toISOString()}
           totalAmount={totalAmount}
           items={reservation.items}

@@ -668,7 +668,7 @@ sequenceDiagram
 
 ### Fluxo de Exceção 1: Cliente Tentando Pagar Após o Vencimento do TTL
 - **Cenário**: O cliente A ficou 15 minutos na tela de checkout e clica em "Pagar" após o cronômetro zerar.
-- **Comportamento**: A API de checkout rejeita o pagamento com `410 Gone` (*"Sua reserva de 10 minutos expirou. Por favor, selecione os assentos novamente."*), impedindo a cobrança de um assento que já pode ter sido liberado.
+- **Comportamento**: A API de checkout rejeita o pagamento com `410 Gone` (*"Sua reserva de 10 minutos expirou. Por favor, selecione os assentos novamente."*), exibindo o estado de reserva expirada com botão de retorno direto para a página do evento (`/events/[id]`) para reiniciar a seleção.
 
 ---
 
@@ -801,7 +801,7 @@ sequenceDiagram
 
 ### Fluxo de Exceção 1: Reserva Expirada Durante a Finalização
 - **Condição**: O cliente clicou no momento exato em que os 10 minutos se esgotaram.
-- **Comportamento**: A transação é abortada com `410 Gone`. Os assentos são liberados e o usuário recebe a mensagem explicativa com link para reiniciar a compra.
+- **Comportamento**: A transação é abortada com `410 Gone`. Os assentos são liberados e o usuário recebe a mensagem explicativa com botão para voltar diretamente para a página do evento (`/events/[id]`) e reiniciar a seleção dos ingressos.
 
 ---
 
@@ -900,7 +900,7 @@ Funcionalidade: Pagamento Simulado Aprovado
   - O pedido é gravado como `REJECTED` no histórico para fins de auditoria.
   - Os assentos e vagas são imediatamente liberados (`SeatStatus.AVAILABLE`).
   - Nenhum ingresso é emitido.
-  - A interface exibe alerta vermelho contextual de recusa com botão "Tentar Novamente".
+  - A interface exibe alerta contextual "Reserva Expirada ou Cancelada" com botão "Voltar para o Evento" direcionando para `/events/[id]`.
 
 ---
 
@@ -920,9 +920,9 @@ sequenceDiagram
     API->>DB: Cria registro Order (status: 'REJECTED', rejectionReason: 'INSUFFICIENT_FUNDS')
     API->>DB: UPDATE seats SET status='AVAILABLE', reservedById=NULL, reservedUntil=NULL WHERE id IN (reservedSeatIds)
     DB-->>API: Assentos liberados e Order gravado
-    API-->>UI: 402 Payment Required / 200 OK { success: false, status: "REJECTED", message: "Pagamento não autorizado pela operadora do cartão." }
-    UI->>Cli: Exibe alerta em vermelho: "Pagamento Recusado: Saldo Insuficiente. Os assentos foram liberados."
-    UI->>Cli: Disponibiliza botão "Tentar Novamente com Outro Cartão / Escolher Novos Assentos"
+    API-->>UI: 200 OK { success: false, status: "REJECTED", error: "Pagamento não autorizado..." }
+    UI->>Cli: Exibe alerta: "Reserva Expirada ou Cancelada. Os assentos foram liberados."
+    UI->>Cli: Disponibiliza botão "Voltar para o Evento" (redirecionando para /events/[id])
 ```
 
 ---
@@ -936,20 +936,18 @@ sequenceDiagram
    - Atualiza todos os assentos vinculados à reserva de volta para `AVAILABLE` (`reservedById = NULL`, `reservedUntil = NULL`).
    - Para setores de pista, restaura a cota de `availableCapacity`.
 4. A API retorna a resposta de recusa detalhada.
-5. O front-end exibe um banner de alerta informativo em vermelho:
-   - *"Transação não autorizada: Simulação de cartão sem limite ou recusado pela instituição emissora."*
-   - *"Os assentos selecionados foram liberados de volta para a vitrine pública."*
-6. A interface fornece os botões:
-   - **"Escolher Novos Assentos"** (retorna para o mapa do evento).
-   - **"Voltar para a Página Inicial"**.
+5. O front-end exibe o bloco/card de aviso **"Reserva Expirada ou Cancelada"**:
+   - *"Sua reserva expirou ou o pagamento foi recusado, e os assentos foram liberados para o público."*
+6. A interface fornece o botão de ação:
+   - **"Voltar para o Evento"** (redireciona para a página do evento correspondente `/events/[id]`, permitindo ao usuário selecionar novos assentos ou tentar novamente a compra no mesmo evento).
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Tentativa Imediata de Nova Compra
-- **Cenário**: O cliente deseja tentar comprar novamente o mesmo assento.
-- **Comportamento**: Ao clicar em "Tentar Novamente", o cliente é levado ao mapa de assentos onde a poltrona acabou de ser liberada (`AVAILABLE`) e pode ser selecionada novamente.
+- **Cenário**: O cliente deseja tentar comprar novamente no mesmo evento após a simulação de recusa ou cancelamento.
+- **Comportamento**: Ao clicar em "Voltar para o Evento", o cliente é levado diretamente à página do evento (`/events/[id]`) onde a poltrona/setor acabou de ser liberado (`AVAILABLE`) e pode ser selecionado novamente.
 
 ---
 
@@ -997,7 +995,8 @@ Funcionalidade: Pagamento Simulado Recusado
     Quando eu clico no botão "Simular Pagamento Recusado"
     Então o sistema deve registrar o pedido como "REJECTED"
     E a poltrona "A1" deve ser liberada imediatamente para o status "AVAILABLE"
-    E a tela deve exibir a mensagem de erro "Pagamento recusado pela operadora do cartão."
+    E a tela deve exibir o card "Reserva Expirada ou Cancelada"
+    E o botão exibido deve redirecionar o usuário para a página do evento correspondente ("/events/[id]")
     E nenhum ingresso deve ser emitido
 ```
 
