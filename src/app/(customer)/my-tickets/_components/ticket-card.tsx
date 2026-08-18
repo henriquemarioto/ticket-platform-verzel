@@ -103,7 +103,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
                 {seat ? `${seat.row}${seat.number}` : "Pista (S/ Assento)"}
               </p>
             </div>
-            <div className="col-span-2 pt-2 mt-2 shadow-sm flex justify-between items-center">
+            <div className="col-span-2 pt-2 mt-2 flex justify-between items-center">
               <div>
                 <p className="text-text-muted text-xs">Código do Ingresso</p>
                 <p className="font-mono text-primary font-semibold tracking-wider">{ticket.ticketCode}</p>

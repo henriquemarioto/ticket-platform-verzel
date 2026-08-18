@@ -26,7 +26,7 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
         {orderId && (
           <div className="bg-main/50 rounded-lg p-4 shadow-sm/50">
             <p className="text-sm text-text-muted mb-1">Número do Pedido</p>
-            <p className="font-mono text-white font-medium">{orderId}</p>
+            <p className="font-mono font-medium">{orderId}</p>
           </div>
         )}
 

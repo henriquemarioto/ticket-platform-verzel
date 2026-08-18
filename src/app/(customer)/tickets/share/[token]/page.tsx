@@ -147,11 +147,11 @@ export default async function ShareTicketPage({
             </div>
 
             <div className="bg-bg-main p-4 rounded-xl shadow-sm space-y-3 text-sm">
-              <div className="flex justify-between items-center pb-3 shadow-sm">
+              <div className="flex justify-between items-center pb-3">
                 <span className="text-text-muted">Setor</span>
                 <span className="font-medium">{sector.name}</span>
               </div>
-              <div className="flex justify-between items-center pb-3 shadow-sm">
+              <div className="flex justify-between items-center pb-3">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
                   {seat ? `${seat.row}${seat.number}` : "Pista"}

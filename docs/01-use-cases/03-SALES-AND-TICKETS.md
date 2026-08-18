@@ -66,17 +66,13 @@ sequenceDiagram
    - Carrega eventos futuros com status `PUBLISHED`.
    - Calcula o menor preço entre os setores ativos para cada evento (`minPrice`).
 3. A página inicial exibe:
-   - **Hero Banner**: Destaque para o principal evento em cartaz com imagem ampla, título e botão de ação rápida.
-   - **Filtros Rápidos de Categoria**: Pílulas interativas (`Todos`, `Shows`, `Filmes`, `Teatro`, `Festivais`).
-   - **Barra de Busca Rápida**: Campo de texto com busca instantânea por título, artista ou cidade.
-   - **Grade de Cards de Eventos**: Cada card exibe:
-     - Poster em alta definição com efeito hover sutil.
-     - Badge de categoria (ex: `SHOW`, `MOVIE`).
-     - Título do evento e data formatada por extenso (ex: *"20 de Nov, 20:00"*).
-     - Local e Cidade (ex: *"Espaço Hall Cultural - São Paulo, SP"*).
-     - Tag de valor: *"A partir de R$ 120,00"*.
-4. O visitante clica em qualquer card.
-5. A aplicação navega fluidamente para a página de detalhes do evento selecionado (`/events/:id`).
+   - **Hero Banner**: Destaque para o principal evento em cartaz com imagem ampla, título e botão de ação rápida. Logo abaixo da barra de pesquisa, exibe os **Filtros Rápidos de Categoria** (Pílulas interativas).
+   - **Navegação de Categorias**: Ao clicar em uma pílula de categoria específica (ex: "Shows"), o visitante é redirecionado para a página do catálogo (`/events`) exibindo apenas aqueles eventos. Ao clicar em "Todos", retorna para a vitrine inicial padrão (`/`).
+   - **Barra de Busca Rápida**: Campo de texto com busca instantânea por título, artista ou cidade. Redireciona buscas do contexto principal para a página de catálogo.
+   - **Grade de Destaques (2 Fileiras)**: Grade responsiva exibindo até 7 eventos. No 8º slot, é exibido um card de chamada de ação dinâmico "Ver todos os eventos", redirecionando o cliente para a página de catálogo `/events`.
+   - **Carrosséis por Categoria (Show, Cinema, Teatro, Festivais)**: Uma seção dedicada e rolável horizontalmente contendo até 8 eventos daquela categoria específica, finalizando com um card interativo de "Ver todos os eventos [Tipo]".
+4. O visitante pode clicar no card "Ver Todos" e ser redirecionado para a página de catálogo completo em `/events`, que apresenta todos os eventos combinados com paginação (ou grade livre) e filtros ativos no cabeçalho (`CategoryPills`).
+5. A aplicação navega fluidamente para a página de detalhes do evento selecionado (`/events/:id`) quando um card de evento individual é clicado.
 
 ---
 

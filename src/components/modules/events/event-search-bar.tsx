@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export function EventSearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
 
@@ -24,13 +25,15 @@ export function EventSearchBar() {
       const currentQuery = searchParams.toString();
       
       if (newQuery !== currentQuery) {
-        const newUrl = newQuery ? `/?${newQuery}` : "/";
+        // If we are on home and searching, go to /events. Otherwise keep current path.
+        const basePath = pathname === "/" && newQuery ? "/events" : pathname;
+        const newUrl = newQuery ? `${basePath}?${newQuery}` : basePath;
         router.replace(newUrl, { scroll: false });
       }
     }, 300);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, searchParams, router]);
+  }, [searchTerm, searchParams, pathname, router]);
 
   return (
     <div className="relative w-full max-w-md">

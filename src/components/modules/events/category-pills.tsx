@@ -17,10 +17,10 @@ export function CategoryPills() {
   const currentCategory = searchParams.get("category") || "";
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap justify-center gap-2">
       {CATEGORIES.map((category) => {
         const isActive = currentCategory === category.value;
-        const href = category.value ? `/?category=${category.value}` : "/";
+        const href = category.value ? `/events?category=${category.value}` : "/";
         
         return (
           <Link key={category.value} href={href} prefetch={true}>

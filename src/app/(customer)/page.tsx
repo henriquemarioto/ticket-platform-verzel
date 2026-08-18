@@ -2,33 +2,16 @@ import { prisma } from "@/lib/prisma";
 import { EventSearchBar } from "@/components/modules/events/event-search-bar";
 import { CategoryPills } from "@/components/modules/events/category-pills";
 import { EventCard } from "@/components/modules/events/event-card";
+import { EventCarousel } from "@/components/modules/events/event-carousel";
+import { ViewAllCard } from "@/components/modules/events/view-all-card";
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-
-export default async function CustomerHomePage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const resolvedSearchParams = await searchParams;
-  const query = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : undefined;
-  const category = typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : undefined;
-
-  const events = await prisma.event.findMany({
+export default async function CustomerHomePage() {
+  const allEvents = await prisma.event.findMany({
     where: {
       status: "PUBLISHED",
       eventDate: {
         gte: new Date(),
       },
-      ...(query && {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
-      }),
-      ...(category && {
-        category: category as import("@prisma/client").EventCategory,
-      }),
     },
     include: {
       sectors: true,
@@ -37,6 +20,56 @@ export default async function CustomerHomePage({
       eventDate: "asc",
     },
   });
+
+  const featuredEvents = allEvents.slice(0, 7);
+
+  const shows = allEvents.filter((e) => e.category === "SHOW");
+  const movies = allEvents.filter((e) => e.category === "MOVIE");
+  const theaters = allEvents.filter((e) => e.category === "THEATER");
+  const festivals = allEvents.filter((e) => e.category === "FESTIVAL");
+
+  const renderEventCard = (event: typeof allEvents[0]) => {
+    const minPrice =
+      event.sectors.length > 0
+        ? Math.min(...event.sectors.map((s) => s.price))
+        : 0;
+
+    return (
+      <div key={event.id} className="w-[260px] sm:w-[280px] shrink-0 snap-start h-auto">
+        <EventCard
+          id={event.id}
+          title={event.title}
+          eventDate={event.eventDate}
+          locationName={event.locationName}
+          city={event.city}
+          bannerUrl={event.bannerUrl}
+          minPrice={minPrice}
+          category={event.category}
+        />
+      </div>
+    );
+  };
+
+  const renderGridEventCard = (event: typeof allEvents[0]) => {
+    const minPrice =
+      event.sectors.length > 0
+        ? Math.min(...event.sectors.map((s) => s.price))
+        : 0;
+
+    return (
+      <EventCard
+        key={event.id}
+        id={event.id}
+        title={event.title}
+        eventDate={event.eventDate}
+        locationName={event.locationName}
+        city={event.city}
+        bannerUrl={event.bannerUrl}
+        minPrice={minPrice}
+        category={event.category}
+      />
+    );
+  };
 
   return (
     <div className="min-h-screen pb-16">
@@ -50,64 +83,86 @@ export default async function CustomerHomePage({
           <p className="text-lg text-text-muted sm:text-xl">
             Descubra shows, teatros, cinemas e festivais imperdíveis acontecendo perto de você.
           </p>
-          <div className="pt-4 flex justify-center">
+          <div className="pt-4 flex flex-col items-center gap-6">
             <EventSearchBar />
+            <CategoryPills />
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="container mx-auto mt-8 px-4 sm:mt-12">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-2xl font-bold text-text-primary">Eventos em Destaque</h2>
-          <CategoryPills />
-        </div>
+      <main className="container mx-auto mt-8 px-4 sm:mt-12 space-y-16">
+        
+        {/* Eventos em Destaque (Grade 2 Fileiras) */}
+        <section>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-2xl font-bold text-text-primary">Eventos em Destaque</h2>
+          </div>
 
-        {events.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {events.map((event) => {
-              const minPrice =
-                event.sectors.length > 0
-                  ? Math.min(...event.sectors.map((s) => s.price))
-                  : 0;
+            {featuredEvents.map(renderGridEventCard)}
+            <ViewAllCard 
+              href="/events" 
+              count={allEvents.length} 
+              variant="grid" 
+            />
+          </div>
+        </section>
 
-              return (
-                <EventCard
-                  key={event.id}
-                  id={event.id}
-                  title={event.title}
-                  eventDate={event.eventDate}
-                  locationName={event.locationName}
-                  city={event.city}
-                  bannerUrl={event.bannerUrl}
-                  minPrice={minPrice}
-                  category={event.category}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="mb-4 rounded-full bg-surface-hover p-4">
-              <svg
-                className="h-10 w-10 text-text-muted"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-text-primary">Nenhum evento encontrado</h3>
-            <p className="mt-2 text-text-muted">
-              Não encontramos eventos com os filtros selecionados.
-            </p>
-          </div>
+        {/* Carrossel de Shows */}
+        {shows.length > 0 && (
+          <EventCarousel title="Shows & Concertos" categoryLabel="Música ao vivo">
+            {shows.slice(0, 8).map(renderEventCard)}
+            <ViewAllCard 
+              href="/events?category=SHOW" 
+              title="Ver todos os Shows"
+              subtitle="Encontre mais atrações musicais"
+              count={shows.length} 
+              variant="carousel" 
+            />
+          </EventCarousel>
+        )}
+
+        {/* Carrossel de Teatro */}
+        {theaters.length > 0 && (
+          <EventCarousel title="Teatro & Espetáculos" categoryLabel="Artes Cênicas">
+            {theaters.slice(0, 8).map(renderEventCard)}
+            <ViewAllCard 
+              href="/events?category=THEATER" 
+              title="Ver todos de Teatro"
+              subtitle="Mais peças e apresentações"
+              count={theaters.length} 
+              variant="carousel" 
+            />
+          </EventCarousel>
+        )}
+
+        {/* Carrossel de Cinema */}
+        {movies.length > 0 && (
+          <EventCarousel title="Cinema & Filmes" categoryLabel="Nas telonas">
+            {movies.slice(0, 8).map(renderEventCard)}
+            <ViewAllCard 
+              href="/events?category=MOVIE" 
+              title="Ver todos de Cinema"
+              subtitle="Mais filmes em cartaz"
+              count={movies.length} 
+              variant="carousel" 
+            />
+          </EventCarousel>
+        )}
+
+        {/* Carrossel de Festivais */}
+        {festivals.length > 0 && (
+          <EventCarousel title="Festivais" categoryLabel="Para curtir o dia todo">
+            {festivals.slice(0, 8).map(renderEventCard)}
+            <ViewAllCard 
+              href="/events?category=FESTIVAL" 
+              title="Ver todos os Festivais"
+              subtitle="Mais eventos de longa duração"
+              count={festivals.length} 
+              variant="carousel" 
+            />
+          </EventCarousel>
         )}
       </main>
     </div>

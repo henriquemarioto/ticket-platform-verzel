@@ -130,14 +130,14 @@ export default function CheckoutClient({
             </div>
           </div>
 
-          <div className="mb-6 pb-6 shadow-sm">
+          <div className="mb-6">
             <h3 className="font-medium text-text-primary mb-2">{eventName}</h3>
             <p className="text-sm text-text-muted">Revise os ingressos selecionados antes de prosseguir com o pagamento.</p>
           </div>
 
           <div className="space-y-4">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-2 shadow-sm last:border-0 last:pb-0">
+              <div key={item.id} className="flex items-center justify-between py-2 last:border-0 last:pb-0">
                 <div>
                   <p className="font-medium text-text-primary">{item.quantity}x {item.sector.name}</p>
                   {item.seat && (
@@ -187,7 +187,7 @@ export default function CheckoutClient({
               <span>Taxa de Serviço</span>
               <span>R$ 0,00</span>
             </div>
-            <div className="flex justify-between text-lg font-bold text-text-primary shadow-sm pt-4">
+            <div className="flex justify-between text-lg font-bold text-text-primary pt-4">
               <span>Total a Pagar</span>
               <span>{formattedTotal}</span>
             </div>
