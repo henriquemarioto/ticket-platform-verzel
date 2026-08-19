@@ -80,6 +80,16 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 - [x] **Task 2.9: Criação de Evento com Setores de Pista (UC08)**
   - [x] Implementar Route Handler `POST /api/events` com validação Zod.
   - [x] Implementar formulário de criação em `src/app/(organizer)/organizer/events/create/page.tsx`.
+- [x] **Task 2.9b: Classificação +18, Descrição Mínima (300 chars) e Separação Cidade/UF**
+  - [x] Modelar campo `isAdult Boolean @default(false)` no `prisma/schema.prisma` e sincronizar banco.
+  - [x] Atualizar `createEventSchema` com `description.min(300)` e `isAdult`.
+  - [x] Atualizar `prisma/seed.ts` com descrições >= 300 caracteres e flags +18.
+  - [x] Criar constante `BRAZIL_STATES` e separar campos Cidade e UF (`<Select>`) no formulário, unificando como `"Cidade, UF"`.
+  - [x] Adicionar contador em tempo real (`X / 300`) na descrição do formulário de criação.
+  - [x] Adicionar checkbox de classificação +18 no formulário de criação.
+  - [x] Renderizar badge destacado `+18` ao lado da categoria na tela de detalhes do evento (`/events/[id]`).
+  - [x] Renderizar indicador discreto `+18` no `EventCard` na vitrine (`/`) e catálogo (`/events`).
+  - [x] Auditar e validar qualidade com testes automatizados e TypeScript estrito.
 - [x] **Task 2.10: Criação de Evento com Mapa de Assentos Numerados (UC09)**
   - [x] Adicionar gerador de grade de assentos por fileiras e poltronas (A1..A10, B1..B10...).
   - [x] Persistir registros de `Seat` com status `AVAILABLE`.

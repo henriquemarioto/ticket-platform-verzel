@@ -7,6 +7,7 @@ import { ExternalCatalogModal, CatalogItem } from "@/components/modules/events/E
 import { Film, Music, Plus, Trash, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { createEventSchema } from "@/lib/validations/events";
+import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
 import { useRouter } from "next/navigation";
 
 type SectorState = {
@@ -33,8 +34,10 @@ export default function CreateEventPage() {
   const [description, setDescription] = React.useState("");
   const [bannerUrl, setBannerUrl] = React.useState("");
   const [locationName, setLocationName] = React.useState("");
-  const [city, setCity] = React.useState("");
+  const [cityName, setCityName] = React.useState("");
+  const [stateUf, setStateUf] = React.useState("");
   const [eventDate, setEventDate] = React.useState("");
+  const [isAdult, setIsAdult] = React.useState(false);
   
   const [sectors, setSectors] = React.useState<SectorState[]>([]);
 
@@ -48,10 +51,25 @@ export default function CreateEventPage() {
       setBannerUrl(item.bannerUrl || item.posterUrl || "");
     }
     if (item.suggestedLocation) {
-      const parts = item.suggestedLocation.split(",");
-      if (parts.length > 1) {
-        setLocationName(parts[0].trim());
-        setCity(parts[1].trim());
+      const parts = item.suggestedLocation.split(/[,-]/).map(p => p.trim()).filter(Boolean);
+      if (parts.length >= 3) {
+        setLocationName(parts[0]);
+        setCityName(parts[1]);
+        const maybeUf = parts[2].toUpperCase();
+        if (BRAZIL_STATES.some(s => s.uf === maybeUf)) {
+          setStateUf(maybeUf);
+        } else {
+          setStateUf("");
+        }
+      } else if (parts.length === 2) {
+        const maybeUf = parts[1].toUpperCase();
+        if (BRAZIL_STATES.some(s => s.uf === maybeUf)) {
+          setCityName(parts[0]);
+          setStateUf(maybeUf);
+        } else {
+          setLocationName(parts[0]);
+          setCityName(parts[1]);
+        }
       } else {
         setLocationName(item.suggestedLocation);
       }
@@ -84,6 +102,8 @@ export default function CreateEventPage() {
     setErrors({});
     setIsSubmitting(true);
 
+    const city = cityName.trim() && stateUf.trim() ? `${cityName.trim()}, ${stateUf.trim()}` : cityName.trim();
+
     // Prepare payload
     const payload = {
       title,
@@ -93,6 +113,7 @@ export default function CreateEventPage() {
       locationName,
       city,
       eventDate: eventDate ? new Date(eventDate).toISOString() : "",
+      isAdult,
       sectors: sectors.map(s => ({
         name: s.name,
         type: s.type,
@@ -181,7 +202,7 @@ export default function CreateEventPage() {
         <form onSubmit={handleSubmit} className="space-y-8">
           
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold shadow-sm pb-2">Informações Básicas</h2>
+            <h2 className="text-xl font-semibold pb-2">Informações Básicas</h2>
 
             {bannerUrl && (
               <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-sm bg-black">
@@ -218,7 +239,12 @@ export default function CreateEventPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-text-primary">Descrição / Sinopse</label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-text-primary">Descrição / Sinopse</label>
+                <span className={`text-xs ${description.length >= 300 ? "text-success font-medium" : "text-text-muted"}`}>
+                  {description.length} / 300 caracteres
+                </span>
+              </div>
               <Textarea 
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -248,8 +274,8 @@ export default function CreateEventPage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1 sm:col-span-1">
                 <label className="text-sm font-medium text-text-primary">Nome do Local</label>
                 <Input 
                   value={locationName} 
@@ -258,20 +284,56 @@ export default function CreateEventPage() {
                   error={errors["locationName"]}
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Cidade / UF</label>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Cidade</label>
                 <Input 
-                  value={city} 
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Ex: São Paulo, SP"
+                  value={cityName} 
+                  onChange={(e) => setCityName(e.target.value)}
+                  placeholder="Ex: São Paulo"
                   error={errors["city"]}
                 />
               </div>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">UF (Estado)</label>
+                <Select
+                  value={stateUf}
+                  onChange={(e) => setStateUf(e.target.value)}
+                  error={errors["city"]}
+                >
+                  <option value="">Selecione o Estado</option>
+                  {BRAZIL_STATES.map((state) => (
+                    <option key={state.uf} value={state.uf}>
+                      {state.uf} - {state.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 rounded-xl border border-border-subtle bg-bg-surface p-4 transition-colors hover:border-border">
+              <input
+                type="checkbox"
+                id="isAdult"
+                checked={isAdult}
+                onChange={(e) => setIsAdult(e.target.checked)}
+                className="h-4 w-4 rounded border-border-subtle text-primary focus:ring-primary/50 cursor-pointer accent-primary"
+              />
+              <label htmlFor="isAdult" className="cursor-pointer text-sm font-medium text-text-primary select-none flex flex-col">
+                <span className="flex items-center gap-1.5">
+                  <span>Classificação Indicativa +18</span>
+                  <span className="inline-flex items-center justify-center rounded bg-danger/15 px-1.5 py-0.5 text-[10px] font-bold text-danger">
+                    +18
+                  </span>
+                </span>
+                <span className="text-xs text-text-muted font-normal">
+                  Marque se este evento for restrito para maiores de 18 anos.
+                </span>
+              </label>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="flex items-center justify-between shadow-sm pb-2">
+            <div className="flex items-center justify-between pb-2">
               <h2 className="text-xl font-semibold">Setores e Ingressos</h2>
               <Button type="button" variant="outline" size="sm" onClick={addSector}>
                 <Plus className="w-4 h-4 mr-1" /> Adicionar Setor
@@ -411,7 +473,7 @@ export default function CreateEventPage() {
             )}
           </div>
 
-          <div className="flex justify-end pt-6 shadow-sm">
+          <div className="flex justify-end pt-6">
             <Button type="submit" size="lg" loading={isSubmitting}>
               Publicar Evento
             </Button>

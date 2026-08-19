@@ -26,7 +26,7 @@ export default async function OrganizerDashboardPage() {
     }
   });
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeVariant = (status: string): "success" | "warning" | "danger" | "neutral" => {
     switch (status) {
       case "PUBLISHED": return "success";
       case "CLOSED": return "warning";
@@ -51,7 +51,7 @@ export default async function OrganizerDashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Meus Eventos</h1>
-          <p className="text-muted mt-1">Gerencie os eventos que você organiza.</p>
+          <p className="text-text-muted mt-1">Gerencie os eventos que você organiza.</p>
         </div>
         <Link href="/organizer/events/create">
           <Button>Criar Novo Evento</Button>
@@ -60,7 +60,7 @@ export default async function OrganizerDashboardPage() {
 
       {events.length === 0 ? (
         <div className="text-center py-16 bg-bg-surface rounded-xl shadow-sm">
-          <p className="text-muted mb-4">Você ainda não possui eventos cadastrados.</p>
+          <p className="text-text-muted mb-4">Você ainda não possui eventos cadastrados.</p>
           <Link href="/organizer/events/create">
             <Button variant="outline">Começar agora</Button>
           </Link>
@@ -68,7 +68,7 @@ export default async function OrganizerDashboardPage() {
       ) : (
         <div className="overflow-x-auto rounded-xl shadow-sm bg-bg-surface">
           <table className="w-full text-left text-sm">
-            <thead className="bg-bg-main shadow-sm text-muted">
+            <thead className="bg-bg-main border-b border-border-subtle text-text-muted">
               <tr>
                 <th className="px-6 py-4 font-semibold">Evento</th>
                 <th className="px-6 py-4 font-semibold">Data</th>
@@ -77,7 +77,7 @@ export default async function OrganizerDashboardPage() {
                 <th className="px-6 py-4 font-semibold text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-shadow-sm">
+            <tbody className="divide-y divide-border-subtle">
               {events.map((event) => {
                 const totalCapacity = event.sectors.reduce((acc, sector) => acc + sector.totalCapacity, 0);
                 const soldTickets = event._count.tickets;
@@ -94,12 +94,22 @@ export default async function OrganizerDashboardPage() {
                           />
                         ) : (
                           <div className="w-12 h-12 rounded bg-bg-main shadow-sm flex items-center justify-center">
-                            <span className="text-xs text-muted">Sem Img</span>
+                            <span className="text-xs text-text-muted">Sem Img</span>
                           </div>
                         )}
                         <div>
                           <p className="font-semibold text-text-primary">{event.title}</p>
-                          <p className="text-xs text-muted">{event.category}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs text-text-muted">{event.category}</span>
+                            {event.isAdult && (
+                              <span 
+                                className="inline-flex items-center justify-center rounded bg-danger/15 px-1 py-0.2 text-[10px] font-bold text-danger leading-none"
+                                title="Classificação indicativa: +18"
+                              >
+                                +18
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -113,7 +123,7 @@ export default async function OrganizerDashboardPage() {
                       })}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant={getStatusBadgeVariant(event.status) as any}>
+                      <Badge variant={getStatusBadgeVariant(event.status)}>
                         {getStatusLabel(event.status)}
                       </Badge>
                     </td>

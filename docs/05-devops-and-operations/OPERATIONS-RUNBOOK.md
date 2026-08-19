@@ -13,7 +13,7 @@ Este documento orienta o time de engenharia em cenários de emergência ou corru
 ## 1. Reset Completo em Ambiente de Desenvolvimento
 Para limpar completamente o banco local e repovoar com os dados de teste:
 ```bash
-npx prisma migrate reset --force
+npm run db:reset
 npm run db:seed
 ```
 
@@ -25,15 +25,25 @@ npm run db:seed
 
 1. Identifique a migração com problema:
    ```bash
-   npx prisma migrate status
+   npm run db:status
    ```
 2. Marque a migração como resolvida ou revertida:
    ```bash
    npx prisma migrate resolve --rolled-back "nome_da_migracao"
    ```
-3. Aplique o script SQL corretivo de rollback manual e reexecute o deploy via CI/CD.
+3. Aplique o script SQL corretivo de rollback manual e reexecute o deploy via CI/CD (`npm run db:migrate:deploy`).
 
+---
 
+## 3. Tabela de Atalhos Operacionais do Prisma (`npm run db:*`)
+
+| Comando | Descrição Operacional |
+| :--- | :--- |
+| `npm run db:status` | Diagnóstico de estado das migrações e divergências de schema. |
+| `npm run db:migrate:deploy` | Aplicação de migrações pendentes em produção (via `DIRECT_URL`). |
+| `npm run db:studio` | Acesso visual aos registros para auditoria ou suporte emergencial. |
+| `npm run db:reset` | Reset forçado e reexecução de migrações (apenas ambiente de desenvolvimento). |
+| `npm run db:seed` | Repopulação dos dados iniciais e usuários padrão para testes. |
 
 ---
 

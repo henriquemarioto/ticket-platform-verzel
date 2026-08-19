@@ -82,6 +82,7 @@ export default async function EventsCatalogPage({
                   bannerUrl={event.bannerUrl}
                   minPrice={minPrice}
                   category={event.category}
+                  isAdult={event.isAdult}
                 />
               );
             })}

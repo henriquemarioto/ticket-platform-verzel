@@ -11,6 +11,7 @@ interface EventCardProps {
   bannerUrl: string | null;
   minPrice: number;
   category: string;
+  isAdult?: boolean;
 }
 
 export function EventCard({
@@ -22,6 +23,7 @@ export function EventCard({
   bannerUrl,
   minPrice,
   category,
+  isAdult,
 }: EventCardProps) {
   const formattedDate = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -53,10 +55,18 @@ export function EventCard({
               Sem Imagem
             </div>
           )}
-          <div className="absolute left-3 top-3">
+          <div className="absolute left-3 top-3 flex items-center gap-1.5">
             <Badge variant="neutral" className="bg-black/60 text-white backdrop-blur-md">
               {category}
             </Badge>
+            {isAdult && (
+              <span 
+                className="inline-flex items-center justify-center rounded-md bg-black px-1.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md border shadow-sm"
+                title="Classificação indicativa: +18"
+              >
+                +18
+              </span>
+            )}
           </div>
         </div>
         

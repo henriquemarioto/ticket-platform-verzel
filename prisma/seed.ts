@@ -100,6 +100,7 @@ async function main() {
     locationName: string;
     city: string;
     eventDate: Date;
+    isAdult?: boolean;
     sectors: SectorDef[];
   }
 
@@ -108,12 +109,13 @@ async function main() {
     {
       title: 'Festival Indie Rock Verzel 2026',
       description:
-        'Uma noite épica com as principais bandas do cenário indie rock contemporâneo.\nEstrutura de som de ponta no tradicional Espaço Unimed, com praça de alimentação gourmet, bar de cervejas artesanais e visão privilegiada da plateia VIP.',
+        'Prepare-se para uma noite lendária com as bandas mais aclamadas do cenário indie rock nacional e internacional reunidas em um único palco. O Espaço Unimed contará com uma infraestrutura acústica de última geração, iluminação imersiva, praça de alimentação gourmet com food trucks selecionados e lounges exclusivos para proporcionar uma experiência inesquecível a todos os fãs de boa música.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1200&q=80',
       locationName: 'Espaço Unimed',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(14, 20, 0),
+      isAdult: false,
       sectors: [
         { name: 'Pista Geral', type: SectorType.GENERAL_ADMISSION, price: 120.0, capacity: 300 },
         { name: 'Pista Premium Front Stage', type: SectorType.GENERAL_ADMISSION, price: 220.0, capacity: 100 },
@@ -130,12 +132,13 @@ async function main() {
     {
       title: 'Coldplay Tribute: A Sky Full of Stars Tour',
       description:
-        'A maior experiência tributo ao Coldplay da América Latina em um dos estádios mais modernos do mundo!\nUma produção colossal no Allianz Parque com pulseiras de LED sincronizadas, show de luzes laser e todos os grandes hinos da banda britânica.',
+        'A maior e mais espetacular homenagem ao Coldplay de toda a América Latina desembarca no Allianz Parque para uma apresentação monumental. O espetáculo traz uma réplica fiel dos shows de estádio da banda britânica, com pulseiras de LED sincronizadas distribuídas ao público, show pirotécnico inesquecível, lasers multicoloridos e um repertório com todos os grandes sucessos da carreira.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200&q=80',
       locationName: 'Allianz Parque',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(24, 21, 0),
+      isAdult: false,
       sectors: [
         { name: 'Pista Comum', type: SectorType.GENERAL_ADMISSION, price: 160.0, capacity: 500 },
         { name: 'Pista Premium', type: SectorType.GENERAL_ADMISSION, price: 320.0, capacity: 150 },
@@ -152,12 +155,13 @@ async function main() {
     {
       title: 'Orquestra Sinfônica & Clássicos do Rock',
       description:
-        'A fusão perfeita entre a grandiosidade da música clássica e o poder do Rock and Roll no histórico Theatro Municipal do Rio de Janeiro.\nMais de 60 músicos executando arranjos sinfônicos para Queen, Pink Floyd, Led Zeppelin e Metallica.',
+        'Uma fusão arrebatadora entre a sofisticação da música erudita e a energia visceral do rock and roll no imponente Theatro Municipal do Rio de Janeiro. Sob a regência de maestros renomados, mais de 60 músicos de orquestra executam arranjos sinfônicos inéditos para lendas como Queen, Pink Floyd, Led Zeppelin, Metallica e Deep Purple, criando uma atmosfera acústica emocionante e grandiosa.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1200&q=80',
       locationName: 'Theatro Municipal do Rio de Janeiro',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(35, 19, 30),
+      isAdult: false,
       sectors: [
         {
           name: 'Plateia Nobre Numerada',
@@ -181,12 +185,13 @@ async function main() {
     {
       title: 'Noite do Jazz & Blues na Lapa',
       description:
-        'Grandes mestres do Jazz e Blues reunidos sob as icônicas lonas do Circo Voador.\nUma atmosfera intimista e acolhedora no coração boêmio da Lapa carioca, com improvisos virtuosos e excelente coquetelaria.',
+        'Uma celebração intimista e vibrante das raízes do Jazz tradicional e Blues clássico sob a mítica lona do Circo Voador, no coração boêmio da Lapa carioca. O evento reúne virtuosos instrumentistas, cantores convidados, cartas de coquetelaria autoral premiada e mesas bistrô para uma noite sofisticada voltada ao público apreciador de boa música e gastronomia noturna refinada.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=1200&q=80',
       locationName: 'Circo Voador',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(8, 21, 30),
+      isAdult: true,
       sectors: [
         { name: 'Ingresso Geral Lote 1', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 250 },
         {
@@ -202,12 +207,13 @@ async function main() {
     {
       title: 'Sunset Electronic Beats & DJ Sets',
       description:
-        '10 horas ininterruptas de House, Melodic Techno e Progressive com os maiores nomes mundiais da música eletrônica no impressionante cenário de pedreira ao ar livre.',
+        'Mais de dez horas ininterruptas de celebração ao som do melhor do Melodic Techno, Progressive House e Deep House no cenário paradisíaco da Pedreira Paulo Leminski. Com cenografia monumental inspirada nos maiores festivais europeus, DJs de renome internacional, open bar premium no setor VIP e praça gastronômica noturna, este é o evento eletrônico definitivo da temporada.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80',
       locationName: 'Pedreira Paulo Leminski',
       city: 'Curitiba, PR',
       eventDate: getFutureDate(42, 16, 0),
+      isAdult: true,
       sectors: [
         { name: 'Pista Sunset', type: SectorType.GENERAL_ADMISSION, price: 140.0, capacity: 400 },
         { name: 'Backstage VIP Open Bar', type: SectorType.GENERAL_ADMISSION, price: 380.0, capacity: 100 },
@@ -216,12 +222,13 @@ async function main() {
     {
       title: 'Nando Reis & Os Paralamas do Sucesso',
       description:
-        'Duas lendas do pop rock brasileiro em uma noite de celebração aos maiores clássicos nacionais no histórico Auditório Araújo Vianna em Porto Alegre.',
+        'Dois dos maiores ícones da história do pop rock brasileiro dividem o palco do lendário Auditório Araújo Vianna em Porto Alegre para um show histórico e emocionante. Uma noite repleta de poesia, guitarras marcantes e refrões inesquecíveis que atravessaram gerações, contando com produção técnica impecável e setores planejados para total conforto e visão panorâmica da plateia.',
       category: EventCategory.SHOW,
       bannerUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1200&q=80',
       locationName: 'Auditório Araújo Vianna',
       city: 'Porto Alegre, RS',
       eventDate: getFutureDate(48, 21, 0),
+      isAdult: false,
       sectors: [
         {
           name: 'Plateia Baixa Central',
@@ -247,12 +254,13 @@ async function main() {
     {
       title: 'Festival Gastronômico & Cervejeiro Verzel',
       description:
-        'Mais de 40 food trucks premiados, 30 cervejarias artesanais paulistas, workshops de culinária e 3 palcos com apresentações ao ar livre na ampla esplanada do Memorial da América Latina.',
+        'O maior encontro de sabores, cultura e cervejas artesanais de São Paulo chega à grandiosa esplanada do Memorial da América Latina. O evento conta com mais de quarenta operações gastronômicas premiadas, trinta mestres cervejeiros locais, três palcos simultâneos com música ao vivo, workshops culinários interativos e espaço exclusivo para toda a família desfrutar de momentos memoráveis.',
       category: EventCategory.FESTIVAL,
       bannerUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1200&q=80',
       locationName: 'Memorial da América Latina',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(18, 12, 0),
+      isAdult: false,
       sectors: [
         { name: 'Passe Diário Geral', type: SectorType.GENERAL_ADMISSION, price: 50.0, capacity: 500 },
         { name: 'Passaporte Weekend (2 Dias)', type: SectorType.GENERAL_ADMISSION, price: 85.0, capacity: 250 },
@@ -262,12 +270,13 @@ async function main() {
     {
       title: 'Aurora Winter Lights & Music Festival',
       description:
-        'Um festival sensorial único que combina esculturas e instalações de luzes volumétricas, projeções no lago e shows de música alternativa na icônica estrutura tubular da Ópera de Arame.',
+        'Uma experiência multissensorial deslumbrante que transforma a arquitetura icônica da Ópera de Arame em uma instalação viva de arte e som. O festival une esculturas lumínicas futuristas, projeções holográficas sobre as águas do lago e apresentações ao vivo de indie folk, ambient e synth-pop, criando uma atmosfera mágica e imersiva sem precedentes na cena cultural de Curitiba.',
       category: EventCategory.FESTIVAL,
       bannerUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80',
       locationName: 'Ópera de Arame',
       city: 'Curitiba, PR',
       eventDate: getFutureDate(52, 18, 0),
+      isAdult: false,
       sectors: [
         { name: 'Entrada Geral Parque + Palco', type: SectorType.GENERAL_ADMISSION, price: 110.0, capacity: 350 },
         {
@@ -283,12 +292,13 @@ async function main() {
     {
       title: 'Bahia Sonora: Festival de Ritmos Brasileiros',
       description:
-        'Uma imersão rítmica com samba-reggae, axé raiz, MPB contemporânea e tropicália na mítica Concha Acústica do Teatro Castro Alves, em Salvador.',
+        'Uma celebração contagiante da rica herança musical afro-brasileira no palco sagrado da Concha Acústica do Teatro Castro Alves em Salvador. O festival une apresentações consagradas de samba-reggae, axé raiz, MPB contemporânea e blocos afro tradicionais, proporcionando uma experiência cultural intensa, cheia de energia positiva e com estrutura de excelência para o público.',
       category: EventCategory.FESTIVAL,
       bannerUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&q=80',
       locationName: 'Concha Acústica do Teatro Castro Alves',
       city: 'Salvador, BA',
       eventDate: getFutureDate(65, 17, 0),
+      isAdult: false,
       sectors: [
         { name: 'Plateia Arquibancada', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 500 },
         { name: 'Camarote Front TCA', type: SectorType.GENERAL_ADMISSION, price: 210.0, capacity: 150 },
@@ -297,12 +307,13 @@ async function main() {
     {
       title: 'Horror & Sci-Fi CineFest 2026',
       description:
-        'Festival cinematográfico temático de terror independente, ficção científica cult e maratonas noitão no tradicionalíssimo Cine Petra Belas Artes da Rua da Consolação.',
+        'O tradicional festival dedicado ao cinema de gênero desembarca no histórico Cine Petra Belas Artes para noites eletrizantes de horror psicológico, ficção científica cult e maratonas noitão madrugada adentro. Com debates com diretores, exibição de cópias restauradas em altíssima definição e experiências imersivas no lobby, esta edição será inesquecível para todos os amantes da sétima arte.',
       category: EventCategory.FESTIVAL,
       bannerUrl: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200&q=80',
       locationName: 'Cine Petra Belas Artes',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(21, 18, 30),
+      isAdult: true,
       sectors: [
         { name: 'Passaporte Festival Completo', type: SectorType.GENERAL_ADMISSION, price: 130.0, capacity: 180 },
         {
@@ -320,12 +331,13 @@ async function main() {
     {
       title: 'O Fantasma da Ópera: O Musical',
       description:
-        'O musical mais aclamado de todos os tempos em superprodução brasileira com orquestra sinfônica ao vivo no Teatro Renault, a principal casa de musicais da América Latina.',
+        'A obra-prima definitiva de Andrew Lloyd Webber ganha vida no palco do grandioso Teatro Renault em uma superprodução com elenco estelar e orquestra sinfônica ao vivo. Figurinos deslumbrantes originais da Broadway, cenários suntuosos e efeitos cênicos de tirar o fôlego recriam a clássica e comovente história de amor nos subterrâneos da Ópera de Paris com máxima fidelidade e emoção.',
       category: EventCategory.THEATER,
       bannerUrl: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=1200&q=80',
       locationName: 'Teatro Renault',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(30, 20, 0),
+      isAdult: false,
       sectors: [
         {
           name: 'Plateia VIP Central',
@@ -356,12 +368,13 @@ async function main() {
     {
       title: 'O Auto da Compadecida: A Peça Clássica',
       description:
-        'A consagrada obra-prima de Ariano Suassuna com João Grilo e Chicó no Grande Teatro do Palácio das Artes em Belo Horizonte. Elenco estelar e música regional ao vivo.',
+        'A consagrada obra-prima de Ariano Suassuna ganha nova e emocionante montagem no palco principal do Grande Teatro do Palácio das Artes em Belo Horizonte. As hilariantes peripécias de João Grilo e Chicó no sertão paraibano ganham vida com elenco estelar, banda regional executando trilha sonora ao vivo e uma cenografia primorosa que homenageia a rica cultura e poesia popular nordestina.',
       category: EventCategory.THEATER,
       bannerUrl: 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=1200&q=80',
       locationName: 'Grande Teatro do Palácio das Artes',
       city: 'Belo Horizonte, MG',
       eventDate: getFutureDate(12, 19, 0),
+      isAdult: false,
       sectors: [
         {
           name: 'Plateia Baixa Numerada',
@@ -384,12 +397,13 @@ async function main() {
     {
       title: 'Stand-up Comedy Night: Risos Sem Limites',
       description:
-        'Uma noite inesquecível com quatro dos maiores humoristas do país no tradicional Teatro Gazeta, localizado em plena Avenida Paulista.',
+        'Uma noite inesquecível de gargalhadas garantidas no tradicional palco do Teatro Gazeta, no coração da Avenida Paulista. Quatro dos maiores comediantes da atualidade apresentam textos 100% inéditos, piadas ácidas, improvisos hilários e observações cotidianas afiadas em um espetáculo descontraído e dinâmico, recomendado para maiores de 18 anos que buscam diversão de alto nível.',
       category: EventCategory.THEATER,
       bannerUrl: 'https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=1200&q=80',
       locationName: 'Teatro Gazeta',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(6, 20, 30),
+      isAdult: true,
       sectors: [
         {
           name: 'Setor Ouro Numerado',
@@ -407,12 +421,13 @@ async function main() {
     {
       title: 'Interestelar: Edição Especial IMAX 70mm',
       description:
-        'A experiência definitiva do clássico de ficção científica de Christopher Nolan exibido na gigantesca tela do UCI IMAX do Bourbon Shopping Pompeia em som imersivo de 12 canais.',
+        'A obra-prima cinematográfica de Christopher Nolan retorna com toda a sua magnitude na gigantesca tela do UCI IMAX do Bourbon Shopping Pompeia. Vivencie a épica jornada interestelar através de um buraco de minhoca com imagem cristalina em alta definição e som imersivo de 12 canais com a inconfundível trilha sonora de Hans Zimmer, oferecendo uma experiência imersiva sem igual.',
       category: EventCategory.MOVIE,
       bannerUrl: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80',
       locationName: 'UCI IMAX Bourbon Shopping',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(5, 21, 0),
+      isAdult: false,
       sectors: [
         {
           name: 'Poltronas VIP IMAX',
@@ -435,12 +450,13 @@ async function main() {
     {
       title: 'Cine Drive-In Noturno: De Volta Para o Futuro',
       description:
-        'Sessão nostálgica ao ar livre no emblemático Cine Drive-in de Brasília, o cinema drive-in em funcionamento contínuo mais antigo e icônico de toda a América Latina.',
+        'Reviva a magia e nostalgia dos anos oitenta no histórico e emblemático Cine Drive-in de Brasília, o mais tradicional cinema ao ar livre em operação contínua da América Latina. Assista à lendária aventura de Marty McFly e Doc Brown no conforto do seu veículo, com transmissão de áudio FM estéreo de alta fidelidade e serviço exclusivo de lanchonete retrô entregue diretamente no carro.',
       category: EventCategory.MOVIE,
       bannerUrl: 'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=1200&q=80',
       locationName: 'Cine Drive-in Brasília',
       city: 'Brasília, DF',
       eventDate: getFutureDate(10, 20, 30),
+      isAdult: false,
       sectors: [
         { name: 'Vaga Carro (Até 4 Pessoas)', type: SectorType.GENERAL_ADMISSION, price: 65.0, capacity: 120 },
         { name: 'Vaga Front Row Carro VIP', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 30 },
@@ -449,12 +465,13 @@ async function main() {
     {
       title: 'Maratona O Senhor dos Anéis: Versão Estendida 4K',
       description:
-        'A trilogia épica completa em resolução 4K HDR e som Dolby Atmos no clássico cinema cult Estação NET Botafogo no Rio de Janeiro.',
+        'A lendária trilogia épica dirigida por Peter Jackson retorna às telonas em resolução 4K HDR e som imersivo Dolby Atmos no clássico cinema cult Estação NET Botafogo. Serão exibidas em sequência as versões estendidas completas com cenas extras exclusivas, permitindo que os fãs mergulhem profundamente na fantástica jornada pela Terra-média com qualidade audiovisual cinematográfica máxima.',
       category: EventCategory.MOVIE,
       bannerUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&q=80',
       locationName: 'Estação NET Botafogo',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(40, 14, 0),
+      isAdult: false,
       sectors: [
         {
           name: 'Poltrona Premium Numerada',
@@ -493,6 +510,7 @@ async function main() {
         locationName: eventDef.locationName,
         city: eventDef.city,
         eventDate: eventDef.eventDate,
+        isAdult: eventDef.isAdult ?? false,
         status: EventStatus.PUBLISHED,
         organizerId: organizerId,
       },

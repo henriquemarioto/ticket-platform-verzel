@@ -27,12 +27,13 @@ export const createSectorSchema = z.object({
 
 export const createEventSchema = z.object({
   title: z.string().min(3, "Título do evento é obrigatório"),
-  description: z.string().min(10, "Descrição detalhada é obrigatória"),
+  description: z.string().min(300, "A descrição do evento deve conter no mínimo 300 caracteres"),
   category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
   bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
   locationName: z.string().min(2, "Nome do local é obrigatório"),
-  city: z.string().min(2, "Cidade é obrigatória"),
+  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Formato deve ser 'Cidade, UF'"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
+  isAdult: z.boolean().optional().default(false),
   sectors: z.array(createSectorSchema).min(1, "Adicione ao menos um setor"),
 });
 

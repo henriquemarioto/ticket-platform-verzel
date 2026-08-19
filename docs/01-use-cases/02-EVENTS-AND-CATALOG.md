@@ -376,9 +376,10 @@ sequenceDiagram
 2. Preenche os dados gerais:
    - Título do evento.
    - Categoria (`SHOW`, `FESTIVAL`, `THEATER`, `MOVIE`).
-   - Sinopse / Descrição.
+   - Classificação Indicativa: Opção de marcar o evento como `+18` (`isAdult: true/false`).
+   - Sinopse / Descrição detalhada (mínimo de 300 caracteres, com contador em tempo real).
    - Data e horário de início (deve ser data futura).
-   - Nome do local e Cidade/UF (ex: *"Allianz Parque, São Paulo - SP"*).
+   - Nome do local, Cidade (input de texto) e UF (seletor dos 27 estados brasileiros, unificados no payload como `"Cidade, UF"`).
    - URL da imagem de banner.
 3. Na seção **"Configuração de Setores"**, clica em **"Adicionar Setor de Pista"**.
 4. Define os parâmetros do setor:
@@ -387,8 +388,8 @@ sequenceDiagram
    - **Preço do Ingresso**: Ex: `R$ 120,00`.
 5. Opcionalmente adiciona outro setor de pista (ex: *"Camarote Open Bar"*, `200` pessoas, `R$ 350,00`).
 6. Clica em **"Publicar Evento"**.
-7. O front-end valida que a capacidade total é maior que zero e que a data é futura.
-8. O backend recebe a requisição, autentica o usuário via JWT e cria o registro em transação única no banco de dados.
+7. O front-end valida que a descrição possui no mínimo 300 caracteres, cidade/UF estão preenchidos, capacidade total é maior que zero e data é futura.
+8. O backend recebe a requisição, autentica o usuário via JWT e cria o registro em transação única no banco de dados com `isAdult` e `city`.
 9. O evento é registrado com status `PUBLISHED` e fica visível imediatamente na vitrine pública.
 10. O organizador é redirecionado para seu painel de gestão (`/organizer`).
 
@@ -404,6 +405,10 @@ sequenceDiagram
 - **Condição**: A data/hora selecionada é anterior ao momento atual.
 - **Comportamento**: A validação Zod bloqueia o envio e destaca o campo: *"A data do evento deve ser futura."*.
 
+### Fluxo de Exceção 2: Descrição com Menos de 300 Caracteres
+- **Condição**: A descrição informada possui menos de 300 caracteres.
+- **Comportamento**: A validação Zod bloqueia o envio e destaca o campo: *"A descrição do evento deve conter no mínimo 300 caracteres."*.
+
 ---
 
 ## 7. Regras de Negócio (RN)
@@ -411,6 +416,9 @@ sequenceDiagram
 - **RN01 - Consistência de Capacidade**: Para setores `GENERAL_ADMISSION`, `availableCapacity` deve ser inicializada com o mesmo valor de `totalCapacity`.
 - **RN02 - Validação Financeira**: O preço unitário (`price`) não pode ser negativo ou zero.
 - **RN03 - Vinculação com Organizador**: Todo evento deve ser associado obrigatoriamente ao `organizerId` extraído da sessão autenticada.
+- **RN04 - Detalhamento Mínimo da Descrição**: A descrição do evento deve ter no mínimo 300 caracteres para garantir qualidade da informação ao comprador.
+- **RN05 - Formatação Padronizada de Localização**: O campo `city` no backend deve ser armazenado no formato padronizado `"Cidade, UF"`.
+- **RN06 - Classificação +18**: O evento pode conter a flag booleana `isAdult`, exibindo badges apropriados na vitrine e detalhes do evento.
 
 ---
 
@@ -420,8 +428,9 @@ sequenceDiagram
 ```json
 {
   "title": "Festival Indie Rock 2026",
-  "description": "Edição comemorativa com as melhores bandas do cenário alternativo.",
+  "description": "Edição comemorativa com as melhores bandas do cenário alternativo nacional e internacional. O festival contará com três palcos simultâneos, praça de alimentação com opções gastronômicas variadas, bares temáticos, área de descanso e estrutura completa de som e iluminação de última geração para proporcionar uma experiência inesquecível.",
   "category": "FESTIVAL",
+  "isAdult": false,
   "eventDate": "2026-11-20T20:00:00.000Z",
   "locationName": "Espaço Hall Cultural",
   "city": "São Paulo, SP",
@@ -584,8 +593,9 @@ sequenceDiagram
 ```json
 {
   "title": "Apresentação Teatral: O Fantasma da Ópera",
-  "description": "Superprodução musical clássica com orquestra ao vivo.",
+  "description": "Superprodução musical clássica com orquestra sinfônica ao vivo, cenários monumentais e figurinos de época deslumbrantes. Uma das histórias de amor e mistério mais aclamadas de todos os tempos, agora apresentada em uma montagem brasileira inesquecível com elenco de prestígio internacional e acústica impecável no Theatro Municipal.",
   "category": "THEATER",
+  "isAdult": false,
   "eventDate": "2026-12-10T19:30:00.000Z",
   "locationName": "Teatro Municipal Verzel",
   "city": "Rio de Janeiro, RJ",

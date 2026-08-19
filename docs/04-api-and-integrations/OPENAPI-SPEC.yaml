@@ -137,9 +137,13 @@ paths:
                   type: string
                 description:
                   type: string
+                  minLength: 300
                 category:
                   type: string
                   enum: [SHOW, MOVIE, THEATER, FESTIVAL]
+                isAdult:
+                  type: boolean
+                  default: false
                 bannerUrl:
                   type: string
                   format: uri

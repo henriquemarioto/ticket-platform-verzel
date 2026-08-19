@@ -122,6 +122,7 @@ model Event {
   title        String
   description  String
   category     EventCategory @default(SHOW)
+  isAdult      Boolean       @default(false)
   bannerUrl    String
   locationName String
   city         String

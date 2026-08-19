@@ -70,7 +70,7 @@ docker compose up -d postgres
 
 ### Passo 4: Executar as Migrações do Prisma e Carga de Teste (Seed)
 ```bash
-npx prisma migrate dev --name init
+npm run db:migrate:dev
 npm run db:seed
 ```
 
@@ -91,6 +91,24 @@ Acesse a aplicação em [http://localhost:3000](http://localhost:3000).
 | **Cliente 2** | `cliente2@verzel.com.br` | `Senha123!` | Testar conflito de assentos |
 | **Portaria** | `portaria@verzel.com.br` | `Senha123!` | Validar ingressos na entrada |
 
+---
+
+## 4. Atalhos e Scripts do Prisma (`npm run db:*`)
+
+Os seguintes comandos rápidos estão configurados no `package.json` para facilitar o gerenciamento do banco de dados e tipos:
+
+| Comando | Equivalente CLI | Finalidade |
+| :--- | :--- | :--- |
+| `npm run db:generate` | `prisma generate` | Gera/atualiza o Prisma Client tipado em `node_modules`. |
+| `npm run db:push` | `prisma db push` | Sincroniza o schema diretamente com o banco sem gerar arquivos de migração. |
+| `npm run db:migrate:dev` | `prisma migrate dev` | Cria e aplica novas migrações em ambiente de desenvolvimento. |
+| `npm run db:migrate:deploy` | `prisma migrate deploy` | Aplica migrações pendentes em staging/produção de forma segura. |
+| `npm run db:migrate:reset` | `prisma migrate reset` | Reseta o banco em ambiente dev (solicita confirmação). |
+| `npm run db:reset` | `prisma migrate reset --force` | Reseta e recria o banco forçadamente sem confirmação interativa. |
+| `npm run db:status` | `prisma migrate status` | Exibe o status e histórico das migrações aplicadas. |
+| `npm run db:studio` | `prisma studio` | Abre a interface gráfica interativa do Prisma Studio na porta 5555. |
+| `npm run db:seed` | `prisma db seed` | Executa o script de carga inicial de dados (`prisma/seed.ts`). |
+| `postinstall` | `prisma generate` | Garante a compilação dos tipos do Prisma Client automaticamente após `npm install`. |
 
 ---
 
@@ -246,7 +264,7 @@ sequenceDiagram
 As migrações de schema nunca devem ser executadas dentro do runtime de uma requisição web. Devem ocorrer durante a etapa de release/deploy:
 ```bash
 # Executa migrações pendentes de forma segura usando a DIRECT_URL
-npx prisma migrate deploy
+npm run db:migrate:deploy
 ```
 
 

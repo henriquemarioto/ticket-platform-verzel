@@ -60,9 +60,16 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
           <div className="relative z-10 flex w-full h-full p-6 sm:p-10">
             {/* Textos (Esquerda) */}
             <div className="flex w-full sm:w-1/2 flex-col gap-4 justify-end sm:justify-center">
-              <Badge variant="neutral" className="w-fit bg-white/20 text-white backdrop-blur-md border-white/20">
-                {event.category}
-              </Badge>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="neutral" className="w-fit bg-white/20 text-white backdrop-blur-md border-white/20">
+                  {event.category}
+                </Badge>
+                {event.isAdult && (
+                  <Badge variant="danger" className="w-fit bg-black text-white backdrop-blur-md border-danger font-bold text-xs">
+                    +18
+                  </Badge>
+                )}
+              </div>
               <h1 className="text-3xl font-bold text-white sm:text-5xl lg:text-6xl drop-shadow-sm">
                 {event.title}
               </h1>

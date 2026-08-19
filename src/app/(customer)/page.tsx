@@ -58,6 +58,7 @@ export default async function CustomerHomePage() {
           bannerUrl={event.bannerUrl}
           minPrice={minPrice}
           category={event.category}
+          isAdult={event.isAdult}
         />
       </div>
     );
@@ -80,6 +81,7 @@ export default async function CustomerHomePage() {
         bannerUrl={event.bannerUrl}
         minPrice={minPrice}
         category={event.category}
+        isAdult={event.isAdult}
       />
     );
   };
@@ -93,10 +95,10 @@ export default async function CustomerHomePage() {
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl lg:text-6xl h-[96px] sm:h-[128px] lg:h-[152px] flex items-center justify-center text-center leading-tight">
             <TypewriterText
               phrases={HERO_TYPEWRITER_PHRASES}
-              typingSpeed={70}
+              typingSpeed={60}
               deletingSpeed={35}
-              pauseDuration={3000}
-              pauseBetweenPhrases={300}
+              pauseDuration={2000}
+              pauseBetweenPhrases={160}
             />
           </h1>
           <p className="text-lg text-text-muted sm:text-xl">
