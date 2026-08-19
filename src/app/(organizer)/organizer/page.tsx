@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
 import { EventGatekeeperButton } from "@/components/modules/organizer/EventGatekeeperButton";
 import { formatShortDateRange } from "@/lib/utils/date-formatters";
-import { Edit } from "lucide-react";
+import { Edit, Plus, PlusCircle } from "lucide-react";
 
 export default async function OrganizerDashboardPage() {
   const headersList = await headers();
@@ -57,7 +57,10 @@ export default async function OrganizerDashboardPage() {
           <p className="text-text-muted mt-1">Gerencie os eventos que você organiza.</p>
         </div>
         <Link href="/organizer/events/create">
-          <Button>Criar Novo Evento</Button>
+          <Button>
+            <PlusCircle className="mr-2" />
+            Criar Evento
+          </Button>
         </Link>
       </div>
 

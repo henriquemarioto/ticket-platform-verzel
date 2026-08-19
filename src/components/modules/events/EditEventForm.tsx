@@ -10,6 +10,7 @@ import { Film, Music, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
 import { updateEventSchema } from "@/lib/validations/events";
+import { formatToDatetimeLocal } from "@/lib/utils/date-formatters";
 
 export interface EditEventInitialData {
   title: string;
@@ -31,16 +32,6 @@ export interface EditEventInitialData {
 interface EditEventFormProps {
   eventId: string;
   initialData: EditEventInitialData;
-}
-
-function formatToDatetimeLocal(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
@@ -308,6 +299,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   type="datetime-local"
                   value={eventDate} 
                   onChange={(e) => handleEventDateChange(e.target.value)}
+                  min={formatToDatetimeLocal(new Date())}
                   error={errors["eventDate"]}
                 />
                 <p className="text-xs text-text-muted">
@@ -323,6 +315,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   type="datetime-local"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)}
+                  min={eventDate || formatToDatetimeLocal(new Date())}
                   error={errors["endDate"]}
                 />
                 <p className="text-xs text-text-muted">
@@ -343,6 +336,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   type="datetime-local"
                   value={entryStartTime} 
                   onChange={(e) => handleEntryStartTimeChange(e.target.value)}
+                  min={formatToDatetimeLocal(new Date())}
                   error={errors["entryStartTime"]}
                 />
                 <p className="text-xs text-text-muted">

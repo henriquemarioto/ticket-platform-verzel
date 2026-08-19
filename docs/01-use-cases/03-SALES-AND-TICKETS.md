@@ -825,6 +825,7 @@ sequenceDiagram
 - **RN01 - Transacionalidade Rígida**: O pagamento, a criação do pedido, a mudança de status dos assentos para `SOLD` e a emissão dos ingressos devem ocorrer dentro de uma única transação de banco de dados (`prisma.$transaction`).
 - **RN02 - Unicidade do Código do Ingresso**: Cada ingresso emitido deve receber um identificador alfanumérico curto único no sistema (ex: `ELT-XXXX`).
 - **RN03 - Assinatura do QR Code**: Todo ingresso emitido deve ter seu QR Code assinado no momento da criação.
+- **RN04 - Encerramento Automático por Esgotamento de Ingressos (Sold Out)**: Após a aprovação do pedido e emissão dos ingressos na transação ACID, o sistema verifica se todos os setores do evento atingiram sua capacidade máxima (para `GENERAL_ADMISSION`, ingressos ativos/usados >= `totalCapacity`; para `NUMBERED_SEATS`, não restam assentos com status diferente de `SOLD`). Se todos os setores estiverem esgotados e o evento estiver `PUBLISHED`, o status do evento é automaticamente atualizado para `CLOSED`.
 
 ---
 

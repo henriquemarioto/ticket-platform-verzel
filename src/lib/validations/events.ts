@@ -41,6 +41,16 @@ export const createEventSchema = z.object({
   isAdult: z.boolean().optional().default(false),
   sectors: z.array(createSectorSchema).min(1, "Adicione ao menos um setor"),
 }).refine((data) => {
+  return new Date(data.eventDate).getTime() > Date.now();
+}, {
+  message: "A data e hora do evento deve ser futura",
+  path: ["eventDate"],
+}).refine((data) => {
+  return new Date(data.entryStartTime).getTime() > Date.now();
+}, {
+  message: "O horário de abertura dos portões deve ser futuro",
+  path: ["entryStartTime"],
+}).refine((data) => {
   const diffMs = new Date(data.eventDate).getTime() - new Date(data.entryStartTime).getTime();
   return diffMs >= 30 * 60 * 1000;
 }, {

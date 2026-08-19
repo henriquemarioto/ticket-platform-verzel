@@ -421,6 +421,7 @@ sequenceDiagram
 - **RN06 - Classificação +18**: O evento pode conter a flag booleana `isAdult`, exibindo badges apropriados na vitrine e detalhes do evento.
 - **RN07 - Período do Evento (Início e Fim)**: O evento deve ter uma data e hora de início (`eventDate`) e pode opcionalmente definir uma data e hora de término (`endDate`), que deve ser estritamente posterior ao início.
 - **RN08 - Horário Obrigatório de Início para Entrar (`entryStartTime`)**: O evento deve possuir obrigatoriamente um horário de abertura dos portões / entrada (`entryStartTime NOT NULL`). Deve ser no mínimo 30 minutos e no máximo 6 horas antes de `eventDate`. O valor padrão sugerido na interface é de 30 minutos antes do início.
+- **RN09 - Bloqueio de Criação com Data no Passado**: A data e hora de início do evento (`eventDate`) e a data e hora de abertura dos portões (`entryStartTime`) devem ser estritamente futuras no momento do cadastro (`> Date.now()`), validadas via Zod refinado e no backend.
 
 ---
 

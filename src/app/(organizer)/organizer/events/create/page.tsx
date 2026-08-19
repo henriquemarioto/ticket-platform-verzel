@@ -8,6 +8,7 @@ import { Film, Music, Plus, Trash, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { createEventSchema } from "@/lib/validations/events";
 import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
+import { formatToDatetimeLocal } from "@/lib/utils/date-formatters";
 import { useRouter } from "next/navigation";
 
 type SectorState = {
@@ -54,9 +55,7 @@ export default function CreateEventPage() {
       if (!isNaN(dateObj.getTime())) {
         if (!entryStartTime || isEntryAutoFilled) {
           const suggested = new Date(dateObj.getTime() - 30 * 60 * 1000);
-          const pad = (n: number) => String(n).padStart(2, "0");
-          const formatted = `${suggested.getFullYear()}-${pad(suggested.getMonth() + 1)}-${pad(suggested.getDate())}T${pad(suggested.getHours())}:${pad(suggested.getMinutes())}`;
-          setEntryStartTime(formatted);
+          setEntryStartTime(formatToDatetimeLocal(suggested));
           setIsEntryAutoFilled(true);
         }
       }
@@ -305,6 +304,7 @@ export default function CreateEventPage() {
                   type="datetime-local"
                   value={eventDate} 
                   onChange={(e) => handleEventDateChange(e.target.value)}
+                  min={formatToDatetimeLocal(new Date())}
                   error={errors["eventDate"]}
                 />
                 <p className="text-xs text-text-muted">
@@ -320,6 +320,7 @@ export default function CreateEventPage() {
                   type="datetime-local"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)}
+                  min={eventDate || formatToDatetimeLocal(new Date())}
                   error={errors["endDate"]}
                 />
                 <p className="text-xs text-text-muted">
@@ -340,6 +341,7 @@ export default function CreateEventPage() {
                   type="datetime-local"
                   value={entryStartTime} 
                   onChange={(e) => handleEntryStartTimeChange(e.target.value)}
+                  min={formatToDatetimeLocal(new Date())}
                   error={errors["entryStartTime"]}
                 />
                 <p className="text-xs text-text-muted">

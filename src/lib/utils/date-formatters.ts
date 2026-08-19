@@ -149,3 +149,17 @@ export function formatEntryTime(
   return `Abertura dos portões em ${pad(entry.getDate())}/${pad(entry.getMonth() + 1)} às ${formatTime(entry)}`;
 }
 
+/**
+ * Formata um objeto Date, string ou timestamp para o formato de input datetime-local (YYYY-MM-DDTHH:mm)
+ */
+export function formatToDatetimeLocal(date: Date | string | number = new Date()): string {
+  const d = toDate(date);
+  if (isNaN(d.getTime())) return "";
+  const year = d.getFullYear();
+  const month = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+

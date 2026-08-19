@@ -229,6 +229,15 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 - [x] **Task 2.35: Ícones Semânticos nos Filtros por Categoria na Tela Inicial (UC11)**
   - [x] Integrar ícones de `lucide-react` para cada categoria em `CategoryPills` ("Todos", "Shows", "Cinema", "Teatro", "Festivais").
 
+- [x] **Task 2.36: Encerramento Automático do Evento por Esgotamento de Ingressos (UC10, UC16)**
+  - [x] Verificar na transação de aprovação de checkout (`POST /api/checkout/process`) se todos os setores do evento atingiram capacidade máxima vendida (`SOLD`).
+  - [x] Atualizar atomicamente o status do evento de `PUBLISHED` para `CLOSED`.
+  - [x] Atualizar documentação em `docs/01-use-cases/03-SALES-AND-TICKETS.md` e `docs/00-overview/DOMAIN-DICTIONARY.md`.
+
+- [x] **Task 2.37: Bloqueio de Criação de Eventos com Data no Passado (UC08, UC09)**
+  - [x] Adicionar refinamento em `createEventSchema` validando `eventDate > Date.now()` e `entryStartTime > Date.now()`.
+  - [x] Adicionar atributo `min` nos inputs de `datetime-local` no formulário de criação `CreateEventPage` e `EditEventForm`.
+  - [x] Atualizar documentação em `docs/01-use-cases/02-EVENTS-AND-CATALOG.md` e `docs/04-api-and-integrations/API-AND-INTEGRATIONS.md`.
 
 ---
 

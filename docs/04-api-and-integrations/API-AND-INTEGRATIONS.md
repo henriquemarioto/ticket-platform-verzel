@@ -132,12 +132,27 @@ export const createEventSchema = z.object({
     .url('URL de imagem válida é obrigatória')
     .or(z.literal('')),
   locationName: z.string().min(2, 'Nome do local é obrigatório'),
+  street: z.string().min(2, 'Rua/Logradouro é obrigatório'),
+  number: z.string().min(1, 'Número é obrigatório'),
+  neighborhood: z.string().min(2, 'Bairro é obrigatório'),
   city: z
     .string()
     .min(4, 'Cidade e UF são obrigatórios')
     .regex(/^.+,\s*[A-Z]{2}$/, 'Campo obrigatório'),
   eventDate: z.string().datetime('Data e hora válidas são obrigatórias'),
+  endDate: z.string().datetime('Data e hora de término válidas').optional().nullable().or(z.literal('')),
+  entryStartTime: z.string().datetime('Data e hora de abertura dos portões válidas são obrigatórias'),
   sectors: z.array(createSectorSchema).min(1, 'Adicione ao menos um setor'),
+}).refine((data) => {
+  return new Date(data.eventDate).getTime() > Date.now();
+}, {
+  message: 'A data e hora do evento deve ser futura',
+  path: ['eventDate'],
+}).refine((data) => {
+  return new Date(data.entryStartTime).getTime() > Date.now();
+}, {
+  message: 'O horário de abertura dos portões deve ser futuro',
+  path: ['entryStartTime'],
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;

@@ -114,6 +114,55 @@ export async function POST(req: Request) {
           data: { status: "COMPLETED" },
         });
 
+        // Verificar se todos os setores do evento estão com capacidade esgotada (Sold Out)
+        const eventSectors = await tx.sector.findMany({
+          where: { eventId: reservation.eventId },
+          select: { id: true, type: true, totalCapacity: true },
+        });
+
+        if (eventSectors.length > 0) {
+          let allSectorsSoldOut = true;
+
+          for (const sector of eventSectors) {
+            if (sector.type === "GENERAL_ADMISSION") {
+              const activeTicketsCount = await tx.ticket.count({
+                where: {
+                  sectorId: sector.id,
+                  status: { in: ["ACTIVE", "USED"] },
+                },
+              });
+              if (activeTicketsCount < sector.totalCapacity) {
+                allSectorsSoldOut = false;
+                break;
+              }
+            } else if (sector.type === "NUMBERED_SEATS") {
+              const nonSoldSeatsCount = await tx.seat.count({
+                where: {
+                  sectorId: sector.id,
+                  status: { not: "SOLD" },
+                },
+              });
+              if (nonSoldSeatsCount > 0) {
+                allSectorsSoldOut = false;
+                break;
+              }
+            }
+          }
+
+          if (allSectorsSoldOut) {
+            const currentEvent = await tx.event.findUnique({
+              where: { id: reservation.eventId },
+              select: { status: true },
+            });
+            if (currentEvent?.status === "PUBLISHED") {
+              await tx.event.update({
+                where: { id: reservation.eventId },
+                data: { status: "CLOSED" },
+              });
+            }
+          }
+        }
+
         return {
           status: "APPROVED",
           orderId: order.id,
