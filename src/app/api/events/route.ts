@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
             { description: { contains: q, mode: "insensitive" } },
             { city: { contains: q, mode: "insensitive" } },
             { locationName: { contains: q, mode: "insensitive" } },
+            { street: { contains: q, mode: "insensitive" } },
+            { neighborhood: { contains: q, mode: "insensitive" } },
           ],
         }),
         ...(category && {
@@ -49,6 +51,9 @@ export async function GET(req: NextRequest) {
         category: event.category,
         bannerUrl: event.bannerUrl,
         locationName: event.locationName,
+        street: event.street,
+        number: event.number,
+        neighborhood: event.neighborhood,
         city: event.city,
         eventDate: event.eventDate,
         endDate: event.endDate,
@@ -96,7 +101,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, description, category, eventDate, endDate, entryStartTime, locationName, city, bannerUrl, isAdult, sectors } = validation.data;
+    const {
+      title,
+      description,
+      category,
+      eventDate,
+      endDate,
+      entryStartTime,
+      locationName,
+      street,
+      number,
+      neighborhood,
+      city,
+      bannerUrl,
+      isAdult,
+      sectors,
+    } = validation.data;
 
     // Prisma Transaction
     const event = await prisma.$transaction(async (tx) => {
@@ -110,20 +130,23 @@ export async function POST(req: NextRequest) {
           endDate: endDate ? new Date(endDate) : null,
           entryStartTime: new Date(entryStartTime),
           locationName,
+          street,
+          number,
+          neighborhood,
           city,
           bannerUrl,
           isAdult: isAdult ?? false,
           organizerId: userId,
           status: "PUBLISHED",
-        }
+        },
       });
 
-      // 2. Iterar sobre os setores e cria-los atomicamente
+      // 2. Iterar sobre os setores e criá-los atomicamente
       for (const sectorData of sectors) {
         if (sectorData.type === "GENERAL_ADMISSION") {
           // Pista
           const capacity = sectorData.totalCapacity!;
-          
+
           await tx.sector.create({
             data: {
               eventId: newEvent.id,
@@ -132,9 +155,8 @@ export async function POST(req: NextRequest) {
               price: sectorData.price,
               totalCapacity: capacity,
               availableCapacity: capacity,
-            }
+            },
           });
-
         } else if (sectorData.type === "NUMBERED_SEATS") {
           // Numerado
           const rows = sectorData.rows!;
@@ -149,7 +171,7 @@ export async function POST(req: NextRequest) {
               price: sectorData.price,
               totalCapacity: capacity,
               availableCapacity: capacity,
-            }
+            },
           });
 
           // Gerar matriz de assentos
@@ -158,7 +180,7 @@ export async function POST(req: NextRequest) {
             for (let i = 1; i <= seatsPerRow; i++) {
               seatsData.push({
                 sectorId: newSector.id,
-                row,
+                row: row.trim().toUpperCase(),
                 number: i,
                 status: "AVAILABLE" as const,
               });
@@ -167,7 +189,7 @@ export async function POST(req: NextRequest) {
 
           // Inserção massiva
           await tx.seat.createMany({
-            data: seatsData
+            data: seatsData,
           });
         }
       }

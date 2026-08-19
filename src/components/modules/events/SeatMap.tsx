@@ -170,8 +170,9 @@ export function SeatMap({ eventId, sectorId, price, currentUserRole }: SeatMapPr
   const rows = useMemo(() => {
     const map = new Map<string, Seat[]>();
     seats.forEach((seat) => {
-      if (!map.has(seat.row)) map.set(seat.row, []);
-      map.get(seat.row)!.push(seat);
+      const rowKey = (seat.row || "").toUpperCase();
+      if (!map.has(rowKey)) map.set(rowKey, []);
+      map.get(rowKey)!.push(seat);
     });
     // Sort rows alphabetically
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
@@ -225,46 +226,50 @@ export function SeatMap({ eventId, sectorId, price, currentUserRole }: SeatMapPr
 
       {/* Grid de Assentos */}
       <div className="flex flex-col items-center gap-4 overflow-x-auto pb-4">
-        {rows.map(([rowName, rowSeats]) => (
-          <div key={rowName} className="flex items-center gap-4 min-w-max">
-            <div className="w-6 text-center font-bold text-text-muted">{rowName}</div>
-            <div className="flex gap-2">
-              {rowSeats.map((seat) => {
-                const isSelected = selectedSeatIds.includes(seat.id);
-                const isMyReservation = seat.status === "RESERVED" && currentUserId && seat.reservedById === currentUserId;
-                
-                let seatClass = "w-8 h-8 sm:w-10 sm:h-10 rounded-t-lg rounded-b-sm flex items-center justify-center text-xs font-medium transition-all ";
-                let content: React.ReactNode = seat.number;
-                
-                if (isSelected) {
-                  seatClass += "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(16,185,129,0.5)] transform scale-110 cursor-pointer";
-                } else if (seat.status === "AVAILABLE") {
-                  seatClass += "bg-surface shadow-sm hover:shadow-sm ring-1 ring-primary/50 hover:bg-surface-hover cursor-pointer text-text-primary";
-                } else if (isMyReservation) {
-                  seatClass += "bg-primary/20 shadow-md border-0 shadow-sm ring-1 ring-primary text-primary cursor-pointer hover:bg-primary/30";
-                  content = <span className="flex flex-col items-center leading-none"><span className="text-[10px]">★</span>{seat.number}</span>;
-                } else if (seat.status === "RESERVED") {
-                  seatClass += "bg-yellow-500/80 text-white cursor-not-allowed";
-                } else {
-                  seatClass += "bg-gray-300 opacity-50 cursor-not-allowed text-gray-500";
-                }
+        {rows.map(([rowName, rowSeats]) => {
+          const displayRowName = rowName.toUpperCase();
+          return (
+            <div key={rowName} className="flex items-center gap-4 min-w-max">
+              <div className="w-6 text-center font-bold text-text-muted">{displayRowName}</div>
+              <div className="flex gap-2">
+                {rowSeats.map((seat) => {
+                  const isSelected = selectedSeatIds.includes(seat.id);
+                  const isMyReservation = seat.status === "RESERVED" && currentUserId && seat.reservedById === currentUserId;
+                  const rowUpper = (seat.row || "").toUpperCase();
+                  
+                  let seatClass = "w-8 h-8 sm:w-10 sm:h-10 rounded-t-lg rounded-b-sm flex items-center justify-center text-xs font-medium transition-all ";
+                  let content: React.ReactNode = seat.number;
+                  
+                  if (isSelected) {
+                    seatClass += "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(16,185,129,0.5)] transform scale-110 cursor-pointer";
+                  } else if (seat.status === "AVAILABLE") {
+                    seatClass += "bg-surface shadow-sm hover:shadow-sm ring-1 ring-primary/50 hover:bg-surface-hover cursor-pointer text-text-primary";
+                  } else if (isMyReservation) {
+                    seatClass += "bg-primary/20 shadow-md border-0 shadow-sm ring-1 ring-primary text-primary cursor-pointer hover:bg-primary/30";
+                    content = <span className="flex flex-col items-center leading-none"><span className="text-[10px]">★</span>{seat.number}</span>;
+                  } else if (seat.status === "RESERVED") {
+                    seatClass += "bg-yellow-500/80 text-white cursor-not-allowed";
+                  } else {
+                    seatClass += "bg-gray-300 opacity-50 cursor-not-allowed text-gray-500";
+                  }
 
-                return (
-                  <button
-                    key={seat.id}
-                    className={seatClass}
-                    disabled={seat.status !== "AVAILABLE" && !isSelected && !isMyReservation}
-                    onClick={() => toggleSeat(seat)}
-                    title={isMyReservation ? `Sua Reserva (Assento ${seat.row}${seat.number}) - Clique para pagar` : `Assento ${seat.row}${seat.number}`}
-                  >
-                    {content}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={seat.id}
+                      className={seatClass}
+                      disabled={seat.status !== "AVAILABLE" && !isSelected && !isMyReservation}
+                      onClick={() => toggleSeat(seat)}
+                      title={isMyReservation ? `Sua Reserva (Assento ${rowUpper}${seat.number}) - Clique para pagar` : `Assento ${rowUpper}${seat.number}`}
+                    >
+                      {content}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="w-6 text-center font-bold text-text-muted">{displayRowName}</div>
             </div>
-            <div className="w-6 text-center font-bold text-text-muted">{rowName}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Rodapé e Checkout */}

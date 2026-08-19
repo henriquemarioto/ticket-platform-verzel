@@ -126,7 +126,10 @@ model Event {
   isAdult        Boolean       @default(false)
   bannerUrl      String
   locationName   String
-  city           String
+  street         String?       // Logradouro (ex: Av. Francisco Matarazzo)
+  number         String?       // Número (ex: 1705)
+  neighborhood   String?       // Bairro (ex: Água Branca)
+  city           String        // Cidade e UF (ex: São Paulo, SP)
   eventDate      DateTime
   endDate        DateTime?
   entryStartTime DateTime      // Horário obrigatório de início para entrar (30m a 6h antes de eventDate)

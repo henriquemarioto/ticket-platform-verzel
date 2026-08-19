@@ -9,6 +9,7 @@ import { ExternalCatalogModal, CatalogItem } from "@/components/modules/events/E
 import { Film, Music, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
+import { updateEventSchema } from "@/lib/validations/events";
 
 export interface EditEventInitialData {
   title: string;
@@ -19,6 +20,9 @@ export interface EditEventInitialData {
   endDate?: string | null; // YYYY-MM-DDTHH:mm
   entryStartTime: string; // YYYY-MM-DDTHH:mm
   locationName: string;
+  street?: string | null;
+  number?: string | null;
+  neighborhood?: string | null;
   cityName: string;
   stateUf: string;
   isAdult: boolean;
@@ -53,6 +57,9 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
   const [description, setDescription] = React.useState(initialData.description || "");
   const [bannerUrl, setBannerUrl] = React.useState(initialData.bannerUrl || "");
   const [locationName, setLocationName] = React.useState(initialData.locationName || "");
+  const [street, setStreet] = React.useState(initialData.street || "");
+  const [number, setNumber] = React.useState(initialData.number || "");
+  const [neighborhood, setNeighborhood] = React.useState(initialData.neighborhood || "");
   const [cityName, setCityName] = React.useState(initialData.cityName || "");
   const [stateUf, setStateUf] = React.useState(initialData.stateUf || "");
   const [eventDate, setEventDate] = React.useState(initialData.eventDate || "");
@@ -117,49 +124,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
     e.preventDefault();
     setErrors({});
 
-    const fieldErrors: Record<string, string> = {};
-
-    if (!title.trim() || title.trim().length < 3) {
-      fieldErrors["title"] = "Título do evento deve conter no mínimo 3 caracteres.";
-    }
-    if (!description.trim() || description.trim().length < 300) {
-      fieldErrors["description"] = "A descrição do evento deve conter no mínimo 300 caracteres.";
-    }
-    if (!locationName.trim() || locationName.trim().length < 2) {
-      fieldErrors["locationName"] = "Nome do local é obrigatório.";
-    }
-    if (!cityName.trim()) {
-      fieldErrors["cityName"] = "Cidade é obrigatória.";
-    }
-    if (!stateUf.trim()) {
-      fieldErrors["stateUf"] = "UF (Estado) é obrigatório.";
-    }
-    if (!eventDate) {
-      fieldErrors["eventDate"] = "Data e hora do evento são obrigatórias.";
-    }
-    if (!entryStartTime) {
-      fieldErrors["entryStartTime"] = "Horário de abertura dos portões é obrigatório.";
-    } else if (eventDate) {
-      const diffMs = new Date(eventDate).getTime() - new Date(entryStartTime).getTime();
-      if (diffMs < 30 * 60 * 1000) {
-        fieldErrors["entryStartTime"] = "A abertura dos portões deve ser no mínimo 30 minutos antes do início do evento.";
-      } else if (diffMs > 6 * 60 * 60 * 1000) {
-        fieldErrors["entryStartTime"] = "A abertura dos portões não pode ser anterior a 6 horas antes do início do evento.";
-      }
-    }
-    if (endDate && eventDate && new Date(endDate).getTime() <= new Date(eventDate).getTime()) {
-      fieldErrors["endDate"] = "A data e hora de término deve ser posterior à data de início.";
-    }
-
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors);
-      toastError("Corrija os erros no formulário antes de continuar.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const city = `${cityName.trim()}, ${stateUf.trim()}`;
+    const city = cityName.trim() && stateUf.trim() ? `${cityName.trim()}, ${stateUf.trim()}` : cityName.trim();
 
     const payload = {
       title: title.trim(),
@@ -167,18 +132,40 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
       category,
       bannerUrl: bannerUrl.trim(),
       locationName: locationName.trim(),
+      street: street.trim(),
+      number: number.trim(),
+      neighborhood: neighborhood.trim(),
       city,
-      eventDate: new Date(eventDate).toISOString(),
-      endDate: endDate ? new Date(endDate).toISOString() : null,
-      entryStartTime: new Date(entryStartTime).toISOString(),
+      eventDate: eventDate ? new Date(eventDate).toISOString() : "",
+      endDate: endDate && endDate.trim() !== "" ? new Date(endDate).toISOString() : null,
+      entryStartTime: entryStartTime ? new Date(entryStartTime).toISOString() : "",
       isAdult,
     };
+
+    const validation = updateEventSchema.safeParse(payload);
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.issues.forEach((issue) => {
+        const path = issue.path.join(".");
+        fieldErrors[path] = issue.message;
+      });
+      if (fieldErrors["city"]) {
+        if (!cityName.trim()) fieldErrors["cityName"] = "Cidade é obrigatória.";
+        if (!stateUf.trim()) fieldErrors["stateUf"] = "UF (Estado) é obrigatório.";
+      }
+      setErrors(fieldErrors);
+      toastError("Corrija os erros no formulário antes de continuar.");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       const res = await fetch(`/api/events/${eventId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(validation.data),
       });
 
       const data = await res.json();
@@ -314,26 +301,6 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
             {/* Horários e Datas com Portaria */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-text-primary">
-                    Abertura dos Portões
-                  </label>
-                  <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">
-                    Portaria
-                  </span>
-                </div>
-                <Input 
-                  type="datetime-local"
-                  value={entryStartTime} 
-                  onChange={(e) => handleEntryStartTimeChange(e.target.value)}
-                  error={errors["entryStartTime"]}
-                />
-                <p className="text-xs text-text-muted">
-                  Entre 30m e 6h antes do início
-                </p>
-              </div>
-
-              <div className="space-y-1">
                 <label className="text-sm font-medium text-text-primary">
                   Data e Hora de Início
                 </label>
@@ -362,6 +329,26 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   Previsão de encerramento
                 </p>
               </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-text-primary">
+                    Abertura dos Portões
+                  </label>
+                  <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">
+                    Portaria
+                  </span>
+                </div>
+                <Input 
+                  type="datetime-local"
+                  value={entryStartTime} 
+                  onChange={(e) => handleEntryStartTimeChange(e.target.value)}
+                  error={errors["entryStartTime"]}
+                />
+                <p className="text-xs text-text-muted">
+                  Entre 30m e 6h antes do início
+                </p>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -380,7 +367,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   value={cityName} 
                   onChange={(e) => setCityName(e.target.value)}
                   placeholder="Ex: São Paulo"
-                  error={errors["cityName"]}
+                  error={errors["cityName"] || errors["city"]}
                 />
               </div>
               <div className="space-y-1 sm:col-span-1">
@@ -388,7 +375,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                 <Select
                   value={stateUf}
                   onChange={(e) => setStateUf(e.target.value)}
-                  error={errors["stateUf"]}
+                  error={errors["stateUf"] || errors["city"]}
                 >
                   <option value="">Selecione o Estado</option>
                   {BRAZIL_STATES.map((state) => (
@@ -397,6 +384,36 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                     </option>
                   ))}
                 </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Rua / Logradouro</label>
+                <Input 
+                  value={street} 
+                  onChange={(e) => setStreet(e.target.value)}
+                  placeholder="Ex: Av. Francisco Matarazzo"
+                  error={errors["street"]}
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Número</label>
+                <Input 
+                  value={number} 
+                  onChange={(e) => setNumber(e.target.value)}
+                  placeholder="Ex: 1705 ou S/N"
+                  error={errors["number"]}
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Bairro</label>
+                <Input 
+                  value={neighborhood} 
+                  onChange={(e) => setNeighborhood(e.target.value)}
+                  placeholder="Ex: Água Branca"
+                  error={errors["neighborhood"]}
+                />
               </div>
             </div>
 

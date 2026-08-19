@@ -143,7 +143,7 @@ export default function CheckoutClient({
                 <div>
                   <p className="font-medium text-text-primary">{item.quantity}x {item.sector.name}</p>
                   {item.seat && (
-                    <p className="text-sm text-text-muted">Assento: {item.seat.row}{item.seat.number}</p>
+                    <p className="text-sm text-text-muted">Assento: {item.seat.row.toUpperCase()}{item.seat.number}</p>
                   )}
                 </div>
                 <div className="text-right">

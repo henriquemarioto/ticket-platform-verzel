@@ -132,7 +132,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
               <div className="flex justify-between items-center pb-2">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
-                  {selectedTicket.seat ? `${selectedTicket.seat.row}${selectedTicket.seat.number}` : "Pista"}
+                  {selectedTicket.seat ? `${selectedTicket.seat.row.toUpperCase()}${selectedTicket.seat.number}` : "Pista"}
                 </span>
               </div>
               <div className="flex justify-between items-center">

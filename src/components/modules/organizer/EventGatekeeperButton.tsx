@@ -19,13 +19,12 @@ export function EventGatekeeperButton({
   return (
     <>
       <Button
-        variant="ghost"
+        variant="secondary"
         size="sm"
         onClick={() => setIsOpen(true)}
         className="gap-1.5 text-xs text-text-primary hover:text-primary"
         title="Gerenciar equipe de portaria"
       >
-        <ShieldCheck className="w-3.5 h-3.5 text-primary" />
         Portaria
       </Button>
 

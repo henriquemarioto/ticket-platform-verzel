@@ -136,10 +136,15 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
           <section>
             <h2 className="text-3xl font-bold text-text-primary mb-4">Localização</h2>
             <p className="font-medium text-text-primary">{event.locationName}</p>
+            {event.street && (
+              <p className="text-sm text-text-muted">
+                {event.street}, {event.number || 'S/N'}{event.neighborhood ? ` - ${event.neighborhood}` : ''}
+              </p>
+            )}
             <p className="text-sm text-text-muted">{event.city}</p>
             
             <a 
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.locationName}, ${event.city}`)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.locationName}, ${event.street || ''} ${event.number || ''}, ${event.neighborhood || ''}, ${event.city}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 shadow-sm ring-1 ring-shadow-sm bg-transparent hover:bg-surface text-text-primary w-fit"

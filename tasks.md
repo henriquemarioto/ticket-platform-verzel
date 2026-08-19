@@ -205,6 +205,31 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Criar modal de gerenciamento de portaria (`EventGatekeepersModal`) no painel do organizador (`/organizer`) com geração rápida de credenciais temporárias (1 clique) e botão de cópia.
   - [x] Atualizar `prisma/seed.ts` populando `entryStartTime` em todos os eventos e vinculando a conta `portaria@verzel.com.br` ao evento de demonstração.
 
+- [x] **Task 2.31: Padronização de Letras dos Assentos em Maiúsculo (UC09, UC14, UC18, UC24)**
+  - [x] Normalizar letras de fileiras (`row`) para maiúsculas no Zod (`createSectorSchema`), criação (`POST /api/events`), formulário (`CreateEventPage`), mapa de assentos (`SeatMap`), checkout, vouchers e leitura na portaria.
+  - [x] Garantir seed com fileiras em maiúsculo (`'A'`, `'B'`, etc.).
+
+- [x] **Task 2.32: Desbloqueio Automático da Portaria por Horário e serverTime (UC21)**
+  - [x] Retornar `serverTime` em `GET /api/gate/events` e no Server Component de `/gatekeeper`.
+  - [x] Calcular offset de relógio local e agendar timer (`setTimeout`) para desbloqueio automático no `entryStartTime`.
+  - [x] Manter tick de reavaliação a cada 10 segundos (`setInterval`) para atualizar o estado do botão sem recarregar a página.
+
+- [x] **Task 2.33: Bloqueio de Seleção e Validação de Eventos Encerrados na Portaria (UC21, UC24)**
+  - [x] Adicionar cálculo de término com tolerância padrão de 6 horas após `eventDate` na ausência de `endDate`.
+  - [x] Bloquear seleção na tela `/gatekeeper` para eventos encerrados com badge e botão "Evento Encerrado".
+  - [x] Rejeitar validação em `POST /api/gate/validate` para eventos encerrados.
+
+- [x] **Task 2.34: Aprimoramento do Endereço do Evento (Rua, Número, Bairro) (UC08, UC09, UC10, UC12)**
+  - [x] Modelar `street`, `number` e `neighborhood` no `prisma/schema.prisma` e gerar migração.
+  - [x] Atualizar schemas Zod com validação obrigatória de rua, número e bairro.
+  - [x] Atualizar formulários de criação e edição com os novos campos.
+  - [x] Exibir endereço completo nos detalhes do evento, vouchers, compartilhamento e Google Maps.
+  - [x] Atualizar `prisma/seed.ts` com endereços reais completos.
+
+- [x] **Task 2.35: Ícones Semânticos nos Filtros por Categoria na Tela Inicial (UC11)**
+  - [x] Integrar ícones de `lucide-react` para cada categoria em `CategoryPills` ("Todos", "Shows", "Cinema", "Teatro", "Festivais").
+
+
 ---
 
 ## 🌟 Fase 3: Escala, Opcionais e Excelência (Bônus)

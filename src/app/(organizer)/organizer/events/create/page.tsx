@@ -34,6 +34,9 @@ export default function CreateEventPage() {
   const [description, setDescription] = React.useState("");
   const [bannerUrl, setBannerUrl] = React.useState("");
   const [locationName, setLocationName] = React.useState("");
+  const [street, setStreet] = React.useState("");
+  const [number, setNumber] = React.useState("");
+  const [neighborhood, setNeighborhood] = React.useState("");
   const [cityName, setCityName] = React.useState("");
   const [stateUf, setStateUf] = React.useState("");
   const [eventDate, setEventDate] = React.useState("");
@@ -117,7 +120,7 @@ export default function CreateEventPage() {
 
   const calculateNumberedSeats = (rowsStr: string, seatsPerRow: string) => {
     if (!rowsStr || !seatsPerRow) return 0;
-    const rows = rowsStr.split(",").filter(r => r.trim() !== "");
+    const rows = rowsStr.toUpperCase().split(",").map(r => r.trim()).filter(Boolean);
     return rows.length * (parseInt(seatsPerRow) || 0);
   };
 
@@ -135,6 +138,9 @@ export default function CreateEventPage() {
       category,
       bannerUrl,
       locationName,
+      street,
+      number,
+      neighborhood,
       city,
       eventDate: eventDate ? new Date(eventDate).toISOString() : "",
       endDate: endDate ? new Date(endDate).toISOString() : undefined,
@@ -145,7 +151,7 @@ export default function CreateEventPage() {
         type: s.type,
         price: parseFloat(s.price),
         totalCapacity: s.type === "GENERAL_ADMISSION" ? parseInt(s.totalCapacity) : undefined,
-        rows: s.type === "NUMBERED_SEATS" ? s.rowsStr.split(",").map(r => r.trim()).filter(Boolean) : undefined,
+        rows: s.type === "NUMBERED_SEATS" ? s.rowsStr.toUpperCase().split(",").map(r => r.trim()).filter(Boolean) : undefined,
         seatsPerRow: s.type === "NUMBERED_SEATS" ? parseInt(s.seatsPerRow) : undefined,
       }))
     };
@@ -378,6 +384,36 @@ export default function CreateEventPage() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Rua / Logradouro</label>
+                <Input 
+                  value={street} 
+                  onChange={(e) => setStreet(e.target.value)}
+                  placeholder="Ex: Av. Francisco Matarazzo"
+                  error={errors["street"]}
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Número</label>
+                <Input 
+                  value={number} 
+                  onChange={(e) => setNumber(e.target.value)}
+                  placeholder="Ex: 1705 ou S/N"
+                  error={errors["number"]}
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-sm font-medium text-text-primary">Bairro</label>
+                <Input 
+                  value={neighborhood} 
+                  onChange={(e) => setNeighborhood(e.target.value)}
+                  placeholder="Ex: Água Branca"
+                  error={errors["neighborhood"]}
+                />
+              </div>
+            </div>
+
             <div className="flex items-center gap-3 rounded-xl border border-border-subtle bg-bg-surface p-4 transition-colors hover:border-border">
               <input
                 type="checkbox"
@@ -483,7 +519,7 @@ export default function CreateEventPage() {
                             <label className="text-xs text-text-muted">Letras das Fileiras (Separadas por vírgula)</label>
                             <Input 
                               value={sector.rowsStr} 
-                              onChange={(e) => updateSector(sector.id, "rowsStr", e.target.value)}
+                              onChange={(e) => updateSector(sector.id, "rowsStr", e.target.value.toUpperCase())}
                               placeholder="Ex: A, B, C, D"
                               error={errors[`sectors.${index}.rows`]}
                             />
@@ -509,7 +545,7 @@ export default function CreateEventPage() {
                                 PALCO
                               </div>
                               
-                              {sector.rowsStr.split(",").map(r => r.trim()).filter(Boolean).map(row => (
+                              {sector.rowsStr.toUpperCase().split(",").map(r => r.trim()).filter(Boolean).map(row => (
                                 <div key={row} className="flex gap-2 min-w-max items-center">
                                   <div className="w-6 text-xs font-bold text-text-muted text-right pr-2">{row}</div>
                                   {Array.from({ length: Math.min(parseInt(sector.seatsPerRow), 50) }).map((_, i) => (

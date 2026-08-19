@@ -150,7 +150,7 @@ export default async function ShareTicketPage({
               <div className="flex justify-between items-center pb-3">
                 <span className="text-text-muted">Assento</span>
                 <span className="font-medium">
-                  {seat ? `${seat.row}${seat.number}` : "Pista"}
+                  {seat ? `${seat.row.toUpperCase()}${seat.number}` : "Pista"}
                 </span>
               </div>
               <div className="flex justify-between items-center">

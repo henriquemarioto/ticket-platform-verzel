@@ -130,7 +130,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
             <div>
               <p className="text-text-muted text-xs">Assento</p>
               <p className="font-medium">
-                {seat ? `${seat.row}${seat.number}` : "Pista (S/ Assento)"}
+                {seat ? `${seat.row.toUpperCase()}${seat.number}` : "Pista (S/ Assento)"}
               </p>
             </div>
             <div className="col-span-2 pt-2 mt-2 flex justify-between items-center">

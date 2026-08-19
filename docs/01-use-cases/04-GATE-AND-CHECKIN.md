@@ -91,7 +91,8 @@ sequenceDiagram
 - **RN01 - Acesso Restrito a Gatekeeper**: Apenas usuários com a role `GATEKEEPER` podem acessar as rotas operacionais de portaria.
 - **RN02 - Validação Vinculada ao Evento Ativo**: O motor de validação deve sempre comparar o `eventId` do ingresso lido com o evento selecionado no painel da portaria.
 - **RN03 - Vínculo Obrigatório de Portaria ao Evento**: O operador de portaria só tem acesso e só pode validar eventos aos quais foi explicitamente vinculado (`EventGatekeeper`).
-- **RN04 - Bloqueio de Seleção Antes do Horário de Entrada**: A portaria só consegue selecionar o evento após o horário programado de abertura dos portões (`now >= entryStartTime`). Antes desse horário, o botão de seleção fica desabilitado com aviso do horário de abertura.
+- **RN04 - Desbloqueio Automático por Horário de Entrada**: O botão de seleção de evento habilita automaticamente no momento exato de `entryStartTime`. A interface calcula a diferença com base no `serverTime` retornado pela API para não depender exclusivamente do relógio do cliente, mantendo um tick a cada 10s para reavaliar a condição.
+- **RN05 - Bloqueio de Eventos Encerrados**: Eventos cujo horário de término já passou não podem ser selecionados para validação. Caso o evento não possua `endDate` definido, o término é considerado como **6 horas após a data de início** (`eventDate + 6h`).
 
 ---
 
@@ -103,6 +104,7 @@ sequenceDiagram
 ```json
 {
   "success": true,
+  "serverTime": "2026-11-20T19:35:00.000Z",
   "events": [
     {
       "id": "evt_rock2026",
@@ -111,7 +113,13 @@ sequenceDiagram
       "endDate": "2026-11-20T23:30:00.000Z",
       "entryStartTime": "2026-11-20T19:30:00.000Z",
       "isEntryOpen": true,
+      "isEnded": false,
+      "isSelectable": true,
       "locationName": "Espaço Hall Cultural",
+      "street": "Avenida das Américas",
+      "number": "1500",
+      "neighborhood": "Barra da Tijuca",
+      "city": "Rio de Janeiro, RJ",
       "totalSold": 185,
       "totalCheckedIn": 42
     }
@@ -544,6 +552,7 @@ stateDiagram-v2
 - **RN03 - Log de Auditoria**: Toda tentativa de validação (sucesso ou falha) deve ser registrada em log para histórico operacional.
 - **RN04 - Validação Apenas Após Horário de Entrada**: Os ingressos só podem ser validados pela portaria após o horário de abertura dos portões (`now >= entryStartTime`). Tentativas antes desse horário são sumariamente rejeitadas.
 - **RN05 - Autorização Obrigatória de Portaria**: O operador que executa a validação deve estar vinculado ao evento através de `EventGatekeeper`. Requisições sem autorização retornam HTTP 403 Forbidden.
+- **RN06 - Bloqueio de Validação em Eventos Encerrados**: Ingressos de eventos já finalizados (após `endDate` ou `eventDate + 6h` na ausência de `endDate`) não podem ser validados, retornando erro descritivo de evento encerrado.
 
 ---
 

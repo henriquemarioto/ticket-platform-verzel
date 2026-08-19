@@ -94,6 +94,9 @@ model Event {
   category       EventCategory @default(SHOW)
   bannerUrl      String
   locationName   String
+  street         String?
+  number         String?
+  neighborhood   String?
   city           String
   eventDate      DateTime
   endDate        DateTime?

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, Keyboard, Sparkles, ShieldCheck } from "lucide-react";
+import { Camera, Keyboard, ShieldCheck } from "lucide-react";
 import { GatekeeperEvent, EventMetrics } from "./types";
 import { GatekeeperScanner } from "./GatekeeperScanner";
 import { GatekeeperManualInput } from "./GatekeeperManualInput";
@@ -158,7 +158,6 @@ export function GatekeeperTabs({
                <span>Assinatura Criptográfica HMAC</span>
              </div>
              <div className="flex items-center gap-1.5">
-               <Sparkles className="w-4 h-4 text-primary" />
                <span>Anti-duplicação Concorrente</span>
              </div>
            </div>

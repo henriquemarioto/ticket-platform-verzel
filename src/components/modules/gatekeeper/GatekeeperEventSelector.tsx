@@ -25,6 +25,8 @@ export function GatekeeperEventSelector({
     return (
       event.title.toLowerCase().includes(term) ||
       event.locationName.toLowerCase().includes(term) ||
+      (event.street && event.street.toLowerCase().includes(term)) ||
+      (event.neighborhood && event.neighborhood.toLowerCase().includes(term)) ||
       event.city.toLowerCase().includes(term)
     );
   });
@@ -49,7 +51,7 @@ export function GatekeeperEventSelector({
       {events.length > 0 && (
         <div className="max-w-md mx-auto">
           <Input
-            placeholder="Buscar por nome do evento, local ou cidade..."
+            placeholder="Buscar por nome do evento, local, rua ou cidade..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             icon={<Search className="w-4 h-4 text-text-muted" />}
@@ -87,6 +89,16 @@ export function GatekeeperEventSelector({
                 ? Math.round((event.totalCheckedIn / event.totalSold) * 100)
                 : 0;
 
+            const renderStatusBadge = () => {
+              if (event.isEnded) {
+                return <Badge variant="danger">Evento Encerrado</Badge>;
+              }
+              if (!event.isEntryOpen) {
+                return <Badge variant="warning">Portões Fechados</Badge>;
+              }
+              return <Badge variant="success">Portões Abertos</Badge>;
+            };
+
             return (
               <div
                 key={event.id}
@@ -103,9 +115,7 @@ export function GatekeeperEventSelector({
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute top-3 right-3 flex gap-1.5">
-                      <Badge variant={event.isEntryOpen ? "success" : "warning"}>
-                        {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
-                      </Badge>
+                      {renderStatusBadge()}
                     </div>
                   </div>
                 ) : (
@@ -113,9 +123,7 @@ export function GatekeeperEventSelector({
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
                       {event.category}
                     </span>
-                    <Badge variant={event.isEntryOpen ? "success" : "warning"}>
-                      {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
-                    </Badge>
+                    {renderStatusBadge()}
                   </div>
                 )}
 
@@ -137,7 +145,9 @@ export function GatekeeperEventSelector({
                       <div className="flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-text-muted shrink-0" />
                         <span className="truncate">
-                          {event.locationName} • {event.city}
+                          {event.locationName}
+                          {event.street ? ` • ${event.street}, ${event.number || "S/N"}${event.neighborhood ? ` - ${event.neighborhood}` : ""}` : ""}
+                          {` • ${event.city}`}
                         </span>
                       </div>
                     </div>
@@ -162,15 +172,21 @@ export function GatekeeperEventSelector({
                   </div>
 
                   {/* Ação de Seleção */}
-                  {event.isEntryOpen ? (
-                    <Button
-                      variant="primary"
-                      onClick={() => onSelectEvent(event)}
-                      className="w-full min-h-[48px] justify-center text-sm font-semibold shadow-sm"
-                    >
-                      Selecionar Evento
-                    </Button>
-                  ) : (
+                  {event.isEnded ? (
+                    <div className="space-y-1.5">
+                      <Button
+                        variant="secondary"
+                        disabled
+                        className="w-full min-h-[48px] justify-center text-xs font-semibold opacity-70 cursor-not-allowed gap-1.5"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        Evento Encerrado
+                      </Button>
+                      <p className="text-[11px] text-center text-danger font-medium">
+                        Este evento já foi finalizado.
+                      </p>
+                    </div>
+                  ) : !event.isEntryOpen ? (
                     <div className="space-y-1.5">
                       <Button
                         variant="secondary"
@@ -184,6 +200,14 @@ export function GatekeeperEventSelector({
                         Seleção liberada a partir da abertura dos portões.
                       </p>
                     </div>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      onClick={() => onSelectEvent(event)}
+                      className="w-full min-h-[48px] justify-center text-sm font-semibold shadow-sm"
+                    >
+                      Selecionar Evento
+                    </Button>
                   )}
                 </div>
               </div>

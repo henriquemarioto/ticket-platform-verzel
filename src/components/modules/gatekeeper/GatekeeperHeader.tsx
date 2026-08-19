@@ -23,14 +23,18 @@ export function GatekeeperHeader({
   const entryTimeLabel = formatEntryTime(event.entryStartTime, event.eventDate);
 
   return (
-    <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
+    <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-6 mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="neutral">Portaria Ativa</Badge>
-            <Badge variant={event.isEntryOpen ? "success" : "warning"}>
-              {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
-            </Badge>
+            {event.isEnded ? (
+              <Badge variant="danger">Evento Encerrado</Badge>
+            ) : (
+              <Badge variant={event.isEntryOpen ? "success" : "warning"}>
+                {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
+              </Badge>
+            )}
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
             {event.title}
@@ -47,13 +51,15 @@ export function GatekeeperHeader({
             <div className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-text-muted shrink-0" />
               <span>
-                {event.locationName} • {event.city}
+                {event.locationName}
+                {event.street ? ` • ${event.street}, ${event.number || "S/N"}${event.neighborhood ? ` - ${event.neighborhood}` : ""}` : ""}
+                {` • ${event.city}`}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t lg:border-t-0">
+        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t border-border-subtle lg:border-t-0">
           <Button
             variant="outline"
             onClick={onRefresh}

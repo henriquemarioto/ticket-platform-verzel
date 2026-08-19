@@ -43,6 +43,9 @@ export default async function GatekeeperPage() {
       category: true,
       bannerUrl: true,
       locationName: true,
+      street: true,
+      number: true,
+      neighborhood: true,
       city: true,
       eventDate: true,
       endDate: true,
@@ -65,7 +68,12 @@ export default async function GatekeeperPage() {
       (t) => t.status === "USED"
     ).length;
 
+    const eventEndTime = event.endDate
+      ? new Date(event.endDate)
+      : new Date(new Date(event.eventDate).getTime() + 6 * 60 * 60 * 1000);
     const isEntryOpen = now >= new Date(event.entryStartTime);
+    const isEnded = now >= eventEndTime;
+    const isSelectable = isEntryOpen && !isEnded;
 
     return {
       id: event.id,
@@ -74,16 +82,26 @@ export default async function GatekeeperPage() {
       category: event.category,
       bannerUrl: event.bannerUrl,
       locationName: event.locationName,
+      street: event.street,
+      number: event.number,
+      neighborhood: event.neighborhood,
       city: event.city,
       eventDate: event.eventDate.toISOString(),
       endDate: event.endDate ? event.endDate.toISOString() : null,
       entryStartTime: event.entryStartTime.toISOString(),
       isEntryOpen,
+      isEnded,
+      isSelectable,
       status: event.status,
       totalSold,
       totalCheckedIn,
     };
   });
 
-  return <GatekeeperDashboard initialEvents={initialEvents} />;
+  return (
+    <GatekeeperDashboard
+      initialEvents={initialEvents}
+      initialServerTime={now.toISOString()}
+    />
+  );
 }

@@ -48,6 +48,9 @@ export async function GET(request: NextRequest) {
         category: true,
         bannerUrl: true,
         locationName: true,
+        street: true,
+        number: true,
+        neighborhood: true,
         city: true,
         eventDate: true,
         endDate: true,
@@ -70,7 +73,12 @@ export async function GET(request: NextRequest) {
         (t) => t.status === "USED"
       ).length;
 
+      const eventEndTime = event.endDate
+        ? new Date(event.endDate)
+        : new Date(new Date(event.eventDate).getTime() + 6 * 60 * 60 * 1000);
       const isEntryOpen = now >= new Date(event.entryStartTime);
+      const isEnded = now >= eventEndTime;
+      const isSelectable = isEntryOpen && !isEnded;
 
       return {
         id: event.id,
@@ -79,11 +87,16 @@ export async function GET(request: NextRequest) {
         category: event.category,
         bannerUrl: event.bannerUrl,
         locationName: event.locationName,
+        street: event.street,
+        number: event.number,
+        neighborhood: event.neighborhood,
         city: event.city,
         eventDate: event.eventDate.toISOString(),
         endDate: event.endDate ? event.endDate.toISOString() : null,
         entryStartTime: event.entryStartTime.toISOString(),
         isEntryOpen,
+        isEnded,
+        isSelectable,
         status: event.status,
         totalSold,
         totalCheckedIn,
@@ -93,6 +106,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
+        serverTime: new Date().toISOString(),
         events: formattedEvents,
       },
       { status: 200 }

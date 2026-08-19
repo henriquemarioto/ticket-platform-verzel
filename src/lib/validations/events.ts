@@ -5,7 +5,7 @@ export const createSectorSchema = z.object({
   type: z.enum(["GENERAL_ADMISSION", "NUMBERED_SEATS"]),
   price: z.coerce.number().positive("O valor deve ser maior que zero"),
   totalCapacity: z.coerce.number().int().optional(),
-  rows: z.array(z.string()).optional(),
+  rows: z.array(z.string()).optional().transform(arr => arr ? arr.map(r => r.trim().toUpperCase()) : arr),
   seatsPerRow: z.coerce.number().int().optional(),
 }).refine(data => {
   if (data.type === "GENERAL_ADMISSION") {
@@ -31,6 +31,9 @@ export const createEventSchema = z.object({
   category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
   bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
   locationName: z.string().min(2, "Nome do local é obrigatório"),
+  street: z.string().min(2, "Rua/Logradouro é obrigatório"),
+  number: z.string().min(1, "Número é obrigatório"),
+  neighborhood: z.string().min(2, "Bairro é obrigatório"),
   city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
   endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),
@@ -74,6 +77,9 @@ export const updateEventSchema = z.object({
   category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
   bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
   locationName: z.string().min(2, "Nome do local é obrigatório"),
+  street: z.string().min(2, "Rua/Logradouro é obrigatório"),
+  number: z.string().min(1, "Número é obrigatório"),
+  neighborhood: z.string().min(2, "Bairro é obrigatório"),
   city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
   endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),

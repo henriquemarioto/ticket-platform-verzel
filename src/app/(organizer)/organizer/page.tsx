@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
 import { EventGatekeeperButton } from "@/components/modules/organizer/EventGatekeeperButton";
 import { formatShortDateRange } from "@/lib/utils/date-formatters";
+import { Edit } from "lucide-react";
 
 export default async function OrganizerDashboardPage() {
   const headersList = await headers();
@@ -138,11 +139,11 @@ export default async function OrganizerDashboardPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <EventStatusActions eventId={event.id} currentStatus={event.status} />
                         <EventGatekeeperButton eventId={event.id} eventTitle={event.title} />
                         <Link href={`/organizer/events/${event.id}/edit`}>
-                          <Button variant="ghost" size="sm">Editar</Button>
+                          <Button variant="ghost" size="sm"><Edit className="w-4 h-4"/></Button>
                         </Link>
-                        <EventStatusActions eventId={event.id} currentStatus={event.status} />
                       </div>
                     </td>
                   </tr>

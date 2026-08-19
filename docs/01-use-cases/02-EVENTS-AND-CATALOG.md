@@ -417,7 +417,7 @@ sequenceDiagram
 - **RN02 - Validação Financeira**: O preço unitário (`price`) não pode ser negativo ou zero.
 - **RN03 - Vinculação com Organizador**: Todo evento deve ser associado obrigatoriamente ao `organizerId` extraído da sessão autenticada.
 - **RN04 - Detalhamento Mínimo da Descrição**: A descrição do evento deve ter no mínimo 300 caracteres para garantir qualidade da informação ao comprador.
-- **RN05 - Formatação Padronizada de Localização**: O campo `city` no backend deve ser armazenado no formato padronizado `"Cidade, UF"`.
+- **RN05 - Formatação Padronizada de Localização**: O endereço do evento é composto por `locationName` (nome do espaço), `street` (rua/logradouro), `number` (número), `neighborhood` (bairro) e `city` (armazenado no formato padronizado `"Cidade, UF"`).
 - **RN06 - Classificação +18**: O evento pode conter a flag booleana `isAdult`, exibindo badges apropriados na vitrine e detalhes do evento.
 - **RN07 - Período do Evento (Início e Fim)**: O evento deve ter uma data e hora de início (`eventDate`) e pode opcionalmente definir uma data e hora de término (`endDate`), que deve ser estritamente posterior ao início.
 - **RN08 - Horário Obrigatório de Início para Entrar (`entryStartTime`)**: O evento deve possuir obrigatoriamente um horário de abertura dos portões / entrada (`entryStartTime NOT NULL`). Deve ser no mínimo 30 minutos e no máximo 6 horas antes de `eventDate`. O valor padrão sugerido na interface é de 30 minutos antes do início.
@@ -437,7 +437,10 @@ sequenceDiagram
   "endDate": "2026-11-20T23:30:00.000Z",
   "entryStartTime": "2026-11-20T19:30:00.000Z",
   "locationName": "Espaço Hall Cultural",
-  "city": "São Paulo, SP",
+  "street": "Avenida das Américas",
+  "number": "1500",
+  "neighborhood": "Barra da Tijuca",
+  "city": "Rio de Janeiro, RJ",
   "bannerUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
   "status": "PUBLISHED",
   "sectors": [
@@ -588,6 +591,7 @@ sequenceDiagram
 - **RN01 - Unicidade de Assento por Setor**: Cada etiqueta de assento (ex: `A1`, `B5`) deve ser única dentro do mesmo setor.
 - **RN02 - Cálculo Automático de Capacidade**: A `totalCapacity` do setor numerado deve ser estritamente igual ao número total de assentos gerados no grid.
 - **RN03 - Status Inicial dos Assentos**: Todo assento recém-criado deve ser inserido com status `AVAILABLE` (`SeatStatus.AVAILABLE`).
+- **RN04 - Normalização de Fileiras em Maiúsculo**: As letras de identificação das fileiras são sempre normalizadas e armazenadas em caixa alta (`toUpperCase()`) no Zod, banco de dados, preview e visualizações.
 
 ---
 

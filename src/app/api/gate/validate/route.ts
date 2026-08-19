@@ -168,6 +168,29 @@ export async function POST(req: Request) {
       });
     }
 
+    // 4. Validar se o evento já encerrou
+    const eventEndTime = ticket.event.endDate
+      ? new Date(ticket.event.endDate)
+      : new Date(new Date(ticket.event.eventDate).getTime() + 6 * 60 * 60 * 1000);
+
+    if (now > eventEndTime) {
+      await prisma.ticketValidationLog.create({
+        data: {
+          ticketId: ticket.id,
+          gatekeeperId: session.id,
+          result: "INVALID_CODE",
+          rawPayload,
+          message: "Entrada não permitida: este evento já foi encerrado",
+        },
+      });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json({
+        result: "INVALID_CODE",
+        message: "Entrada Não Permitida: Este evento já foi encerrado.",
+        eventMetrics,
+      });
+    }
+
     if (ticket.status !== "ACTIVE") {
       await prisma.ticketValidationLog.create({
         data: {
@@ -241,7 +264,7 @@ export async function POST(req: Request) {
         code: ticket.ticketCode,
         customerName: ticket.customer.name,
         sectorName: ticket.sector.name,
-        seat: ticket.seat ? `${ticket.seat.row}${ticket.seat.number}` : null,
+        seat: ticket.seat ? `${ticket.seat.row.toUpperCase()}${ticket.seat.number}` : null,
       },
       eventMetrics,
     });
