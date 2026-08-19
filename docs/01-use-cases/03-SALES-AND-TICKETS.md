@@ -402,6 +402,10 @@ sequenceDiagram
 - **Condição**: Outro comprador finalizou a compra milissegundos antes e restam menos vagas do que o solicitado.
 - **Comportamento**: O backend rejeita a transação (`409 Conflict`), retorna a capacidade restante real e a UI atualiza o limite máximo do botão `[+]`.
 
+### Fluxo de Exceção 2: Tentativa de Compra por Conta de Organizador
+- **Condição**: Um usuário autenticado com o papel `ORGANIZER` tenta reservar ingressos de pista.
+- **Comportamento**: O sistema não permite a compra. A interface exibe um modal informativo solicitando login com uma conta de cliente (com ação para alternar de conta). No backend, a API retorna `403 Forbidden` (`code: "ORGANIZER_CANNOT_BUY"`).
+
 ---
 
 ## 7. Regras de Negócio (RN)
@@ -409,6 +413,7 @@ sequenceDiagram
 - **RN01 - Limite Máximo por Compra**: Cada transação de pista é limitada a no máximo **6 ingressos** para coibir cambismo.
 - **RN02 - Atomicidade de Decremento**: O decremento da capacidade deve obrigatoriamente verificar `availableCapacity >= quantity` na cláusula `WHERE` da query SQL, impedindo que a capacidade fique negativa.
 - **RN03 - Tempo de Retenção (TTL)**: A reserva de pista retém a quantidade por exatamente **10 minutos**.
+- **RN04 - Exclusividade de Compra para Clientes**: Organizadores (`ORGANIZER`) e operadores de portaria (`GATEKEEPER`) não têm permissão para comprar ingressos. O fluxo de compra é restrito exclusivamente ao perfil `CUSTOMER`.
 
 ---
 

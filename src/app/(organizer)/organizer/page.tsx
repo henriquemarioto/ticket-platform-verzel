@@ -142,11 +142,9 @@ export default async function OrganizerDashboardPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {event.status === "DRAFT" && (
-                          <Link href={`/organizer/events/${event.id}/edit`}>
-                            <Button variant="ghost" size="sm">Editar</Button>
-                          </Link>
-                        )}
+                        <Link href={`/organizer/events/${event.id}/edit`}>
+                          <Button variant="ghost" size="sm">Editar</Button>
+                        </Link>
                         <EventStatusActions eventId={event.id} currentStatus={event.status} />
                       </div>
                     </td>

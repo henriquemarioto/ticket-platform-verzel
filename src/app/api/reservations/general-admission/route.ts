@@ -11,6 +11,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
+    if (session.role !== "CUSTOMER") {
+      return NextResponse.json(
+        {
+          error: "Organizadores não podem comprar ingressos. Faça login como cliente.",
+          code: "ORGANIZER_CANNOT_BUY",
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const result = reserveGeneralAdmissionSchema.safeParse(body);
 

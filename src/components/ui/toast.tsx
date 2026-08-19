@@ -49,48 +49,53 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-      <div className="fixed bottom-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
+      <div className="fixed top-4 right-4 z-[200] flex max-h-screen w-full flex-col p-4 md:max-w-[440px] pointer-events-none gap-2.5">
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onClose={() => removeToast(t.id)} />
         ))}
       </div>
     </ToastContext.Provider>
-  )
+  );
 }
 
-function ToastItem({ toast, onClose }: { toast: ToastMessage, onClose: () => void }) {
+function ToastItem({ toast, onClose }: { toast: ToastMessage; onClose: () => void }) {
   const icons = {
-    success: <CheckCircle2 className="h-5 w-5 text-success" />,
-    error: <XCircle className="h-5 w-5 text-danger" />,
-    warning: <AlertTriangle className="h-5 w-5 text-warning" />,
-    info: <Info className="h-5 w-5 text-blue-500" />,
-  }
+    success: <CheckCircle2 className="h-6 w-6 text-white shrink-0" />,
+    error: <XCircle className="h-6 w-6 text-white shrink-0" />,
+    warning: <AlertTriangle className="h-6 w-6 text-white shrink-0" />,
+    info: <Info className="h-6 w-6 text-white shrink-0" />,
+  };
 
-  const borders = {
-    success: "border-success/30",
-    error: "border-danger/30",
-    warning: "border-warning/30",
-    info: "border-blue-500/30",
-  }
+  const variants = {
+    success: "bg-emerald-600 text-white shadow-xl shadow-emerald-950/20 border border-emerald-500/30",
+    error: "bg-rose-600 text-white shadow-xl shadow-rose-950/20 border border-rose-500/30",
+    warning: "bg-amber-500 text-white shadow-xl shadow-amber-950/20 border border-amber-400/30",
+    info: "bg-blue-600 text-white shadow-xl shadow-blue-950/20 border border-blue-500/30",
+  };
 
   return (
     <div 
       className={cn(
-        "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md shadow-md ring-1 ring-black/5 bg-bg-surface p-4 pr-8 transition-all mb-2 animate-in slide-in-from-bottom-full duration-300"
+        "animate-in slide-in-from-top-4 fade-in-0 duration-300 pointer-events-auto p-4 sm:p-5 rounded-xl flex items-center justify-between gap-3 w-full transition-all",
+        variants[toast.type]
       )}
     >
-      <div className="flex gap-3 items-center w-full">
+      <div className="flex gap-3 items-center flex-1 min-w-0">
         {icons[toast.type]}
-        <p className="text-sm font-medium leading-none">{toast.message}</p>
+        <p className="text-sm sm:text-base font-semibold text-white leading-snug break-words">
+          {toast.message}
+        </p>
       </div>
       <button
+        type="button"
         onClick={onClose}
-        className="absolute right-2 top-2 rounded-md p-1 opacity-50 transition-opacity hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 cursor-pointer"
+        aria-label="Fechar notificação"
+        className="text-white/80 hover:text-white hover:bg-white/10 rounded-md p-1 transition-colors cursor-pointer shrink-0"
       >
         <X className="h-4 w-4" />
       </button>
     </div>
-  )
+  );
 }
 
 export function useToast() {

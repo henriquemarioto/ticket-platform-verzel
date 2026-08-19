@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin } from "lucide-react";
@@ -11,15 +12,18 @@ type Params = Promise<{ id: string }>;
 export default async function EventDetailsPage({ params }: { params: Params }) {
   const { id } = await params;
 
-  const event = await prisma.event.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      sectors: true,
-      organizer: true,
-    },
-  });
+  const [event, session] = await Promise.all([
+    prisma.event.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        sectors: true,
+        organizer: true,
+      },
+    }),
+    getSession(),
+  ]);
 
   if (!event || event.status !== "PUBLISHED") {
     notFound();
@@ -161,7 +165,12 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
             <div className="space-y-4">
               <div className="divide-y divide-subtle">
                 {event.sectors.map((sector) => (
-                  <SectorItem key={sector.id} sector={sector} eventId={event.id} />
+                  <SectorItem
+                    key={sector.id}
+                    sector={sector}
+                    eventId={event.id}
+                    currentUserRole={session?.role || null}
+                  />
                 ))}
                 {event.sectors.length === 0 && (
                   <div className="py-4 text-center text-sm text-text-muted">

@@ -95,6 +95,22 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Persistir registros de `Seat` com status `AVAILABLE`.
 - [x] **Task 2.11: Painel de Gestão do Organizador (UC10)**
   - [x] Implementar tela `src/app/(organizer)/organizer/page.tsx` listando eventos criados com badges de status e botão para novo evento.
+- [x] **Task 2.11b: Edição de Eventos pelo Organizador (UC10)**
+  - [x] Implementar schema `updateEventSchema` em `src/lib/validations/events.ts`.
+  - [x] Implementar Route Handler `PUT /api/events/[id]` com verificação estrita de posse (`organizerId === userId`).
+  - [x] Implementar tela `src/app/(organizer)/organizer/events/[id]/edit/page.tsx` com formulário `EditEventForm`.
+  - [x] Habilitar botão "Editar" na listagem `/organizer`.
+- [x] **Task 2.4b: Restrição de Acesso da Portaria (UC03)**
+  - [x] Atualizar `src/proxy.ts` para redirecionar `GATEKEEPER` para `/gatekeeper` ao tentar acessar `/`, `/events`, `/events/*`, `/checkout`, `/my-tickets`.
+  - [x] Atualizar `Navbar.tsx` para ocultar o link "Eventos" para a Portaria e vincular a logo a `/gatekeeper`.
+- [x] **Task 1.4b: Redesign e Reposicionamento do Toast (Design System)**
+  - [x] Mudar container do Toast para topo direito (`fixed top-4 right-4 z-[100]`).
+  - [x] Aumentar tamanho, destaque e aplicar fundos sólidos (`success` verde, `error` vermelho, `warning` amarelo, `info` azul) com texto branco.
+- [x] **Task 2.4c: Bloqueio de Auth para Usuários Logados & Modal de Restrição de Compra para Organizador**
+  - [x] Redirecionar usuários logados ao tentar acessar `/login` ou `/register` para o painel de seu respectivo papel no `src/proxy.ts`.
+  - [x] Bloquear chamadas de reserva (`/api/reservations/general-admission`, `/api/seats/reserve`) e checkout para `ORGANIZER` com 403.
+  - [x] Criar modal informativo no frontend quando um organizador tentar comprar ingressos em `/events/[id]`, solicitando login como cliente com botão de troca de conta.
+  - [x] Redirecionar `ORGANIZER` que acessar `/checkout` diretamente para `/organizer`.
 
 ---
 

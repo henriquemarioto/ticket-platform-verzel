@@ -691,22 +691,26 @@ Funcionalidade: Criação de Evento com Assentos Numerados
 sequenceDiagram
     autonumber
     actor Org as Organizador
-    participant UI as Painel de Gestão (/organizer)
+    participant UI as Painel / Edição (/organizer/events/:id/edit)
     participant API as API de Eventos (/api/events/:id)
     participant DB as PostgreSQL (Prisma)
 
-    Org->>UI: Acessa /organizer e visualiza lista de seus eventos
-    UI->>API: GET /api/organizer/events
-    API->>DB: Busca eventos WHERE organizerId = user.id
-    DB-->>API: Retorna lista de eventos com métricas de ocupação
-    API-->>UI: 200 OK { events: [...] }
-    Org->>UI: Clica em "Editar Evento" ou "Encerrar Vendas"
-    Org->>UI: Altera status para "CLOSED" e confirma no modal
-    UI->>API: PATCH /api/events/:id/status { status: "CLOSED" }
-    API->>DB: Atualiza status do evento
-    DB-->>API: Evento atualizado
-    API-->>UI: 200 OK { success: true, newStatus: "CLOSED" }
-    UI->>Org: Atualiza badge de status para "Encerrado" na tabela
+    Org->>UI: Acessa /organizer e clica em "Editar" no evento
+    UI->>UI: Navega para /organizer/events/:id/edit e carrega dados
+    Org->>UI: Modifica título, descrição, banner, data, localização ou classificação +18
+    Org->>UI: Clica em "Salvar Alterações"
+    UI->>UI: Valida schema Zod (descrição >= 300 chars, data futura, etc)
+    UI->>API: PUT /api/events/:id (payload com campos atualizados)
+    API->>DB: Busca evento e valida se event.organizerId === user.id
+    alt Organizador é Dono do Evento
+        API->>DB: Executa update no Prisma
+        DB-->>API: Retorna evento atualizado
+        API-->>UI: 200 OK { success: true, event: {...} }
+        UI->>Org: Exibe toast de sucesso no topo direito e redireciona para /organizer
+    else Organizador NÃO é o criador
+        API-->>UI: 403 Forbidden { error: "Você não tem permissão para editar este evento." }
+        UI->>Org: Exibe toast de erro
+    end
 ```
 
 ---
@@ -720,34 +724,66 @@ sequenceDiagram
    - Status atual (`DRAFT` = Cinza, `PUBLISHED` = Verde, `CLOSED` = Laranja, `CANCELLED` = Vermelho).
    - Ingressos vendidos vs. capacidade total.
    - Ações: "Editar", "Alterar Status", "Ver Analytics" e "Acessar Vitrine".
-3. O organizador pode clicar em **"Editar"** para ajustar campos não-estruturais (ex: descrição, banner, data caso não haja ingressos vendidos).
-4. O organizador pode alterar o status do evento (ex: de `PUBLISHED` para `CLOSED` para suspender novas vendas).
-5. O backend valida a permissão de posse (`event.organizerId === user.id`) e persiste as modificações.
-6. A interface atualiza o estado visual sem necessidade de recarregar a página.
+3. O organizador clica em **"Editar"** para abrir a tela de edição `/organizer/events/[id]/edit`.
+4. A tela carrega todos os dados cadastrais do evento:
+   - Título, Categoria, Descrição com contador de 300 caracteres, URL de Imagem de Capa com preview, Data/Hora, Nome do Local, Cidade e UF, Classificação Indicativa +18.
+5. O organizador altera os dados desejados e clica em **"Salvar Alterações"**.
+6. O front-end valida os dados via `updateEventSchema` e envia `PUT /api/events/[id]`.
+7. O backend valida a sessão JWT e confirma que `event.organizerId === user.id`.
+8. O registro do evento é atualizado no banco de dados e a resposta 200 OK é retornada.
+9. O usuário recebe notificação Toast destacada no topo direito e é redirecionado de volta para `/organizer`.
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Tentativa de Editar Evento de Outro Organizador
-- **Condição**: O organizador A tenta alterar a URL para editar o evento pertencente ao organizador B.
-- **Comportamento**: O backend retorna `403 Forbidden` com `{ error: "Você não tem permissão para gerenciar este evento." }`.
+- **Condição**: O organizador A tenta acessar a rota ou enviar requisição `PUT` para o evento pertencente ao organizador B.
+- **Comportamento**: O backend retorna `403 Forbidden` com `{ error: "Você não tem permissão para editar este evento." }`.
 
-### Fluxo de Exceção 2: Tentativa de Excluir Setor com Ingressos Vendidos
-- **Condição**: O organizador tenta remover um setor onde já existem ingressos comprados por clientes.
-- **Comportamento**: O sistema bloqueia a ação com HTTP 400: *"Não é possível remover ou reduzir a capacidade de um setor com ingressos já vendidos."*.
+### Fluxo de Exceção 2: Validação de Dados Inválidos
+- **Condição**: O organizador submete o formulário de edição com descrição inferior a 300 caracteres ou data inválida.
+- **Comportamento**: O Zod bloqueia a submissão e exibe o feedback de erro nos campos correspondentes.
 
 ---
 
 ## 7. Regras de Negócio (RN)
 
 - **RN01 - Isolamento por Organizador**: O organizador só pode listar, visualizar e alterar eventos criados por sua própria conta (`WHERE organizerId = currentUserId`).
-- **RN02 - Imutabilidade de Setores com Vendas**: Setores com ingressos emitidos não podem ter sua capacidade reduzida para um valor menor que a quantidade de ingressos vendidos.
+- **RN02 - Imutabilidade de Setores com Vendas**: A estrutura de setores e assentos com ingressos emitidos permanece protegida para evitar corrupção de ingressos já comercializados.
 - **RN03 - Evento Encerrado**: Eventos com status `CLOSED` continuam visíveis em "Meus Ingressos" para quem comprou e na portaria para validação, mas são desabilitados para novas compras na vitrine.
+- **RN04 - Integridade dos Metadados**: Ao editar um evento, a descrição deve manter a exigência de no mínimo 300 caracteres e a cidade no formato `"Cidade, UF"`.
 
 ---
 
 ## 8. Contratos de API
+
+### Requisição: `PUT /api/events/:id`
+```json
+{
+  "title": "Festival Indie Rock Verzel 2026 - Edição Especial",
+  "description": "Edição comemorativa expandida com as melhores bandas do cenário alternativo nacional e internacional. O festival contará com palcos simultâneos, praça de alimentação completa, bares temáticos e estrutura de som de última geração para proporcionar uma experiência inesquecível.",
+  "category": "FESTIVAL",
+  "bannerUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
+  "locationName": "Espaço Hall Cultural Verzel",
+  "city": "São Paulo, SP",
+  "eventDate": "2026-11-21T21:00:00.000Z",
+  "isAdult": false
+}
+```
+
+### Resposta de Sucesso: `HTTP 200 OK`
+```json
+{
+  "success": true,
+  "event": {
+    "id": "evt_clx987111222",
+    "title": "Festival Indie Rock Verzel 2026 - Edição Especial",
+    "status": "PUBLISHED",
+    "updatedAt": "2026-08-19T14:30:00.000Z"
+  }
+}
+```
 
 ### Requisição: `PATCH /api/events/:id/status`
 ```json
@@ -773,17 +809,25 @@ sequenceDiagram
 ## 9. Critérios de Aceite (BDD / Gherkin)
 
 ```gherkin
-Funcionalidade: Gestão e Controle de Status de Eventos
-  Como um Organizador
-  Eu quero gerenciar meus eventos e alterar seus status
-  Para controlar quando as vendas devem ser abertas ou encerradas
+Funcionalidade: Edição e Gestão de Eventos pelo Organizador
+  Como um Organizador autenticado
+  Eu quero editar as informações dos eventos que eu criei
+  Para manter os dados atualizados para os compradores
 
-  Cenário: Alteração de status de Publicado para Encerrado
-    Dado que sou o organizador do evento "Festival Indie Rock 2026" com status "PUBLISHED"
-    Quando eu acesso o painel "/organizer"
-    E seleciono a opção "Encerrar Vendas" para este evento
-    Então o sistema deve alterar o status do evento para "CLOSED"
-    E o botão de compra na vitrine pública deve ficar desabilitado com o texto "Vendas Encerradas"
+  Cenário: Edição com sucesso de evento próprio
+    Dado que sou o criador do evento com id "evt_123"
+    Quando eu acesso a página "/organizer/events/evt_123/edit"
+    E altero o título para "Festival Indie Rock 2026 - Edição Especial"
+    E clico em "Salvar Alterações"
+    Então o sistema deve atualizar os dados do evento com status HTTP 200
+    E deve exibir uma notificação Toast de sucesso no topo direito
+    E deve me redirecionar para a listagem "/organizer"
+
+  Cenário: Tentativa de editar evento criado por outro organizador
+    Dado que estou autenticado com a conta de um Organizador A
+    Quando tento enviar uma requisição PUT para o evento do Organizador B
+    Então o sistema deve rejeitar a requisição com status HTTP 403 Forbidden
+    E deve exibir a mensagem "Você não tem permissão para editar este evento."
 ```
 
 

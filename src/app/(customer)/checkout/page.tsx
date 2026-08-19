@@ -8,8 +8,16 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function CheckoutPage({ searchParams }: { searchParams: SearchParams }) {
   const session = await getSession();
   
-  if (!session || session.role !== "CUSTOMER") {
+  if (!session) {
     redirect("/login?returnUrl=/checkout");
+  }
+
+  if (session.role === "ORGANIZER") {
+    redirect("/organizer");
+  }
+
+  if (session.role === "GATEKEEPER") {
+    redirect("/gatekeeper");
   }
 
   const { reservationId } = await searchParams;

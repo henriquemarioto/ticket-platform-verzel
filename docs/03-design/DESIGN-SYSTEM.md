@@ -125,9 +125,15 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 ---
 
 ## 7. `Toast` (`src/components/ui/toast.tsx`)
-- Alertas flutuantes globais disparados via hook `useToast()`.
-- Suporta 4 tipos semânticos: `success`, `error`, `warning`, `info`.
-- Desaparece automaticamente após 4000ms com animação suave de fade/slide.
+- Notificações flutuantes globais disparadas via hook `useToast()`.
+- **Posicionamento**: Topo direito (`fixed top-4 right-4 z-[100]`), com animação fluida de entrada a partir do topo (`slide-in-from-top-4`).
+- **Dimensões e Destaque**: Padding ampliado (`p-4 sm:p-5`), cantos arredondados (`rounded-xl`), sombra de alta definição (`shadow-xl`) e largura máxima otimizada (`md:max-w-[440px]`).
+- **Esquema de Cores Sólidas & Alto Contraste**:
+  - `success`: Fundo verde sólido (`bg-emerald-600`), ícone branco e texto branco (`text-white font-semibold`).
+  - `error`: Fundo vermelho sólido (`bg-rose-600`), ícone branco e texto branco (`text-white font-semibold`).
+  - `warning`: Fundo amarelo/âmbar sólido (`bg-amber-500`), ícone branco e texto branco (`text-white font-semibold`).
+  - `info`: Fundo azul sólido (`bg-blue-600`), ícone branco e texto branco (`text-white font-semibold`).
+- **Acessibilidade**: Botão de fechar `X` com alto contraste (`text-white/80 hover:text-white`) e temporizador automático de 4000ms.
 
 ---
 

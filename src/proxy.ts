@@ -50,6 +50,34 @@ export async function proxy(request: NextRequest) {
   if (payload) {
     const { role } = payload;
 
+    if (pathname === "/login" || pathname === "/register") {
+      if (role === "ORGANIZER") {
+        return NextResponse.redirect(new URL("/organizer", request.url));
+      }
+      if (role === "GATEKEEPER") {
+        return NextResponse.redirect(new URL("/gatekeeper", request.url));
+      }
+      if (role === "CUSTOMER") {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
+    if (role === "ORGANIZER" && pathname.startsWith("/checkout")) {
+      return NextResponse.redirect(new URL("/organizer", request.url));
+    }
+
+    if (role === "GATEKEEPER") {
+      if (
+        pathname === "/" ||
+        pathname === "/events" ||
+        pathname.startsWith("/events/") ||
+        pathname.startsWith("/checkout") ||
+        pathname.startsWith("/my-tickets")
+      ) {
+        return NextResponse.redirect(new URL("/gatekeeper", request.url));
+      }
+    }
+
     if (pathname.startsWith("/organizer") && role !== "ORGANIZER") {
       return NextResponse.rewrite(new URL("/forbidden", request.url));
     }

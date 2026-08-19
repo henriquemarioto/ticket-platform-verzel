@@ -6,19 +6,22 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { Loader2 } from "lucide-react";
 import { Seat } from "@prisma/client";
+import { OrganizerCannotBuyModal } from "./OrganizerCannotBuyModal";
 
 interface SeatMapProps {
   eventId: string;
   sectorId: string;
   price: number;
+  currentUserRole?: string | null;
 }
 
-export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
+export function SeatMap({ eventId, sectorId, price, currentUserRole }: SeatMapProps) {
   const [seats, setSeats] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reserving, setReserving] = useState(false);
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
+  const [isOrganizerModalOpen, setIsOrganizerModalOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -48,6 +51,11 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
   }, [eventId, sectorId, toast]);
 
   const toggleSeat = (seat: any) => {
+    if (currentUserRole === "ORGANIZER") {
+      setIsOrganizerModalOpen(true);
+      return;
+    }
+
     if (seat.status === "RESERVED" && currentUserId && seat.reservedById === currentUserId) {
        const resId = seat.reservationItems?.[0]?.reservationId;
        if (resId) {
@@ -71,6 +79,11 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
   };
 
   const handleReserve = async () => {
+    if (currentUserRole === "ORGANIZER") {
+      setIsOrganizerModalOpen(true);
+      return;
+    }
+
     if (selectedSeatIds.length === 0) return;
     
     setReserving(true);
@@ -84,6 +97,10 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 403 && data.code === "ORGANIZER_CANNOT_BUY") {
+          setIsOrganizerModalOpen(true);
+          return;
+        }
         if (res.status === 401) {
           toast("info", "Você precisa fazer login para reservar ingressos.");
           router.push(`/login?returnUrl=/events/${eventId}`);
@@ -141,7 +158,8 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
   }
 
   return (
-    <div className="flex flex-col rounded-lg bg-surface-hover/20 p-4 sm:p-8">
+    <>
+      <div className="flex flex-col rounded-lg bg-surface-hover/20 p-4 sm:p-8">
       {/* Legenda */}
       <div className="flex flex-wrap items-center justify-center gap-4 mb-8 text-sm">
         <div className="flex items-center gap-2">
@@ -246,5 +264,12 @@ export function SeatMap({ eventId, sectorId, price }: SeatMapProps) {
         </Button>
       </div>
     </div>
-  );
+
+    <OrganizerCannotBuyModal
+      isOpen={isOrganizerModalOpen}
+      onClose={() => setIsOrganizerModalOpen(false)}
+      eventId={eventId}
+    />
+  </>
+);
 }

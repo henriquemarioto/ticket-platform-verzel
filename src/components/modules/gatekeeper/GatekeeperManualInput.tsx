@@ -26,13 +26,6 @@ export function GatekeeperManualInput({ onValidate, isProcessing }: GatekeeperMa
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const quickCodes = [
-    { label: "Válido", code: "ELT-4819", color: "text-emerald-400 bg-emerald-400/10 shadow-sm ring-1 ring-emerald-400/20" },
-    { label: "Usado", code: "ELT-4820", color: "text-orange-400 bg-orange-400/10 shadow-sm ring-1 ring-orange-400/20" },
-    { label: "Outro Evento", code: "RCK-9921", color: "text-red-400 bg-red-400/10 shadow-sm ring-1 ring-red-400/20" },
-    { label: "Inválido", code: "XXX-0000", color: "text-rose-600 bg-rose-600/10 shadow-sm ring-1 ring-rose-600/20" },
-  ];
-
   return (
     <div className="max-w-md mx-auto space-y-8 animate-in fade-in duration-300">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,26 +56,6 @@ export function GatekeeperManualInput({ onValidate, isProcessing }: GatekeeperMa
           </div>
         </div>
       </form>
-
-      <div className="shadow-sm pt-6">
-        <p className="text-sm text-text-muted mb-4 text-center">Códigos para Teste Rápido</p>
-        <div className="grid grid-cols-2 gap-3">
-          {quickCodes.map((tc) => (
-            <button
-              key={tc.code}
-              type="button"
-              onClick={() => {
-                setCode(tc.code);
-                inputRef.current?.focus();
-              }}
-              className={`py-2 px-3 rounded-lg border text-sm font-mono transition-colors hover:brightness-110 cursor-pointer ${tc.color}`}
-            >
-              <span className="block text-xs font-sans opacity-80 mb-0.5">{tc.label}</span>
-              {tc.code}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

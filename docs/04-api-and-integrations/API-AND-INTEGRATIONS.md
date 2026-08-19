@@ -134,7 +134,31 @@ export type CreateEventInput = z.infer<typeof createEventSchema>;
 
 ---
 
-## 2. Schema de Alteração de Status (`updateEventStatusSchema`)
+## 2. Schema de Edição de Evento (`updateEventSchema`) e Atualização (`PUT /api/events/:id`)
+
+```typescript
+import { z } from "zod";
+
+export const updateEventSchema = z.object({
+  title: z.string().min(3, "Título do evento é obrigatório"),
+  description: z.string().min(300, "A descrição do evento deve conter no mínimo 300 caracteres"),
+  category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
+  bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
+  locationName: z.string().min(2, "Nome do local é obrigatório"),
+  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Formato deve ser 'Cidade, UF'"),
+  eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
+  isAdult: z.boolean().optional().default(false),
+});
+
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;
+```
+
+- **Acesso**: Restrito a `ORGANIZER` com validação de posse (`event.organizerId === user.id`).
+- **Respostas**: `200 OK` em caso de sucesso; `400 Bad Request` em caso de validação Zod; `401 Unauthorized` se não autenticado; `403 Forbidden` se não for dono do evento; `404 Not Found` se o evento não existir.
+
+---
+
+## 3. Schema de Alteração de Status (`updateEventStatusSchema`)
 
 ```typescript
 import { z } from "zod";
@@ -234,6 +258,9 @@ export const reservePistaSchema = z.object({
 
 export type ReservePistaInput = z.infer<typeof reservePistaSchema>;
 ```
+
+> [!IMPORTANT]
+> **Restrição de Papel nas Reservas**: Apenas usuários com papel `CUSTOMER` podem criar reservas de pista ou assentos. Caso um `ORGANIZER` envie uma requisição para `/api/reservations/general-admission` ou `/api/seats/reserve`, a API retorna `HTTP 403 Forbidden` com `{ error: "Organizadores não podem comprar ingressos. Faça login como cliente.", code: "ORGANIZER_CANNOT_BUY" }`.
 
 ---
 

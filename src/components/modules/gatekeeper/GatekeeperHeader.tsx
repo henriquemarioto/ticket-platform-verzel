@@ -53,7 +53,7 @@ export function GatekeeperHeader({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t lg:border-t-0 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3 pt-2 lg:pt-0 border-t lg:border-t-0">
           <Button
             variant="outline"
             onClick={onRefresh}

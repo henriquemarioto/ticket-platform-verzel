@@ -118,6 +118,7 @@ sequenceDiagram
   - Usuários com papel `GATEKEEPER` devem ser redirecionados imediatamente para `/gatekeeper`.
   - Usuários com papel `CUSTOMER` devem ser redirecionados para a vitrine `/` ou `/my-tickets`.
 - **RN04 - Duração da Sessão**: A sessão tem validade padrão de 7 dias, expirando automaticamente após esse período se não renovada.
+- **RN05 - Bloqueio de Login/Cadastro para Usuários Autenticados**: Usuários com sessão ativa não podem acessar as rotas `/login` e `/register`. O sistema deve interceptar a requisição e redirecionar o usuário para a página correspondente ao seu perfil (`ORGANIZER` -> `/organizer`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/`).
 
 ---
 
@@ -408,18 +409,19 @@ Funcionalidade: Cadastro de Novos Usuários
 
 | Rota / Endpoint | Atores Permitidos | Comportamento se Anônimo | Comportamento se Papel Inválido |
 | :--- | :--- | :--- | :--- |
-| `/` (Vitrine de Eventos) | Todos (Público) | Acesso Permitido | Acesso Permitido |
-| `/events` (Catálogo e Busca de Eventos) | Todos (Público) | Acesso Permitido (Busca e Filtros livres) | Acesso Permitido |
-| `/events/:id` (Detalhes) | Todos (Público) | Acesso Permitido | Acesso Permitido |
+| `/` (Vitrine de Eventos) | `CUSTOMER`, `ORGANIZER` (Público) | Acesso Permitido | Bloqueia Portaria (Redireciona `/gatekeeper`) |
+| `/events` (Catálogo e Busca) | `CUSTOMER`, `ORGANIZER` (Público) | Acesso Permitido (Busca e Filtros livres) | Bloqueia Portaria (Redireciona `/gatekeeper`) |
+| `/events/:id` (Detalhes) | `CUSTOMER`, `ORGANIZER` (Público) | Acesso Permitido | Bloqueia Portaria (Redireciona `/gatekeeper`) |
 | `/tickets/share/:token` | Todos (Público) | Acesso Permitido | Acesso Permitido |
 | `GET /api/events` (Consulta/Busca) | Todos (Público) | Acesso Permitido | Acesso Permitido |
 | `GET /api/events/:id/seats` | Todos (Público) | Acesso Permitido | Acesso Permitido |
 | `/login` / `/register` | Anônimo apenas | Acesso Permitido | Redireciona para Dashboard da Role |
-| `/my-tickets` | `CUSTOMER`, `ORGANIZER` | Redireciona `/login` | N/A |
+| `/my-tickets` | `CUSTOMER`, `ORGANIZER` | Redireciona `/login` | Bloqueia Portaria (Redireciona `/gatekeeper`) |
 | `/checkout` | `CUSTOMER`, `ORGANIZER` | Redireciona `/login` | Bloqueia Portaria (Redireciona `/gatekeeper`) |
 | `/organizer/*` | `ORGANIZER` apenas | Redireciona `/login` | Renderiza Tela `403 Forbidden` |
 | `/gatekeeper/*` | `GATEKEEPER` apenas | Redireciona `/login` | Renderiza Tela `403 Forbidden` |
 | `POST /api/events` | `ORGANIZER` apenas | Retorna `401 Unauthorized` | Retorna `403 Forbidden` |
+| `PUT /api/events/:id` | `ORGANIZER` (Dono) apenas | Retorna `401 Unauthorized` | Retorna `403 Forbidden` |
 | `POST /api/gate/validate` | `GATEKEEPER` apenas | Retorna `401 Unauthorized` | Retorna `403 Forbidden` |
 
 ---
@@ -430,7 +432,7 @@ Funcionalidade: Cadastro de Novos Usuários
 flowchart TD
     Start(["Início da Requisição HTTP"]) --> PathCheck{"O caminho é estático (_next, favicon, assets)?"}
     PathCheck -- "Sim" --> PassPublic["Permitir Passagem Imediata"]
-    PathCheck -- "Não" --> ExtractToken["Extrair cookie auth_session"]
+    PathCheck -- "Não" --> ExtractToken["Extrair cookie auth_session / session"]
     
     ExtractToken --> HasToken{"Token existe e assinatura é válida?"}
     
@@ -443,7 +445,9 @@ flowchart TD
     HasToken -- "Sim" --> DecodeRole["Decodificar Papel (Role)"]
     DecodeRole --> IsAuthRoute{"Tentando acessar /login ou /register?"}
     IsAuthRoute -- "Sim" --> RedirRoleHome["Redirecionar para home do papel"]
-    IsAuthRoute -- "Não" --> CheckPermissions{"A Role possui permissão para a rota?"}
+    IsAuthRoute -- "Não" --> IsGatekeeperOnCustomerRoute{"Role é GATEKEEPER tentando acessar vitrine/detalhes (/ ou /events/*)?"}
+    IsGatekeeperOnCustomerRoute -- "Sim" --> RedirGatekeeper["Redirecionar para /gatekeeper"]
+    IsGatekeeperOnCustomerRoute -- "Não" --> CheckPermissions{"A Role possui permissão para a rota?"}
     
     CheckPermissions -- "Sim" --> PassAuthorized["Permitir Passagem com Headers Injetados (x-user-id, x-user-role)"]
     CheckPermissions -- "Não" --> IsApiForbidden{"É uma chamada de API?"}
@@ -467,7 +471,12 @@ flowchart TD
 2. O Middleware detecta que a rota exige `GATEKEEPER`.
 3. A aplicação renderiza a tela `403 - Acesso Restrito à Portaria`.
 
-### Fluxo de Exceção 3: Token JWT Expirado ou Chave Adulterada
+### Fluxo de Exceção 3: Portaria tentando acessar Vitrine ou Detalhes de Eventos
+1. O usuário logado como `GATEKEEPER` tenta acessar a página inicial `/`, catálogo `/events` ou `/events/:id`.
+2. O Middleware intercepta a requisição e identifica o perfil operacional da Portaria.
+3. O sistema redireciona o operador automaticamente de volta para a tela de controle `/gatekeeper`.
+
+### Fluxo de Exceção 4: Token JWT Expirado ou Chave Adulterada
 1. O usuário envia uma requisição com um cookie de sessão cujo segredo foi alterado ou cujo tempo de vida expirou.
 2. A biblioteca de criptografia rejeita o token com erro `JWTExpired` ou `JWSSignatureVerificationFailed`.
 3. O middleware invalida o cookie expirado e redireciona o usuário para `/login` com a mensagem: *"Sua sessão expirou. Por favor, faça login novamente."*.
@@ -478,7 +487,7 @@ flowchart TD
 
 - **RN01 - Bloqueio na Borda (Edge Middleware)**: A validação de permissões deve ocorrer antes mesmo da renderização das páginas ou execução dos controllers, poupando recursos de banco e servidor.
 - **RN02 - Headers de Contexto**: O Middleware, após validar o JWT com sucesso, injeta os cabeçalhos `x-user-id`, `x-user-email` e `x-user-role` na requisição downstream para consumo rápido pelos Server Components e endpoints.
-- **RN03 - Isolamento Estrito da Portaria**: O papel `GATEKEEPER` é estritamente operacional e não possui acesso a fluxos de compra ou criação de eventos.
+- **RN03 - Isolamento Estrito da Portaria**: O papel `GATEKEEPER` é estritamente operacional e não possui acesso a fluxos de compra, vitrine de eventos ou criação de eventos. Tentativas de acessar `/`, `/events`, `/events/*`, `/checkout` ou `/my-tickets` redirecionam imediatamente para `/gatekeeper`.
 
 ---
 
