@@ -34,8 +34,21 @@ export const createEventSchema = z.object({
   city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
   endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),
+  entryStartTime: z.string().datetime("Data e hora de abertura dos portões válidas são obrigatórias"),
   isAdult: z.boolean().optional().default(false),
   sectors: z.array(createSectorSchema).min(1, "Adicione ao menos um setor"),
+}).refine((data) => {
+  const diffMs = new Date(data.eventDate).getTime() - new Date(data.entryStartTime).getTime();
+  return diffMs >= 30 * 60 * 1000;
+}, {
+  message: "A abertura dos portões deve ser no mínimo 30 minutos antes do início do evento",
+  path: ["entryStartTime"],
+}).refine((data) => {
+  const diffMs = new Date(data.eventDate).getTime() - new Date(data.entryStartTime).getTime();
+  return diffMs <= 6 * 60 * 60 * 1000;
+}, {
+  message: "A abertura dos portões não pode ser anterior a 6 horas antes do início do evento",
+  path: ["entryStartTime"],
 }).refine((data) => {
   if (data.endDate && data.endDate.trim() !== "") {
     return new Date(data.endDate).getTime() > new Date(data.eventDate).getTime();
@@ -64,7 +77,20 @@ export const updateEventSchema = z.object({
   city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
   endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),
+  entryStartTime: z.string().datetime("Data e hora de abertura dos portões válidas são obrigatórias"),
   isAdult: z.boolean().optional().default(false),
+}).refine((data) => {
+  const diffMs = new Date(data.eventDate).getTime() - new Date(data.entryStartTime).getTime();
+  return diffMs >= 30 * 60 * 1000;
+}, {
+  message: "A abertura dos portões deve ser no mínimo 30 minutos antes do início do evento",
+  path: ["entryStartTime"],
+}).refine((data) => {
+  const diffMs = new Date(data.eventDate).getTime() - new Date(data.entryStartTime).getTime();
+  return diffMs <= 6 * 60 * 60 * 1000;
+}, {
+  message: "A abertura dos portões não pode ser anterior a 6 horas antes do início do evento",
+  path: ["entryStartTime"],
 }).refine((data) => {
   if (data.endDate && data.endDate.trim() !== "") {
     return new Date(data.endDate).getTime() > new Date(data.eventDate).getTime();

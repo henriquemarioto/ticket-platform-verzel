@@ -38,9 +38,32 @@ export default function CreateEventPage() {
   const [stateUf, setStateUf] = React.useState("");
   const [eventDate, setEventDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
+  const [entryStartTime, setEntryStartTime] = React.useState("");
+  const [isEntryAutoFilled, setIsEntryAutoFilled] = React.useState(true);
   const [isAdult, setIsAdult] = React.useState(false);
   
   const [sectors, setSectors] = React.useState<SectorState[]>([]);
+
+  const handleEventDateChange = (val: string) => {
+    setEventDate(val);
+    if (val) {
+      const dateObj = new Date(val);
+      if (!isNaN(dateObj.getTime())) {
+        if (!entryStartTime || isEntryAutoFilled) {
+          const suggested = new Date(dateObj.getTime() - 30 * 60 * 1000);
+          const pad = (n: number) => String(n).padStart(2, "0");
+          const formatted = `${suggested.getFullYear()}-${pad(suggested.getMonth() + 1)}-${pad(suggested.getDate())}T${pad(suggested.getHours())}:${pad(suggested.getMinutes())}`;
+          setEntryStartTime(formatted);
+          setIsEntryAutoFilled(true);
+        }
+      }
+    }
+  };
+
+  const handleEntryStartTimeChange = (val: string) => {
+    setEntryStartTime(val);
+    setIsEntryAutoFilled(false);
+  };
 
   const handleSelectFromCatalog = (item: CatalogItem) => {
     setTitle(item.title);
@@ -115,6 +138,7 @@ export default function CreateEventPage() {
       city,
       eventDate: eventDate ? new Date(eventDate).toISOString() : "",
       endDate: endDate ? new Date(endDate).toISOString() : undefined,
+      entryStartTime: entryStartTime ? new Date(entryStartTime).toISOString() : "",
       isAdult,
       sectors: sectors.map(s => ({
         name: s.name,
@@ -265,24 +289,56 @@ export default function CreateEventPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Horários e Datas com Portaria */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Data e Hora de Início</label>
+                <label className="text-sm font-medium text-text-primary">
+                  Data e Hora de Início
+                </label>
                 <Input 
                   type="datetime-local"
                   value={eventDate} 
-                  onChange={(e) => setEventDate(e.target.value)}
+                  onChange={(e) => handleEventDateChange(e.target.value)}
                   error={errors["eventDate"]}
                 />
+                <p className="text-xs text-text-muted">
+                  Início oficial das apresentações
+                </p>
               </div>
+
               <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Data e Hora de Término (Opcional)</label>
+                <label className="text-sm font-medium text-text-primary">
+                  Data de Término (Opcional)
+                </label>
                 <Input 
                   type="datetime-local"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)}
                   error={errors["endDate"]}
                 />
+                <p className="text-xs text-text-muted">
+                  Previsão de encerramento
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-text-primary">
+                    Abertura dos Portões
+                  </label>
+                  <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">
+                    Portaria
+                  </span>
+                </div>
+                <Input 
+                  type="datetime-local"
+                  value={entryStartTime} 
+                  onChange={(e) => handleEntryStartTimeChange(e.target.value)}
+                  error={errors["entryStartTime"]}
+                />
+                <p className="text-xs text-text-muted">
+                  Entre 30m e 6h antes do início
+                </p>
               </div>
             </div>
             

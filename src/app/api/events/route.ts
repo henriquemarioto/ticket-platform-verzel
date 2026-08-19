@@ -52,6 +52,7 @@ export async function GET(req: NextRequest) {
         city: event.city,
         eventDate: event.eventDate,
         endDate: event.endDate,
+        entryStartTime: event.entryStartTime,
         isAdult: event.isAdult,
         minPrice,
         status: event.status,
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, description, category, eventDate, endDate, locationName, city, bannerUrl, isAdult, sectors } = validation.data;
+    const { title, description, category, eventDate, endDate, entryStartTime, locationName, city, bannerUrl, isAdult, sectors } = validation.data;
 
     // Prisma Transaction
     const event = await prisma.$transaction(async (tx) => {
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
           category,
           eventDate: new Date(eventDate),
           endDate: endDate ? new Date(endDate) : null,
+          entryStartTime: new Date(entryStartTime),
           locationName,
           city,
           bannerUrl,

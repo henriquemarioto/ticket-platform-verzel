@@ -7,9 +7,11 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
     const roleHeader = request.headers.get("x-user-role");
+    const userIdHeader = request.headers.get("x-user-id");
+    const userId = session?.id || userIdHeader;
     const userRole = session?.role || roleHeader;
 
-    if (!userRole) {
+    if (!userRole || !userId) {
       return NextResponse.json(
         { error: "Não autorizado. Sessão necessária." },
         { status: 401 }
@@ -23,10 +25,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const now = new Date();
+
     const events = await prisma.event.findMany({
       where: {
         status: {
           in: [EventStatus.PUBLISHED, EventStatus.CLOSED],
+        },
+        gatekeepers: {
+          some: {
+            gatekeeperId: userId,
+          },
         },
       },
       orderBy: {
@@ -42,6 +51,7 @@ export async function GET(request: NextRequest) {
         city: true,
         eventDate: true,
         endDate: true,
+        entryStartTime: true,
         status: true,
         tickets: {
           select: {
@@ -60,6 +70,8 @@ export async function GET(request: NextRequest) {
         (t) => t.status === "USED"
       ).length;
 
+      const isEntryOpen = now >= new Date(event.entryStartTime);
+
       return {
         id: event.id,
         title: event.title,
@@ -70,6 +82,8 @@ export async function GET(request: NextRequest) {
         city: event.city,
         eventDate: event.eventDate.toISOString(),
         endDate: event.endDate ? event.endDate.toISOString() : null,
+        entryStartTime: event.entryStartTime.toISOString(),
+        isEntryOpen,
         status: event.status,
         totalSold,
         totalCheckedIn,

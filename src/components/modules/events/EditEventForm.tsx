@@ -17,6 +17,7 @@ export interface EditEventInitialData {
   bannerUrl: string;
   eventDate: string; // YYYY-MM-DDTHH:mm
   endDate?: string | null; // YYYY-MM-DDTHH:mm
+  entryStartTime: string; // YYYY-MM-DDTHH:mm
   locationName: string;
   cityName: string;
   stateUf: string;
@@ -26,6 +27,16 @@ export interface EditEventInitialData {
 interface EditEventFormProps {
   eventId: string;
   initialData: EditEventInitialData;
+}
+
+function formatToDatetimeLocal(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
 export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
@@ -46,7 +57,26 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
   const [stateUf, setStateUf] = React.useState(initialData.stateUf || "");
   const [eventDate, setEventDate] = React.useState(initialData.eventDate || "");
   const [endDate, setEndDate] = React.useState(initialData.endDate || "");
+  const [entryStartTime, setEntryStartTime] = React.useState(initialData.entryStartTime || "");
+  const [isEntryAutoFilled, setIsEntryAutoFilled] = React.useState(false);
   const [isAdult, setIsAdult] = React.useState(initialData.isAdult || false);
+
+  const handleEventDateChange = (val: string) => {
+    setEventDate(val);
+    if (val) {
+      const dateObj = new Date(val);
+      if (!isNaN(dateObj.getTime()) && (!entryStartTime || isEntryAutoFilled)) {
+        const suggested = new Date(dateObj.getTime() - 30 * 60 * 1000);
+        setEntryStartTime(formatToDatetimeLocal(suggested));
+        setIsEntryAutoFilled(true);
+      }
+    }
+  };
+
+  const handleEntryStartTimeChange = (val: string) => {
+    setEntryStartTime(val);
+    setIsEntryAutoFilled(false);
+  };
 
   const handleSelectFromCatalog = (item: CatalogItem) => {
     setTitle(item.title);
@@ -107,6 +137,16 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
     if (!eventDate) {
       fieldErrors["eventDate"] = "Data e hora do evento são obrigatórias.";
     }
+    if (!entryStartTime) {
+      fieldErrors["entryStartTime"] = "Horário de abertura dos portões é obrigatório.";
+    } else if (eventDate) {
+      const diffMs = new Date(eventDate).getTime() - new Date(entryStartTime).getTime();
+      if (diffMs < 30 * 60 * 1000) {
+        fieldErrors["entryStartTime"] = "A abertura dos portões deve ser no mínimo 30 minutos antes do início do evento.";
+      } else if (diffMs > 6 * 60 * 60 * 1000) {
+        fieldErrors["entryStartTime"] = "A abertura dos portões não pode ser anterior a 6 horas antes do início do evento.";
+      }
+    }
     if (endDate && eventDate && new Date(endDate).getTime() <= new Date(eventDate).getTime()) {
       fieldErrors["endDate"] = "A data e hora de término deve ser posterior à data de início.";
     }
@@ -130,6 +170,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
       city,
       eventDate: new Date(eventDate).toISOString(),
       endDate: endDate ? new Date(endDate).toISOString() : null,
+      entryStartTime: new Date(entryStartTime).toISOString(),
       isAdult,
     };
 
@@ -270,24 +311,56 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Horários e Datas com Portaria */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Data e Hora de Início</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-text-primary">
+                    Abertura dos Portões
+                  </label>
+                  <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">
+                    Portaria
+                  </span>
+                </div>
+                <Input 
+                  type="datetime-local"
+                  value={entryStartTime} 
+                  onChange={(e) => handleEntryStartTimeChange(e.target.value)}
+                  error={errors["entryStartTime"]}
+                />
+                <p className="text-xs text-text-muted">
+                  Entre 30m e 6h antes do início
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-text-primary">
+                  Data e Hora de Início
+                </label>
                 <Input 
                   type="datetime-local"
                   value={eventDate} 
-                  onChange={(e) => setEventDate(e.target.value)}
+                  onChange={(e) => handleEventDateChange(e.target.value)}
                   error={errors["eventDate"]}
                 />
+                <p className="text-xs text-text-muted">
+                  Início oficial das apresentações
+                </p>
               </div>
+
               <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Data e Hora de Término (Opcional)</label>
+                <label className="text-sm font-medium text-text-primary">
+                  Data de Término (Opcional)
+                </label>
                 <Input 
                   type="datetime-local"
                   value={endDate} 
                   onChange={(e) => setEndDate(e.target.value)}
                   error={errors["endDate"]}
                 />
+                <p className="text-xs text-text-muted">
+                  Previsão de encerramento
+                </p>
               </div>
             </div>
             

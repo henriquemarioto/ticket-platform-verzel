@@ -2,12 +2,41 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
-import { Calendar, MapPin, QrCode, Share2, Loader2 } from "lucide-react";
-import { formatEventDateRange } from "@/lib/utils/date-formatters";
+import { Calendar, MapPin, QrCode, Share2, Loader2, Clock } from "lucide-react";
+import { formatEventDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
+
+export interface TicketItemData {
+  id: string;
+  ticketCode: string;
+  qrPayload: string;
+  status: string;
+  eventId?: string;
+  usedAt?: Date | string | null;
+  event: {
+    id: string;
+    title: string;
+    bannerUrl?: string | null;
+    locationName: string;
+    city: string;
+    eventDate: Date | string;
+    endDate?: Date | string | null;
+    entryStartTime?: Date | string;
+  };
+  sector: {
+    id: string;
+    name: string;
+    type: string;
+  };
+  seat?: {
+    id: string;
+    row: string;
+    number: number;
+  } | null;
+}
 
 type TicketCardProps = {
-  ticket: any;
-  onShowQR: (ticket: any) => void;
+  ticket: TicketItemData;
+  onShowQR: (ticket: TicketItemData) => void;
 };
 
 export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
@@ -27,14 +56,18 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
       await navigator.clipboard.writeText(url);
       
       success("Link copiado para a área de transferência.");
-    } catch (error: any) {
-      showError(error.message);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Erro ao compartilhar";
+      showError(msg);
     } finally {
       setIsSharing(false);
     }
   };
 
   const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
+  const entryTimeLabel = event.entryStartTime
+    ? formatEntryTime(event.entryStartTime, event.eventDate)
+    : "";
 
   const getStatusBadge = () => {
     switch (ticket.status) {
@@ -72,13 +105,19 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
             {getStatusBadge()}
           </div>
           
-          <div className="space-y-2 text-sm text-text-muted">
+          <div className="space-y-1.5 text-sm text-text-muted">
+            {entryTimeLabel && (
+              <div className="flex items-center gap-2 text-primary font-medium text-xs">
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                <span>{entryTimeLabel}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>{formattedDate}</span>
+              <Calendar className="w-4 h-4 shrink-0" />
+              <span>Início: {formattedDate}</span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-4 h-4 shrink-0" />
               <span>{event.locationName} • {event.city}</span>
             </div>
           </div>

@@ -90,6 +90,8 @@ sequenceDiagram
 
 - **RN01 - Acesso Restrito a Gatekeeper**: Apenas usuários com a role `GATEKEEPER` podem acessar as rotas operacionais de portaria.
 - **RN02 - Validação Vinculada ao Evento Ativo**: O motor de validação deve sempre comparar o `eventId` do ingresso lido com o evento selecionado no painel da portaria.
+- **RN03 - Vínculo Obrigatório de Portaria ao Evento**: O operador de portaria só tem acesso e só pode validar eventos aos quais foi explicitamente vinculado (`EventGatekeeper`).
+- **RN04 - Bloqueio de Seleção Antes do Horário de Entrada**: A portaria só consegue selecionar o evento após o horário programado de abertura dos portões (`now >= entryStartTime`). Antes desse horário, o botão de seleção fica desabilitado com aviso do horário de abertura.
 
 ---
 
@@ -106,6 +108,9 @@ sequenceDiagram
       "id": "evt_rock2026",
       "title": "Festival Indie Rock Verzel 2026",
       "eventDate": "2026-11-20T20:00:00.000Z",
+      "endDate": "2026-11-20T23:30:00.000Z",
+      "entryStartTime": "2026-11-20T19:30:00.000Z",
+      "isEntryOpen": true,
       "locationName": "Espaço Hall Cultural",
       "totalSold": 185,
       "totalCheckedIn": 42
@@ -537,6 +542,8 @@ stateDiagram-v2
 - **RN01 - 4 Estados Rígidos**: A resposta da API deve conter estritamente um dos 4 enums: `VALID`, `ALREADY_USED`, `WRONG_EVENT` ou `INVALID_CODE`.
 - **RN02 - Irreversibilidade do Check-in**: Uma vez que o status do ingresso foi marcado como `USED`, ele não pode retornar para `ACTIVE`.
 - **RN03 - Log de Auditoria**: Toda tentativa de validação (sucesso ou falha) deve ser registrada em log para histórico operacional.
+- **RN04 - Validação Apenas Após Horário de Entrada**: Os ingressos só podem ser validados pela portaria após o horário de abertura dos portões (`now >= entryStartTime`). Tentativas antes desse horário são sumariamente rejeitadas.
+- **RN05 - Autorização Obrigatória de Portaria**: O operador que executa a validação deve estar vinculado ao evento através de `EventGatekeeper`. Requisições sem autorização retornam HTTP 403 Forbidden.
 
 ---
 

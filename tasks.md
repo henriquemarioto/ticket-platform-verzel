@@ -190,6 +190,21 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Criar helper `formatEventDateRange` e atualizar componentes de exibição (Vitrine, Detalhes, Vouchers, Painéis).
   - [x] Atualizar `prisma/seed.ts` com horários de início e término coerentes.
 
+- [x] **Task 2.29: Horário de Início para Entrar (entryStartTime) e Bloqueio Operacional de Portaria (UC08, UC09, UC10, UC21, UC24)**
+  - [x] Modelar `entryStartTime DateTime` no `prisma/schema.prisma` como campo obrigatório (NOT NULL) e sincronizar banco.
+  - [x] Atualizar `createEventSchema` e `updateEventSchema` com validação de `entryStartTime` entre 30 min e 6 horas antes de `eventDate`.
+  - [x] Atualizar formulários de criação e edição com campo `entryStartTime` e cálculo padrão automático (`eventDate - 30 min`).
+  - [x] Bloquear seleção de evento na tela de portaria (`/gatekeeper` e `GatekeeperEventSelector`) quando `now < entryStartTime`.
+  - [x] Bloquear validação de ingressos (`POST /api/gate/validate`) quando `now < entryStartTime` com mensagem de aviso de abertura de portões.
+  - [x] Exibir horário de abertura dos portões na tela de detalhes do evento, vouchers (`my-tickets`, compartilhamento) e cards da portaria.
+
+- [x] **Task 2.30: Vínculo Obrigatório de Portaria ao Evento e Geração de Contas Temporárias (UC01, UC03, UC21, UC24)**
+  - [x] Modelar `EventGatekeeper` (`event_gatekeepers`) associando operadores `GATEKEEPER` aos eventos autorizados.
+  - [x] Restringir listagem `GET /api/gate/events` e validação `POST /api/gate/validate` para permitir apenas operadores vinculados ao evento (`403 Forbidden` se não vinculado).
+  - [x] Implementar endpoints de gestão de portaria para o organizador (`GET`, `POST`, `DELETE` em `/api/events/[id]/gatekeepers`).
+  - [x] Criar modal de gerenciamento de portaria (`EventGatekeepersModal`) no painel do organizador (`/organizer`) com geração rápida de credenciais temporárias (1 clique) e botão de cópia.
+  - [x] Atualizar `prisma/seed.ts` populando `entryStartTime` em todos os eventos e vinculando a conta `portaria@verzel.com.br` ao evento de demonstração.
+
 ---
 
 ## 🌟 Fase 3: Escala, Opcionais e Excelência (Bônus)

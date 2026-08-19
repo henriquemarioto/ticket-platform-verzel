@@ -60,6 +60,7 @@ async function main() {
   // Limpeza prévia de registros transacionais de eventos anteriores para garantir idempotência
   console.log('Limpando dados transacionais e eventos prévios...');
   await prisma.ticketValidationLog.deleteMany({});
+  await prisma.eventGatekeeper.deleteMany({});
   await prisma.ticket.deleteMany({});
   await prisma.order.deleteMany({});
   await prisma.reservationItem.deleteMany({});
@@ -101,6 +102,7 @@ async function main() {
     city: string;
     eventDate: Date;
     endDate?: Date | null;
+    entryStartTime?: Date;
     isAdult?: boolean;
     sectors: SectorDef[];
   }
@@ -528,6 +530,7 @@ async function main() {
         city: eventDef.city,
         eventDate: eventDef.eventDate,
         endDate: eventDef.endDate || null,
+        entryStartTime: eventDef.entryStartTime || new Date(eventDef.eventDate.getTime() - 60 * 60 * 1000),
         isAdult: eventDef.isAdult ?? false,
         status: EventStatus.PUBLISHED,
         organizerId: organizerId,
@@ -536,6 +539,14 @@ async function main() {
 
     createdEvents.push(event);
     createdSectorsByEvent[event.id] = [];
+
+    // Vincular conta de portaria de teste ao evento
+    await prisma.eventGatekeeper.create({
+      data: {
+        eventId: event.id,
+        gatekeeperId: portariaId,
+      },
+    });
 
     for (const sectorDef of eventDef.sectors) {
       const sector = await prisma.sector.create({

@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowLeft, RefreshCw, Calendar, MapPin } from "lucide-react";
+import { ArrowLeft, RefreshCw, Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatEventDateRange } from "@/lib/utils/date-formatters";
+import { formatEventDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
 import { GatekeeperEvent } from "./types";
 
 interface GatekeeperHeaderProps {
@@ -20,6 +20,7 @@ export function GatekeeperHeader({
   isRefreshing,
 }: GatekeeperHeaderProps) {
   const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
+  const entryTimeLabel = formatEntryTime(event.entryStartTime, event.eventDate);
 
   return (
     <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
@@ -27,20 +28,24 @@ export function GatekeeperHeader({
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="neutral">Portaria Ativa</Badge>
-            <Badge variant={event.status === "PUBLISHED" ? "success" : "warning"}>
-              {event.status === "PUBLISHED" ? "Publicado" : "Encerrado"}
+            <Badge variant={event.isEntryOpen ? "success" : "warning"}>
+              {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
             </Badge>
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
             {event.title}
           </h1>
           <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-sm text-text-muted">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-primary shrink-0" />
-              <span>{formattedDate}</span>
+            <div className="flex items-center gap-1.5 font-medium text-text-primary">
+              <Clock className="w-4 h-4 text-primary shrink-0" />
+              <span>{entryTimeLabel}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-primary shrink-0" />
+              <Calendar className="w-4 h-4 text-text-muted shrink-0" />
+              <span>Início: {formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-text-muted shrink-0" />
               <span>
                 {event.locationName} • {event.city}
               </span>

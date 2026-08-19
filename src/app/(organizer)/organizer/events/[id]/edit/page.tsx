@@ -57,6 +57,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
     bannerUrl: event.bannerUrl || "",
     eventDate: formatToDatetimeLocal(event.eventDate),
     endDate: event.endDate ? formatToDatetimeLocal(event.endDate) : "",
+    entryStartTime: formatToDatetimeLocal(event.entryStartTime),
     locationName: event.locationName,
     cityName,
     stateUf,

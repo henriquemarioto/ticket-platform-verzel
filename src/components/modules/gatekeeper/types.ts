@@ -8,6 +8,8 @@ export interface GatekeeperEvent {
   city: string;
   eventDate: string;
   endDate?: string | null;
+  entryStartTime: string;
+  isEntryOpen: boolean;
   status: string;
   totalSold: number;
   totalCheckedIn: number;

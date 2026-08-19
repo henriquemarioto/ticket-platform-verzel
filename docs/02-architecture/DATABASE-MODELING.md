@@ -108,39 +108,54 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  events       Event[]
-  orders       Order[]
-  tickets      Ticket[]
-  reservations Reservation[]
-  validations  TicketValidationLog[]
+  events             Event[]
+  orders             Order[]
+  tickets            Ticket[]
+  reservations       Reservation[]
+  validations        TicketValidationLog[]
+  gatekeeperEvents   EventGatekeeper[]
 
   @@map("users")
 }
 
 model Event {
-  id           String        @id @default(cuid())
-  title        String
-  description  String
-  category     EventCategory @default(SHOW)
-  isAdult      Boolean       @default(false)
-  bannerUrl    String
-  locationName String
-  city         String
-  eventDate    DateTime
-  endDate      DateTime?
-  status       EventStatus   @default(PUBLISHED)
-  externalId   String?
+  id             String        @id @default(cuid())
+  title          String
+  description    String
+  category       EventCategory @default(SHOW)
+  isAdult        Boolean       @default(false)
+  bannerUrl      String
+  locationName   String
+  city           String
+  eventDate      DateTime
+  endDate        DateTime?
+  entryStartTime DateTime      // Horário obrigatório de início para entrar (30m a 6h antes de eventDate)
+  status         EventStatus   @default(PUBLISHED)
+  externalId     String?
   
-  organizerId  String
-  organizer    User          @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId    String
+  organizer      User          @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   
-  sectors      Sector[]
-  tickets      Ticket[]
-  reservations Reservation[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  sectors        Sector[]
+  tickets        Ticket[]
+  reservations   Reservation[]
+  gatekeepers    EventGatekeeper[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@map("events")
+}
+
+model EventGatekeeper {
+  id           String   @id @default(cuid())
+  eventId      String
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  gatekeeperId String
+  gatekeeper   User     @relation(fields: [gatekeeperId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@unique([eventId, gatekeeperId])
+  @@map("event_gatekeepers")
 }
 
 model Sector {

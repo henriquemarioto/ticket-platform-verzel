@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { Calendar, MapPin, AlertCircle } from "lucide-react";
+import { Calendar, MapPin, AlertCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { generateSharePasscode } from "@/lib/crypto";
-import { formatEventDateRange } from "@/lib/utils/date-formatters";
+import { formatEventDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
 import { Metadata } from "next";
 
 export async function generateMetadata({ 
@@ -68,6 +68,7 @@ export default async function ShareTicketPage({
   const { event, sector, seat } = ticket;
 
   const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
+  const entryTimeLabel = formatEntryTime(event.entryStartTime, event.eventDate);
 
   const getStatusBadge = () => {
     switch (ticket.status) {
@@ -125,10 +126,14 @@ export default async function ShareTicketPage({
 
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold mb-2">{event.title}</h2>
-              <div className="space-y-2 text-sm text-text-muted flex flex-col items-center">
+              <div className="space-y-1.5 text-sm text-text-muted flex flex-col items-center">
+                <div className="flex items-center gap-2 text-primary font-medium">
+                  <Clock className="w-4 h-4" />
+                  <span>{entryTimeLabel}</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{formattedDate}</span>
+                  <span>Início: {formattedDate}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />

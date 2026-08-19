@@ -420,6 +420,7 @@ sequenceDiagram
 - **RN05 - Formatação Padronizada de Localização**: O campo `city` no backend deve ser armazenado no formato padronizado `"Cidade, UF"`.
 - **RN06 - Classificação +18**: O evento pode conter a flag booleana `isAdult`, exibindo badges apropriados na vitrine e detalhes do evento.
 - **RN07 - Período do Evento (Início e Fim)**: O evento deve ter uma data e hora de início (`eventDate`) e pode opcionalmente definir uma data e hora de término (`endDate`), que deve ser estritamente posterior ao início.
+- **RN08 - Horário Obrigatório de Início para Entrar (`entryStartTime`)**: O evento deve possuir obrigatoriamente um horário de abertura dos portões / entrada (`entryStartTime NOT NULL`). Deve ser no mínimo 30 minutos e no máximo 6 horas antes de `eventDate`. O valor padrão sugerido na interface é de 30 minutos antes do início.
 
 ---
 
@@ -434,6 +435,7 @@ sequenceDiagram
   "isAdult": false,
   "eventDate": "2026-11-20T20:00:00.000Z",
   "endDate": "2026-11-20T23:30:00.000Z",
+  "entryStartTime": "2026-11-20T19:30:00.000Z",
   "locationName": "Espaço Hall Cultural",
   "city": "São Paulo, SP",
   "bannerUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",

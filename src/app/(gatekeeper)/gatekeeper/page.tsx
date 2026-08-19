@@ -20,10 +20,17 @@ export default async function GatekeeperPage() {
     redirect("/forbidden");
   }
 
+  const now = new Date();
+
   const events = await prisma.event.findMany({
     where: {
       status: {
         in: [EventStatus.PUBLISHED, EventStatus.CLOSED],
+      },
+      gatekeepers: {
+        some: {
+          gatekeeperId: session.id,
+        },
       },
     },
     orderBy: {
@@ -38,6 +45,8 @@ export default async function GatekeeperPage() {
       locationName: true,
       city: true,
       eventDate: true,
+      endDate: true,
+      entryStartTime: true,
       status: true,
       tickets: {
         select: {
@@ -56,6 +65,8 @@ export default async function GatekeeperPage() {
       (t) => t.status === "USED"
     ).length;
 
+    const isEntryOpen = now >= new Date(event.entryStartTime);
+
     return {
       id: event.id,
       title: event.title,
@@ -65,6 +76,9 @@ export default async function GatekeeperPage() {
       locationName: event.locationName,
       city: event.city,
       eventDate: event.eventDate.toISOString(),
+      endDate: event.endDate ? event.endDate.toISOString() : null,
+      entryStartTime: event.entryStartTime.toISOString(),
+      isEntryOpen,
       status: event.status,
       totalSold,
       totalCheckedIn,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { TicketCard } from "./ticket-card";
+import { TicketCard, TicketItemData } from "./ticket-card";
 import { Modal } from "@/components/ui/modal";
 import { QRCodeSVG } from "qrcode.react";
 import { Badge } from "@/components/ui/badge";
@@ -10,16 +10,16 @@ import { TicketX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type TicketTabsProps = {
-  upcomingTickets: any[];
-  pastTickets: any[];
+  upcomingTickets: TicketItemData[];
+  pastTickets: TicketItemData[];
 };
 
 export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
   const router = useRouter();
-  const [upcoming, setUpcoming] = useState<any[]>(upcomingTickets);
-  const [past, setPast] = useState<any[]>(pastTickets);
+  const [upcoming, setUpcoming] = useState<TicketItemData[]>(upcomingTickets);
+  const [past, setPast] = useState<TicketItemData[]>(pastTickets);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
-  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<TicketItemData | null>(null);
 
   useEffect(() => {
     setUpcoming(upcomingTickets);
@@ -115,7 +115,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
           <div className="flex flex-col items-center">
             <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
               <QRCodeSVG
-                value={selectedTicket.qrPayload || `v1:${selectedTicket.ticketCode}:${selectedTicket.eventId}`}
+                value={selectedTicket.qrPayload || `v1:${selectedTicket.ticketCode}:${selectedTicket.event.id}`}
                 size={240}
                 level="M"
                 includeMargin={false}

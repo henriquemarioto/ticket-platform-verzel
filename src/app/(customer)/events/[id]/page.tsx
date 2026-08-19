@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Clock } from "lucide-react";
 import { SectorItem } from "@/components/modules/events/SectorItem";
-import { formatEventDateRange } from "@/lib/utils/date-formatters";
+import { formatEventDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
 
 type Params = Promise<{ id: string }>;
 
@@ -31,6 +31,7 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
   }
 
   const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
+  const entryTimeLabel = formatEntryTime(event.entryStartTime, event.eventDate);
 
   return (
     <div className="min-h-screen pb-16 bg-surface-hover">
@@ -73,13 +74,23 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
                 {event.title}
               </h1>
 
-              <div className="flex flex-col gap-3 sm:gap-6 sm:flex-row mt-2">
+              <div className="flex flex-col gap-3 sm:gap-6 sm:flex-row mt-2 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/80">Portões</p>
+                    <p className="font-medium text-white">{entryTimeLabel}</p>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/80">Data e Hora</p>
+                    <p className="text-sm text-white/80">Início</p>
                     <p className="font-medium text-white">{formattedDate}</p>
                   </div>
                 </div>

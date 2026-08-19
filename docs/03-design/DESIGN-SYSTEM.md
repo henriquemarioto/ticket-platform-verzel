@@ -92,9 +92,9 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 
 ## 3. `Badge`, Selos de Classificação & Pílulas de Filtro (`src/components/ui/badge.tsx`, `CategoryPills`)
 - Indicador visual compacto para status de ingressos, eventos e botões de filtro interativo:
-  - `success`: Fundo verde suave com texto escuro (`bg-success/20 text-success`).
-  - `warning`: Fundo âmbar suave com texto escuro (`bg-warning/20 text-warning`).
-  - `danger`: Fundo vermelho suave com texto escuro (`bg-danger/20 text-danger`).
+  - `success`: Fundo verde suave com texto escuro (`bg-success text-success`).
+  - `warning`: Fundo âmbar suave com texto escuro (`bg-warning text-warning`).
+  - `danger`: Fundo vermelho suave com texto escuro (`bg-danger text-danger`).
   - `neutral`: Fundo branco/superfície com texto suave (`bg-surface text-text-muted border border-border-subtle`).
 - **Classificação Indicativa +18**:
   - **Na Tela do Evento (`/events/:id`)**: Badge destacado em tom de perigo/alerta ao lado da categoria principal (`bg-danger/80 text-white backdrop-blur-md border-danger font-bold text-xs`).

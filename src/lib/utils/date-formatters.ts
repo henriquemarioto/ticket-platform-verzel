@@ -115,9 +115,37 @@ export function formatShortDateRange(
     return `${start.getDate()} ${MONTHS_SHORT[start.getMonth()]} ${start.getFullYear()}, ${formatTime(start)} - ${formatTime(end)}`;
   }
 
-  if (start.getFullYear() === end.getFullYear()) {
-    return `${start.getDate()} ${MONTHS_SHORT[start.getMonth()]} - ${end.getDate()} ${MONTHS_SHORT[end.getMonth()]} ${end.getFullYear()}`;
-  }
-
   return `${start.getDate()} ${MONTHS_SHORT[start.getMonth()]} ${start.getFullYear()} - ${end.getDate()} ${MONTHS_SHORT[end.getMonth()]} ${end.getFullYear()}`;
 }
+
+/**
+ * Formata o horário de abertura dos portões com contexto de data
+ *
+ * Exemplos:
+ * - Mesmo dia do evento: "Abertura dos portões às 19:30"
+ * - Data diferente: "Abertura dos portões em 20/11 às 19:30"
+ */
+export function formatEntryTime(
+  entryStartTime: Date | string | number,
+  eventDate?: Date | string | number
+): string {
+  if (!entryStartTime) return "";
+  const entry = toDate(entryStartTime);
+  if (isNaN(entry.getTime())) return "";
+
+  if (eventDate) {
+    const event = toDate(eventDate);
+    const isSameDay =
+      !isNaN(event.getTime()) &&
+      entry.getFullYear() === event.getFullYear() &&
+      entry.getMonth() === event.getMonth() &&
+      entry.getDate() === event.getDate();
+
+    if (isSameDay) {
+      return `Abertura dos portões às ${formatTime(entry)}`;
+    }
+  }
+
+  return `Abertura dos portões em ${pad(entry.getDate())}/${pad(entry.getMonth() + 1)} às ${formatTime(entry)}`;
+}
+

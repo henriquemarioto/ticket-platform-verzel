@@ -364,11 +364,14 @@ export interface GatekeeperEventItem {
   id: string;
   title: string;
   eventDate: string;
+  endDate?: string | null;
+  entryStartTime: string;
+  isEntryOpen: boolean;
   locationName: string;
   city: string;
   status: string;
   totalSold: number;
-  totalValidated: number;
+  totalCheckedIn: number;
 }
 ```
 
@@ -401,6 +404,38 @@ export interface ValidateTicketResponse {
     sectorName: string;
     seatInfo?: string;
     usedAt?: string;
+  };
+  eventMetrics?: {
+    totalSold: number;
+    totalCheckedIn: number;
+  };
+}
+```
+
+---
+
+## 7. Schemas de Gestão de Portaria pelo Organizador (`/api/events/[id]/gatekeepers`)
+
+```typescript
+import { z } from 'zod';
+
+export const createTemporaryGatekeeperSchema = z.object({
+  name: z.string().min(2, 'Nome ou identificação da portaria é obrigatório'),
+  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
+  password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres').optional().or(z.literal('')),
+  autoGenerate: z.boolean().default(true),
+});
+
+export type CreateTemporaryGatekeeperInput = z.infer<typeof createTemporaryGatekeeperSchema>;
+
+export interface GatekeeperAssignmentResponse {
+  success: boolean;
+  gatekeeper: {
+    id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+    generatedPassword?: string; // Exibido apenas no momento da criação para o organizador
   };
 }
 ```

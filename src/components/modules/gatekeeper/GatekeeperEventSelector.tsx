@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Search, Calendar, MapPin, Ticket, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Search, Calendar, MapPin, Ticket, CheckCircle2, ShieldCheck, Clock, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { formatShortDateRange } from "@/lib/utils/date-formatters";
+import { formatShortDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
 import { GatekeeperEvent } from "./types";
 
 interface GatekeeperEventSelectorProps {
@@ -64,10 +64,10 @@ export function GatekeeperEventSelector({
             <Ticket className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-semibold text-text-primary mb-1">
-            Nenhum evento ativo no momento
+            Nenhum evento autorizado no momento
           </h2>
           <p className="text-sm text-text-muted">
-            Não há eventos publicados ou encerrados disponíveis para validação de portaria neste momento.
+            Sua conta de portaria não possui eventos vinculados ou os eventos não estão disponíveis no momento.
           </p>
         </div>
       ) : filteredEvents.length === 0 ? (
@@ -80,6 +80,7 @@ export function GatekeeperEventSelector({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredEvents.map((event) => {
             const formattedDate = formatShortDateRange(event.eventDate, event.endDate);
+            const entryTimeLabel = formatEntryTime(event.entryStartTime, event.eventDate);
 
             const occupancyRate =
               event.totalSold > 0
@@ -102,8 +103,8 @@ export function GatekeeperEventSelector({
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute top-3 right-3 flex gap-1.5">
-                      <Badge variant={event.status === "PUBLISHED" ? "success" : "warning"}>
-                        {event.status === "PUBLISHED" ? "Publicado" : "Encerrado"}
+                      <Badge variant={event.isEntryOpen ? "success" : "warning"}>
+                        {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
                       </Badge>
                     </div>
                   </div>
@@ -112,8 +113,8 @@ export function GatekeeperEventSelector({
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
                       {event.category}
                     </span>
-                    <Badge variant={event.status === "PUBLISHED" ? "success" : "warning"}>
-                      {event.status === "PUBLISHED" ? "Publicado" : "Encerrado"}
+                    <Badge variant={event.isEntryOpen ? "success" : "warning"}>
+                      {event.isEntryOpen ? "Portões Abertos" : "Portões Fechados"}
                     </Badge>
                   </div>
                 )}
@@ -124,13 +125,17 @@ export function GatekeeperEventSelector({
                     <h2 className="text-lg font-bold text-text-primary tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
                       {event.title}
                     </h2>
-                    <div className="space-y-1 text-xs text-text-muted">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-primary shrink-0" />
-                        <span>{formattedDate}</span>
+                    <div className="space-y-1.5 text-xs text-text-muted">
+                      <div className="flex items-center gap-1.5 font-medium text-text-primary">
+                        <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span>{entryTimeLabel}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <Calendar className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                        <span>Início: {formattedDate}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-text-muted shrink-0" />
                         <span className="truncate">
                           {event.locationName} • {event.city}
                         </span>
@@ -157,13 +162,29 @@ export function GatekeeperEventSelector({
                   </div>
 
                   {/* Ação de Seleção */}
-                  <Button
-                    variant="primary"
-                    onClick={() => onSelectEvent(event)}
-                    className="w-full min-h-[48px] justify-center text-sm font-semibold shadow-sm"
-                  >
-                    Selecionar Evento
-                  </Button>
+                  {event.isEntryOpen ? (
+                    <Button
+                      variant="primary"
+                      onClick={() => onSelectEvent(event)}
+                      className="w-full min-h-[48px] justify-center text-sm font-semibold shadow-sm"
+                    >
+                      Selecionar Evento
+                    </Button>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <Button
+                        variant="secondary"
+                        disabled
+                        className="w-full min-h-[48px] justify-center text-xs font-semibold opacity-70 cursor-not-allowed gap-1.5"
+                      >
+                        <Lock className="w-3.5 h-3.5" />
+                        Portões Fechados
+                      </Button>
+                      <p className="text-[11px] text-center text-amber-500 font-medium">
+                        Seleção liberada a partir da abertura dos portões.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             );

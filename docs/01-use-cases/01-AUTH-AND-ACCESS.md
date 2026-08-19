@@ -788,6 +788,24 @@ Funcionalidade: Encerramento de Sessão (Logout)
     E deve me redirecionar para "/login"
 ```
 
+---
+
+# Caso de Uso: UC01b - Gestão e Geração de Contas Temporárias de Portaria pelo Organizador
+## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
+
+## 1. Identificação e Descrição
+- **Identificador**: `UC01b`
+- **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
+- **Nome**: Geração e Vinculação de Contas Temporárias de Portaria pelo Organizador
+- **Objetivo**: Permitir que o organizador de um evento gere contas de acesso temporárias com o papel `GATEKEEPER`, vinculadas especificamente àquele evento físico, com geração automática de e-mail e senha em 1 clique e botão de cópia rápida para repasse imediato aos operadores de catraca no dia da realização.
+
+---
+
+## 2. Regras de Negócio (RN)
+- **RN01 - Posse do Evento**: Apenas o organizador titular do evento pode gerar, visualizar ou remover contas de portaria vinculadas.
+- **RN02 - Vínculo com Papel Gatekeeper**: As contas geradas possuem `role = GATEKEEPER` e são associadas na tabela `event_gatekeepers`.
+- **RN03 - Visualização Única de Senha**: A senha gerada é exibida em texto claro na tela imediatamente após a criação para possibilitar a cópia instantânea pelo organizador.
+
 

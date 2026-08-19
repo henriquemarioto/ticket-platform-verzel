@@ -50,6 +50,32 @@ export async function POST(req: Request) {
     let codeToSearch = ticketCode;
     const rawPayload = qrPayload || ticketCode || "UNKNOWN";
 
+    // 1. Validar se o operador está autorizado para este evento
+    const gatekeeperLink = await prisma.eventGatekeeper.findUnique({
+      where: {
+        eventId_gatekeeperId: {
+          eventId,
+          gatekeeperId: session.id,
+        },
+      },
+    });
+
+    if (!gatekeeperLink) {
+      await prisma.ticketValidationLog.create({
+        data: {
+          gatekeeperId: session.id,
+          result: "INVALID_CODE",
+          rawPayload,
+          message: "Operador de portaria não autorizado para este evento",
+        },
+      });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json(
+        { error: "Acesso negado. Você não está autorizado para validar ingressos deste evento.", result: "INVALID_CODE", eventMetrics },
+        { status: 403 }
+      );
+    }
+
     if (qrPayload) {
       const parsed = parseAndVerifyQRPayload(qrPayload);
       if (!parsed || !parsed.isValidSignature) {
@@ -97,6 +123,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido ou Inexistente", eventMetrics });
     }
 
+    // 2. Validar se o ingresso pertence ao evento correto
     if (ticket.eventId !== eventId) {
       await prisma.ticketValidationLog.create({
         data: {
@@ -112,6 +139,31 @@ export async function POST(req: Request) {
         result: "WRONG_EVENT", 
         message: "Evento Incorreto",
         expectedEvent: ticket.event.title,
+        eventMetrics,
+      });
+    }
+
+    // 3. Validar se os portões do evento já estão abertos
+    const now = new Date();
+    if (now < ticket.event.entryStartTime) {
+      const openingTimeStr = ticket.event.entryStartTime.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "America/Sao_Paulo",
+      });
+      await prisma.ticketValidationLog.create({
+        data: {
+          ticketId: ticket.id,
+          gatekeeperId: session.id,
+          result: "INVALID_CODE",
+          rawPayload,
+          message: `Entrada não permitida: portões abrem às ${openingTimeStr}`,
+        },
+      });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json({
+        result: "INVALID_CODE",
+        message: `Entrada Não Permitida: Os portões deste evento abrem às ${openingTimeStr}`,
         eventMetrics,
       });
     }
