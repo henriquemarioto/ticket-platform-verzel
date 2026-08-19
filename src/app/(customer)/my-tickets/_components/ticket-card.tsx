@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { Calendar, MapPin, QrCode, Share2, Loader2 } from "lucide-react";
+import { formatEventDateRange } from "@/lib/utils/date-formatters";
 
 type TicketCardProps = {
   ticket: any;
@@ -33,17 +34,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
     }
   };
 
-  const dateStr = new Date(event.eventDate).toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  
-  const timeStr = new Date(event.eventDate).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
 
   const getStatusBadge = () => {
     switch (ticket.status) {
@@ -84,7 +75,7 @@ export function TicketCard({ ticket, onShowQR }: TicketCardProps) {
           <div className="space-y-2 text-sm text-text-muted">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>{dateStr} às {timeStr}</span>
+              <span>{formattedDate}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4" />

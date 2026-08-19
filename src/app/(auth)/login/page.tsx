@@ -7,12 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { loginSchema } from "@/lib/validations/auth";
+import { processPendingPurchase } from "@/lib/utils/pending-purchase";
 import { Mail, Lock } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { success, error: toastError } = useToast();
+  const { success, error: toastError, toast } = useToast();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,8 +42,12 @@ function LoginForm() {
       }
 
       success("Login realizado com sucesso!");
-      router.push(result.data.redirectUrl);
-      router.refresh();
+      await processPendingPurchase(result.data.user.role, result.data.redirectUrl, router, {
+        success,
+        warning: (msg) => toast("warning", msg),
+        error: toastError,
+        info: (msg) => toast("info", msg),
+      });
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: { email?: string; password?: string } = {};

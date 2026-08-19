@@ -7,7 +7,13 @@ export interface GatekeeperEvent {
   locationName: string;
   city: string;
   eventDate: string;
+  endDate?: string | null;
   status: string;
+  totalSold: number;
+  totalCheckedIn: number;
+}
+
+export interface EventMetrics {
   totalSold: number;
   totalCheckedIn: number;
 }

@@ -53,6 +53,7 @@ export default async function CustomerHomePage() {
           id={event.id}
           title={event.title}
           eventDate={event.eventDate}
+          endDate={event.endDate}
           locationName={event.locationName}
           city={event.city}
           bannerUrl={event.bannerUrl}
@@ -76,6 +77,7 @@ export default async function CustomerHomePage() {
         id={event.id}
         title={event.title}
         eventDate={event.eventDate}
+        endDate={event.endDate}
         locationName={event.locationName}
         city={event.city}
         bannerUrl={event.bannerUrl}

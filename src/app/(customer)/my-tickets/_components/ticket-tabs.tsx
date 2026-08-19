@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { TicketCard } from "./ticket-card";
 import { Modal } from "@/components/ui/modal";
 import { QRCodeSVG } from "qrcode.react";
@@ -14,10 +15,33 @@ type TicketTabsProps = {
 };
 
 export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
+  const router = useRouter();
+  const [upcoming, setUpcoming] = useState<any[]>(upcomingTickets);
+  const [past, setPast] = useState<any[]>(pastTickets);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
 
-  const activeTicketsList = activeTab === "upcoming" ? upcomingTickets : pastTickets;
+  useEffect(() => {
+    setUpcoming(upcomingTickets);
+    setPast(pastTickets);
+  }, [upcomingTickets, pastTickets]);
+
+  const handleCloseModal = async () => {
+    setSelectedTicket(null);
+    router.refresh();
+    try {
+      const res = await fetch("/api/my-tickets");
+      const data = await res.json();
+      if (data.success) {
+        setUpcoming(data.upcomingTickets);
+        setPast(data.pastTickets);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar ingressos:", error);
+    }
+  };
+
+  const activeTicketsList = activeTab === "upcoming" ? upcoming : past;
 
   return (
     <div>
@@ -30,9 +54,9 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
           onClick={() => setActiveTab("upcoming")}
         >
           Próximos Eventos
-          {upcomingTickets.length > 0 && (
+          {upcoming.length > 0 && (
             <span className="ml-2 bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full">
-              {upcomingTickets.length}
+              {upcoming.length}
             </span>
           )}
           {activeTab === "upcoming" && (
@@ -81,7 +105,7 @@ export function TicketTabs({ upcomingTickets, pastTickets }: TicketTabsProps) {
       {/* Modal do QR Code */}
       <Modal
         isOpen={!!selectedTicket}
-        onClose={() => setSelectedTicket(null)}
+        onClose={handleCloseModal}
         title="QR Code para Entrada"
       >
         <p className="mb-2 text-center text-sm text-text-muted">

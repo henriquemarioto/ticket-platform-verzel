@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
+import { formatShortDateRange } from "@/lib/utils/date-formatters";
 
 export default async function OrganizerDashboardPage() {
   const headersList = await headers();
@@ -114,13 +115,7 @@ export default async function OrganizerDashboardPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-text-primary">
-                      {new Date(event.eventDate).toLocaleDateString("pt-BR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                      })}
+                      {formatShortDateRange(event.eventDate, event.endDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge variant={getStatusBadgeVariant(event.status)}>

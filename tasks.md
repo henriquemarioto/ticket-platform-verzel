@@ -145,6 +145,8 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Registrar pedido como `REJECTED`, liberar assentos imediatamente e exibir feedback de "Reserva Expirada ou Cancelada" com botão para retornar diretamente ao evento (`/events/[id]`).
 - [x] **Task 2.19: Painel Meus Ingressos (UC18)**
   - [x] Implementar tela `src/app/(customer)/my-tickets/page.tsx` listando vouchers ativos e passados com botões de ação.
+- [x] **Task 2.19b: Atualização Reativa de Ingressos ao Fechar Modal do QR Code (UC18)**
+  - [x] Sincronizar dados dos ingressos e estado local ao fechar o modal do QR Code via `GET /api/my-tickets` e `router.refresh()`.
 - [x] **Task 2.20: Geração e Assinatura HMAC de QR Code (UC19)**
   - [x] Implementar `src/lib/crypto.ts` com assinatura HMAC-SHA256 (`v1:{ticketCode}:{eventId}:{timestamp}:{signature}`).
   - [x] Renderizar QR Code em SVG de alta nitidez com nível de correção de erro `M`.
@@ -170,6 +172,23 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
     - [x] `INVALID_CODE` (Código Inválido ou HMAC Adulterado - Vermelho Escuro)
   - [x] Garantir anti-duplicação concorrente entre múltiplas catracas (`updateMany WHERE status = 'ACTIVE'`).
   - [x] Persistir histórico na tabela `ticket_validation_logs`.
+
+- [x] **Task 2.26: Retenção de Compra Deslogada e Redirecionamento Direto ao Checkout (UC01, UC13, UC14)**
+  - [x] Armazenar intenção de reserva no `sessionStorage` ao tentar comprar deslogado.
+  - [x] Notificar o cliente e redirecionar para `/login?returnUrl=...`.
+  - [x] Ao autenticar como `CUSTOMER` (via login ou cadastro), criar automaticamente a reserva e redirecionar direto para `/checkout?reservationId=...`.
+  - [x] Preservar `searchParams` no middleware `src/proxy.ts`.
+
+- [x] **Task 2.27: Atualização Reativa de Métricas da Portaria por Validação (UC21, UC24)**
+  - [x] Retornar métricas consolidadas (`eventMetrics: { totalSold, totalCheckedIn }`) no endpoint `POST /api/gate/validate`.
+  - [x] Atualizar estado local dos contadores (`GatekeeperMetrics`) em tempo real após cada validação.
+
+- [x] **Task 2.28: Suporte a Eventos com Data e Horário de Início e Fim (UC08, UC09, UC10, UC11, UC12)**
+  - [x] Modelar `endDate DateTime?` no `prisma/schema.prisma` e sincronizar banco.
+  - [x] Atualizar schemas Zod com validação de `endDate > eventDate`.
+  - [x] Implementar campos de data/hora de término nos formulários de criação e edição.
+  - [x] Criar helper `formatEventDateRange` e atualizar componentes de exibição (Vitrine, Detalhes, Vouchers, Painéis).
+  - [x] Atualizar `prisma/seed.ts` com horários de início e término coerentes.
 
 ---
 

@@ -4,7 +4,34 @@ import { prisma } from "@/lib/prisma";
 import { validateTicketSchema } from "@/lib/validations/gate";
 import { parseAndVerifyQRPayload } from "@/lib/crypto";
 
+async function getEventMetrics(targetEventId?: string | null) {
+  if (!targetEventId) {
+    return { totalSold: 0, totalCheckedIn: 0 };
+  }
+  try {
+    const [totalSold, totalCheckedIn] = await Promise.all([
+      prisma.ticket.count({
+        where: {
+          eventId: targetEventId,
+          status: { in: ["ACTIVE", "USED"] },
+        },
+      }),
+      prisma.ticket.count({
+        where: {
+          eventId: targetEventId,
+          status: "USED",
+        },
+      }),
+    ]);
+    return { totalSold, totalCheckedIn };
+  } catch (error) {
+    console.error("[getEventMetrics Error]", error);
+    return { totalSold: 0, totalCheckedIn: 0 };
+  }
+}
+
 export async function POST(req: Request) {
+  let targetEventId: string | undefined;
   try {
     const session = await getSession();
     if (!session || session.role !== "GATEKEEPER") {
@@ -18,6 +45,7 @@ export async function POST(req: Request) {
     }
 
     const { eventId, qrPayload, ticketCode } = result.data;
+    targetEventId = eventId;
     
     let codeToSearch = ticketCode;
     const rawPayload = qrPayload || ticketCode || "UNKNOWN";
@@ -33,13 +61,15 @@ export async function POST(req: Request) {
             message: "Assinatura HMAC inválida ou malformada",
           }
         });
-        return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido ou HMAC Forjado" });
+        const eventMetrics = await getEventMetrics(targetEventId);
+        return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido ou HMAC Forjado", eventMetrics });
       }
       codeToSearch = parsed.ticketCode;
     }
 
     if (!codeToSearch) {
-       return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido" });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido", eventMetrics });
     }
 
     const ticket = await prisma.ticket.findUnique({
@@ -63,7 +93,8 @@ export async function POST(req: Request) {
           message: "Código de ingresso inexistente",
         }
       });
-      return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido ou Inexistente" });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json({ result: "INVALID_CODE", message: "Código Inválido ou Inexistente", eventMetrics });
     }
 
     if (ticket.eventId !== eventId) {
@@ -76,10 +107,12 @@ export async function POST(req: Request) {
           message: `Ingresso pertence ao evento: ${ticket.event.title}`,
         }
       });
+      const eventMetrics = await getEventMetrics(targetEventId);
       return NextResponse.json({ 
         result: "WRONG_EVENT", 
         message: "Evento Incorreto",
-        expectedEvent: ticket.event.title
+        expectedEvent: ticket.event.title,
+        eventMetrics,
       });
     }
 
@@ -93,10 +126,12 @@ export async function POST(req: Request) {
           message: `Ingresso já utilizado em ${ticket.usedAt?.toISOString() || 'desconhecido'}`,
         }
       });
+      const eventMetrics = await getEventMetrics(targetEventId);
       return NextResponse.json({ 
         result: "ALREADY_USED", 
         message: "Ingresso Já Utilizado",
-        usedAt: ticket.usedAt
+        usedAt: ticket.usedAt,
+        eventMetrics,
       });
     }
 
@@ -125,10 +160,12 @@ export async function POST(req: Request) {
       });
       
       const concurrentTicket = await prisma.ticket.findUnique({ where: { id: ticket.id } });
+      const eventMetrics = await getEventMetrics(targetEventId);
       return NextResponse.json({ 
         result: "ALREADY_USED", 
         message: "Ingresso Já Utilizado",
-        usedAt: concurrentTicket?.usedAt
+        usedAt: concurrentTicket?.usedAt,
+        eventMetrics,
       });
     }
 
@@ -143,6 +180,8 @@ export async function POST(req: Request) {
       }
     });
 
+    const eventMetrics = await getEventMetrics(targetEventId);
+
     return NextResponse.json({
       result: "VALID",
       message: "Acesso Liberado",
@@ -151,11 +190,13 @@ export async function POST(req: Request) {
         customerName: ticket.customer.name,
         sectorName: ticket.sector.name,
         seat: ticket.seat ? `${ticket.seat.row}${ticket.seat.number}` : null,
-      }
+      },
+      eventMetrics,
     });
 
   } catch (error) {
     console.error("[Gate Validate Error]", error);
-    return NextResponse.json({ error: "Internal Server Error", result: "INVALID_CODE" }, { status: 500 });
+    const eventMetrics = await getEventMetrics(targetEventId);
+    return NextResponse.json({ error: "Internal Server Error", result: "INVALID_CODE", eventMetrics }, { status: 500 });
   }
 }

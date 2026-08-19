@@ -3,6 +3,7 @@
 import { ArrowLeft, RefreshCw, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { formatEventDateRange } from "@/lib/utils/date-formatters";
 import { GatekeeperEvent } from "./types";
 
 interface GatekeeperHeaderProps {
@@ -18,13 +19,7 @@ export function GatekeeperHeader({
   onRefresh,
   isRefreshing,
 }: GatekeeperHeaderProps) {
-  const formattedDate = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(event.eventDate));
+  const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
 
   return (
     <div className="bg-bg-surface shadow-sm rounded-xl p-4 sm:p-6 mb-6 shadow-sm">

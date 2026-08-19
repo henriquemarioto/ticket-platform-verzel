@@ -8,11 +8,12 @@ import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { registerSchema } from "@/lib/validations/auth";
+import { processPendingPurchase } from "@/lib/utils/pending-purchase";
 import { User, Mail, Lock, CheckCircle } from "lucide-react";
 
 function RegisterForm() {
   const router = useRouter();
-  const { success, error: toastError } = useToast();
+  const { success, error: toastError, toast } = useToast();
   
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -48,8 +49,12 @@ function RegisterForm() {
       }
 
       success("Cadastro realizado com sucesso!");
-      router.push(result.data.redirectUrl);
-      router.refresh();
+      await processPendingPurchase(result.data.user.role, result.data.redirectUrl, router, {
+        success,
+        warning: (msg) => toast("warning", msg),
+        error: toastError,
+        info: (msg) => toast("info", msg),
+      });
     } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};

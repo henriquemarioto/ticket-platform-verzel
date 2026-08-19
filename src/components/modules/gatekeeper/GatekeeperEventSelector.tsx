@@ -6,6 +6,7 @@ import { Search, Calendar, MapPin, Ticket, CheckCircle2, ShieldCheck } from "luc
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { formatShortDateRange } from "@/lib/utils/date-formatters";
 import { GatekeeperEvent } from "./types";
 
 interface GatekeeperEventSelectorProps {
@@ -78,13 +79,7 @@ export function GatekeeperEventSelector({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredEvents.map((event) => {
-            const formattedDate = new Intl.DateTimeFormat("pt-BR", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            }).format(new Date(event.eventDate));
+            const formattedDate = formatShortDateRange(event.eventDate, event.endDate);
 
             const occupancyRate =
               event.totalSold > 0

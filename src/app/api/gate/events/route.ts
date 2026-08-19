@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         locationName: true,
         city: true,
         eventDate: true,
+        endDate: true,
         status: true,
         tickets: {
           select: {
@@ -68,6 +69,7 @@ export async function GET(request: NextRequest) {
         locationName: event.locationName,
         city: event.city,
         eventDate: event.eventDate.toISOString(),
+        endDate: event.endDate ? event.endDate.toISOString() : null,
         status: event.status,
         totalSold,
         totalCheckedIn,

@@ -44,6 +44,24 @@ export function TicketSelector({
       return;
     }
 
+    if (!currentUserRole) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "verzel_pending_purchase",
+          JSON.stringify({
+            type: "GENERAL_ADMISSION",
+            eventId,
+            sectorId,
+            quantity,
+          })
+        );
+      }
+      toast("info", "Faça login para continuar sua compra.");
+      const returnPath = eventId ? `/events/${eventId}` : window.location.pathname;
+      router.push(`/login?returnUrl=${returnPath}`);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/reservations/general-admission", {
@@ -60,6 +78,17 @@ export function TicketSelector({
           return;
         }
         if (res.status === 401) {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(
+              "verzel_pending_purchase",
+              JSON.stringify({
+                type: "GENERAL_ADMISSION",
+                eventId,
+                sectorId,
+                quantity,
+              })
+            );
+          }
           toast("info", "Você precisa fazer login para reservar ingressos.");
           const returnPath = eventId ? `/events/${eventId}` : window.location.pathname;
           router.push(`/login?returnUrl=${returnPath}`);

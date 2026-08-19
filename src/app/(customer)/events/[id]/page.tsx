@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin } from "lucide-react";
 import { SectorItem } from "@/components/modules/events/SectorItem";
+import { formatEventDateRange } from "@/lib/utils/date-formatters";
 
 type Params = Promise<{ id: string }>;
 
@@ -29,13 +30,7 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
     notFound();
   }
 
-  const formattedDate = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(event.eventDate);
+  const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
 
   return (
     <div className="min-h-screen pb-16 bg-surface-hover">

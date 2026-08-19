@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Camera, Keyboard, Sparkles, ShieldCheck } from "lucide-react";
-import { GatekeeperEvent } from "./types";
+import { GatekeeperEvent, EventMetrics } from "./types";
 import { GatekeeperScanner } from "./GatekeeperScanner";
 import { GatekeeperManualInput } from "./GatekeeperManualInput";
 import { GatekeeperResultCard, ValidationDetails } from "./GatekeeperResultCard";
@@ -16,6 +16,7 @@ interface GatekeeperTabsProps {
   activeMode: ValidationMode;
   onSelectMode: (mode: ValidationMode) => void;
   onValidationSuccess: () => void;
+  onValidationComplete?: (metrics?: EventMetrics) => void;
 }
 
 export function GatekeeperTabs({
@@ -23,6 +24,7 @@ export function GatekeeperTabs({
   activeMode,
   onSelectMode,
   onValidationSuccess,
+  onValidationComplete,
 }: GatekeeperTabsProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<{ status: ValidationResult; details: ValidationDetails } | null>(null);
@@ -67,6 +69,10 @@ export function GatekeeperTabs({
 
       if (valResult === "VALID") {
         onValidationSuccess();
+      }
+
+      if (data.eventMetrics && onValidationComplete) {
+        onValidationComplete(data.eventMetrics);
       }
 
       if (activeMode === "camera") {

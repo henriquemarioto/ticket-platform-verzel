@@ -1099,6 +1099,7 @@ sequenceDiagram
 
 - **RN01 - Isolamento por Titular**: O cliente só tem permissão para visualizar ingressos comprados por sua própria conta (`customerId === currentUserId`).
 - **RN02 - Visibilidade do QR Code**: Ingressos com status `USED` ou `CANCELLED` continuam com o histórico visível, mas com marca d'água / overlay indicando "UTILIZADO" ou "CANCELADO".
+- **RN03 - Atualização Automática ao Fechar o Modal do QR Code**: Ao fechar o modal do QR Code de um ingresso na tela de "Meus Ingressos", o sistema deve revalidar e atualizar imediatamente os dados dos ingressos (re-executando a consulta e atualizando o estado local), refletindo instantaneamente mudanças de status ocorridas na portaria (ex: transição de `ACTIVE` para `USED`).
 
 ---
 
@@ -1148,6 +1149,14 @@ Funcionalidade: Painel Meus Ingressos
     Então eu devo ver o card do ingresso com o código "ELT-4819", poltrona "A1" e data do evento
     Quando eu clico em "Exibir QR Code"
     Então um modal com o QR Code criptografado em alta definição deve ser exibido
+
+  Cenário: Atualização de status após fechamento do modal do QR Code
+    Dado que estou com o modal do QR Code aberto na tela "/my-tickets"
+    E o ingresso foi validado na portaria mudando seu status para "USED"
+    Quando eu fecho o modal do QR Code
+    Então a listagem de ingressos deve ser atualizada automaticamente
+    E o ingresso validado deve ser movido para a aba "Histórico / Passados" com badge "Já Utilizado"
+```
 ```
 
 

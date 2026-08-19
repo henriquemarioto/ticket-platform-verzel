@@ -77,6 +77,7 @@ export default async function EventsCatalogPage({
                   id={event.id}
                   title={event.title}
                   eventDate={event.eventDate}
+                  endDate={event.endDate}
                   locationName={event.locationName}
                   city={event.city}
                   bannerUrl={event.bannerUrl}

@@ -85,6 +85,23 @@ export function SeatMap({ eventId, sectorId, price, currentUserRole }: SeatMapPr
     }
 
     if (selectedSeatIds.length === 0) return;
+
+    if (!currentUserId && !currentUserRole) {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "verzel_pending_purchase",
+          JSON.stringify({
+            type: "NUMBERED_SEATS",
+            eventId,
+            sectorId,
+            seatIds: selectedSeatIds,
+          })
+        );
+      }
+      toast("info", "Faça login para continuar sua compra de assentos.");
+      router.push(`/login?returnUrl=/events/${eventId}`);
+      return;
+    }
     
     setReserving(true);
     try {
@@ -102,6 +119,17 @@ export function SeatMap({ eventId, sectorId, price, currentUserRole }: SeatMapPr
           return;
         }
         if (res.status === 401) {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(
+              "verzel_pending_purchase",
+              JSON.stringify({
+                type: "NUMBERED_SEATS",
+                eventId,
+                sectorId,
+                seatIds: selectedSeatIds,
+              })
+            );
+          }
           toast("info", "Você precisa fazer login para reservar ingressos.");
           router.push(`/login?returnUrl=/events/${eventId}`);
           return;

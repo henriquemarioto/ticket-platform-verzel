@@ -99,6 +99,10 @@ sequenceDiagram
 - **Cenário**: O usuário tentou acessar uma rota protegida (ex: `/checkout`) e foi redirecionado para `/login?returnUrl=/checkout`.
 - **Comportamento**: Após o login bem-sucedido, o sistema verifica se o usuário possui a permissão requerida pela URL de retorno. Em caso afirmativo, redireciona o usuário diretamente para `/checkout` em vez da rota padrão.
 
+### Fluxo Alternativo 2: Retomada de Compra Pendente pós-login / pós-cadastro
+- **Cenário**: O visitante deslogado escolheu ingressos e clicou para comprar. Ao ser redirecionado para `/login` ou `/register`, a seleção de ingressos é armazenada no `sessionStorage`.
+- **Comportamento**: Imediatamente após a autenticação bem-sucedida como `CUSTOMER`, o sistema processa automaticamente a reserva e redireciona o comprador direto para a tela de pagamento `/checkout?reservationId=...`. Caso ocorra indisponibilidade de assentos, notifica o usuário e redireciona para a página do evento.
+
 ### Fluxo de Exceção 1: Credenciais Inválidas (401)
 - **Condição**: O e-mail não existe no banco ou a senha digitada não coincide com o hash.
 - **Comportamento**: O servidor retorna `401 Unauthorized`. O formulário destaca os campos com borda vermelha e exibe a mensagem: *"E-mail ou senha incorretos. Verifique suas credenciais."*. A senha é limpa e o foco permanece no campo de e-mail.

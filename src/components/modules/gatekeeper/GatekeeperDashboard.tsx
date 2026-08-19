@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
-import { GatekeeperEvent } from "./types";
+import { GatekeeperEvent, EventMetrics } from "./types";
 import { GatekeeperEventSelector } from "./GatekeeperEventSelector";
 import { GatekeeperHeader } from "./GatekeeperHeader";
 import { GatekeeperMetrics } from "./GatekeeperMetrics";
@@ -56,6 +56,21 @@ export function GatekeeperDashboard({ initialEvents }: GatekeeperDashboardProps)
     );
   };
 
+  const handleValidationComplete = (metrics?: EventMetrics) => {
+    if (!selectedEventId || !metrics) return;
+    setEvents((prev) =>
+      prev.map((e) =>
+        e.id === selectedEventId
+          ? {
+              ...e,
+              totalSold: metrics.totalSold ?? e.totalSold,
+              totalCheckedIn: metrics.totalCheckedIn ?? e.totalCheckedIn,
+            }
+          : e
+      )
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl">
       {!selectedEvent ? (
@@ -79,6 +94,7 @@ export function GatekeeperDashboard({ initialEvents }: GatekeeperDashboardProps)
             activeMode={activeMode}
             onSelectMode={setActiveMode}
             onValidationSuccess={handleValidationSuccess}
+            onValidationComplete={handleValidationComplete}
           />
         </div>
       )}

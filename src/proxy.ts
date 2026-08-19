@@ -41,7 +41,8 @@ export async function proxy(request: NextRequest) {
     // Redireciona para o login salvando a URL de retorno
     const loginUrl = new URL("/login", request.url);
     if (pathname !== "/") {
-      loginUrl.searchParams.set("returnUrl", pathname);
+      const fullPath = `${pathname}${request.nextUrl.search}`;
+      loginUrl.searchParams.set("returnUrl", fullPath);
     }
     return NextResponse.redirect(loginUrl);
   }

@@ -256,6 +256,10 @@ sequenceDiagram
     "seatLabel": "A1",
     "customerName": "Lucas Silva",
     "checkedInAt": "2026-08-14T20:15:30.000Z"
+  },
+  "eventMetrics": {
+    "totalSold": 185,
+    "totalCheckedIn": 43
   }
 }
 ```

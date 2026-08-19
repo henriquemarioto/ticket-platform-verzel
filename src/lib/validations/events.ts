@@ -31,10 +31,19 @@ export const createEventSchema = z.object({
   category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
   bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
   locationName: z.string().min(2, "Nome do local é obrigatório"),
-  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Formato deve ser 'Cidade, UF'"),
+  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
+  endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),
   isAdult: z.boolean().optional().default(false),
   sectors: z.array(createSectorSchema).min(1, "Adicione ao menos um setor"),
+}).refine((data) => {
+  if (data.endDate && data.endDate.trim() !== "") {
+    return new Date(data.endDate).getTime() > new Date(data.eventDate).getTime();
+  }
+  return true;
+}, {
+  message: "A data e hora de término deve ser posterior à data de início",
+  path: ["endDate"],
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;
@@ -52,9 +61,18 @@ export const updateEventSchema = z.object({
   category: z.enum(["SHOW", "MOVIE", "THEATER", "FESTIVAL"]),
   bannerUrl: z.string().url("URL de imagem válida é obrigatória").or(z.literal("")),
   locationName: z.string().min(2, "Nome do local é obrigatório"),
-  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Formato deve ser 'Cidade, UF'"),
+  city: z.string().min(4, "Cidade e UF são obrigatórios").regex(/^.+,\s*[A-Z]{2}$/, "Campo obrigatório"),
   eventDate: z.string().datetime("Data e hora válidas são obrigatórias"),
+  endDate: z.string().datetime("Data e hora de término válidas").optional().nullable().or(z.literal("")),
   isAdult: z.boolean().optional().default(false),
+}).refine((data) => {
+  if (data.endDate && data.endDate.trim() !== "") {
+    return new Date(data.endDate).getTime() > new Date(data.eventDate).getTime();
+  }
+  return true;
+}, {
+  message: "A data e hora de término deve ser posterior à data de início",
+  path: ["endDate"],
 });
 
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;

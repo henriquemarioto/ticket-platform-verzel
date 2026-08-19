@@ -127,6 +127,7 @@ model Event {
   locationName String
   city         String
   eventDate    DateTime
+  endDate      DateTime?
   status       EventStatus   @default(PUBLISHED)
   externalId   String?
   

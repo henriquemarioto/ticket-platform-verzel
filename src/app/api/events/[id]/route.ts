@@ -113,6 +113,7 @@ export async function PUT(
       locationName,
       city,
       eventDate,
+      endDate,
       isAdult,
     } = validation.data;
 
@@ -126,6 +127,7 @@ export async function PUT(
         locationName,
         city,
         eventDate: new Date(eventDate),
+        endDate: endDate ? new Date(endDate) : null,
         isAdult: isAdult ?? false,
       },
     });

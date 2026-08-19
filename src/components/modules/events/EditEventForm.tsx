@@ -16,6 +16,7 @@ export interface EditEventInitialData {
   description: string;
   bannerUrl: string;
   eventDate: string; // YYYY-MM-DDTHH:mm
+  endDate?: string | null; // YYYY-MM-DDTHH:mm
   locationName: string;
   cityName: string;
   stateUf: string;
@@ -44,6 +45,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
   const [cityName, setCityName] = React.useState(initialData.cityName || "");
   const [stateUf, setStateUf] = React.useState(initialData.stateUf || "");
   const [eventDate, setEventDate] = React.useState(initialData.eventDate || "");
+  const [endDate, setEndDate] = React.useState(initialData.endDate || "");
   const [isAdult, setIsAdult] = React.useState(initialData.isAdult || false);
 
   const handleSelectFromCatalog = (item: CatalogItem) => {
@@ -105,6 +107,9 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
     if (!eventDate) {
       fieldErrors["eventDate"] = "Data e hora do evento são obrigatórias.";
     }
+    if (endDate && eventDate && new Date(endDate).getTime() <= new Date(eventDate).getTime()) {
+      fieldErrors["endDate"] = "A data e hora de término deve ser posterior à data de início.";
+    }
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
@@ -124,6 +129,7 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
       locationName: locationName.trim(),
       city,
       eventDate: new Date(eventDate).toISOString(),
+      endDate: endDate ? new Date(endDate).toISOString() : null,
       isAdult,
     };
 
@@ -254,23 +260,33 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
               />
             </div>
 
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-text-primary">URL da Imagem de Capa</label>
+              <Input 
+                value={bannerUrl} 
+                onChange={(e) => setBannerUrl(e.target.value)}
+                placeholder="https://..."
+                error={errors["bannerUrl"]}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">URL da Imagem de Capa</label>
-                <Input 
-                  value={bannerUrl} 
-                  onChange={(e) => setBannerUrl(e.target.value)}
-                  placeholder="https://..."
-                  error={errors["bannerUrl"]}
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-text-primary">Data e Hora</label>
+                <label className="text-sm font-medium text-text-primary">Data e Hora de Início</label>
                 <Input 
                   type="datetime-local"
                   value={eventDate} 
                   onChange={(e) => setEventDate(e.target.value)}
                   error={errors["eventDate"]}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-text-primary">Data e Hora de Término (Opcional)</label>
+                <Input 
+                  type="datetime-local"
+                  value={endDate} 
+                  onChange={(e) => setEndDate(e.target.value)}
+                  error={errors["endDate"]}
                 />
               </div>
             </div>

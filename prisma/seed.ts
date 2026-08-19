@@ -100,6 +100,7 @@ async function main() {
     locationName: string;
     city: string;
     eventDate: Date;
+    endDate?: Date | null;
     isAdult?: boolean;
     sectors: SectorDef[];
   }
@@ -115,6 +116,7 @@ async function main() {
       locationName: 'Espaço Unimed',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(14, 20, 0),
+      endDate: getFutureDate(14, 23, 0),
       isAdult: false,
       sectors: [
         { name: 'Pista Geral', type: SectorType.GENERAL_ADMISSION, price: 120.0, capacity: 300 },
@@ -138,6 +140,7 @@ async function main() {
       locationName: 'Allianz Parque',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(24, 21, 0),
+      endDate: getFutureDate(25, 0, 0),
       isAdult: false,
       sectors: [
         { name: 'Pista Comum', type: SectorType.GENERAL_ADMISSION, price: 160.0, capacity: 500 },
@@ -161,6 +164,7 @@ async function main() {
       locationName: 'Theatro Municipal do Rio de Janeiro',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(35, 19, 30),
+      endDate: getFutureDate(35, 22, 30),
       isAdult: false,
       sectors: [
         {
@@ -191,6 +195,7 @@ async function main() {
       locationName: 'Circo Voador',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(8, 21, 30),
+      endDate: getFutureDate(9, 1, 0),
       isAdult: true,
       sectors: [
         { name: 'Ingresso Geral Lote 1', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 250 },
@@ -213,6 +218,7 @@ async function main() {
       locationName: 'Pedreira Paulo Leminski',
       city: 'Curitiba, PR',
       eventDate: getFutureDate(42, 16, 0),
+      endDate: getFutureDate(43, 2, 0),
       isAdult: true,
       sectors: [
         { name: 'Pista Sunset', type: SectorType.GENERAL_ADMISSION, price: 140.0, capacity: 400 },
@@ -228,6 +234,7 @@ async function main() {
       locationName: 'Auditório Araújo Vianna',
       city: 'Porto Alegre, RS',
       eventDate: getFutureDate(48, 21, 0),
+      endDate: getFutureDate(49, 0, 0),
       isAdult: false,
       sectors: [
         {
@@ -260,6 +267,7 @@ async function main() {
       locationName: 'Memorial da América Latina',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(18, 12, 0),
+      endDate: getFutureDate(18, 20, 0),
       isAdult: false,
       sectors: [
         { name: 'Passe Diário Geral', type: SectorType.GENERAL_ADMISSION, price: 50.0, capacity: 500 },
@@ -276,6 +284,7 @@ async function main() {
       locationName: 'Ópera de Arame',
       city: 'Curitiba, PR',
       eventDate: getFutureDate(52, 18, 0),
+      endDate: getFutureDate(53, 2, 0),
       isAdult: false,
       sectors: [
         { name: 'Entrada Geral Parque + Palco', type: SectorType.GENERAL_ADMISSION, price: 110.0, capacity: 350 },
@@ -298,6 +307,7 @@ async function main() {
       locationName: 'Concha Acústica do Teatro Castro Alves',
       city: 'Salvador, BA',
       eventDate: getFutureDate(65, 17, 0),
+      endDate: getFutureDate(66, 1, 0),
       isAdult: false,
       sectors: [
         { name: 'Plateia Arquibancada', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 500 },
@@ -313,6 +323,7 @@ async function main() {
       locationName: 'Cine Petra Belas Artes',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(21, 18, 30),
+      endDate: getFutureDate(22, 2, 30),
       isAdult: true,
       sectors: [
         { name: 'Passaporte Festival Completo', type: SectorType.GENERAL_ADMISSION, price: 130.0, capacity: 180 },
@@ -337,6 +348,7 @@ async function main() {
       locationName: 'Teatro Renault',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(30, 20, 0),
+      endDate: getFutureDate(30, 22, 30),
       isAdult: false,
       sectors: [
         {
@@ -374,6 +386,7 @@ async function main() {
       locationName: 'Grande Teatro do Palácio das Artes',
       city: 'Belo Horizonte, MG',
       eventDate: getFutureDate(12, 19, 0),
+      endDate: getFutureDate(12, 21, 30),
       isAdult: false,
       sectors: [
         {
@@ -403,6 +416,7 @@ async function main() {
       locationName: 'Teatro Gazeta',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(6, 20, 30),
+      endDate: getFutureDate(6, 23, 0),
       isAdult: true,
       sectors: [
         {
@@ -427,6 +441,7 @@ async function main() {
       locationName: 'UCI IMAX Bourbon Shopping',
       city: 'São Paulo, SP',
       eventDate: getFutureDate(5, 21, 0),
+      endDate: getFutureDate(5, 23, 50),
       isAdult: false,
       sectors: [
         {
@@ -456,6 +471,7 @@ async function main() {
       locationName: 'Cine Drive-in Brasília',
       city: 'Brasília, DF',
       eventDate: getFutureDate(10, 20, 30),
+      endDate: getFutureDate(10, 22, 45),
       isAdult: false,
       sectors: [
         { name: 'Vaga Carro (Até 4 Pessoas)', type: SectorType.GENERAL_ADMISSION, price: 65.0, capacity: 120 },
@@ -471,6 +487,7 @@ async function main() {
       locationName: 'Estação NET Botafogo',
       city: 'Rio de Janeiro, RJ',
       eventDate: getFutureDate(40, 14, 0),
+      endDate: getFutureDate(41, 2, 0),
       isAdult: false,
       sectors: [
         {
@@ -510,6 +527,7 @@ async function main() {
         locationName: eventDef.locationName,
         city: eventDef.city,
         eventDate: eventDef.eventDate,
+        endDate: eventDef.endDate || null,
         isAdult: eventDef.isAdult ?? false,
         status: EventStatus.PUBLISHED,
         organizerId: organizerId,

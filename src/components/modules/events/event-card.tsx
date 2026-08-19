@@ -1,11 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { formatShortDateRange } from "@/lib/utils/date-formatters";
 
 interface EventCardProps {
   id: string;
   title: string;
-  eventDate: Date;
+  eventDate: Date | string;
+  endDate?: Date | string | null;
   locationName: string;
   city: string;
   bannerUrl: string | null;
@@ -18,6 +20,7 @@ export function EventCard({
   id,
   title,
   eventDate,
+  endDate,
   locationName,
   city,
   bannerUrl,
@@ -25,13 +28,7 @@ export function EventCard({
   category,
   isAdult,
 }: EventCardProps) {
-  const formattedDate = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(eventDate);
+  const formattedDate = formatShortDateRange(eventDate, endDate);
 
   const formattedPrice = new Intl.NumberFormat("pt-BR", {
     style: "currency",

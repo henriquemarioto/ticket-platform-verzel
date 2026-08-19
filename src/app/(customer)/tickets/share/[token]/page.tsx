@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Calendar, MapPin, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { generateSharePasscode } from "@/lib/crypto";
+import { formatEventDateRange } from "@/lib/utils/date-formatters";
 import { Metadata } from "next";
 
 export async function generateMetadata({ 
@@ -66,17 +67,7 @@ export default async function ShareTicketPage({
 
   const { event, sector, seat } = ticket;
 
-  const dateStr = new Date(event.eventDate).toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  
-  const timeStr = new Date(event.eventDate).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formattedDate = formatEventDateRange(event.eventDate, event.endDate);
 
   const getStatusBadge = () => {
     switch (ticket.status) {
@@ -137,7 +128,7 @@ export default async function ShareTicketPage({
               <div className="space-y-2 text-sm text-text-muted flex flex-col items-center">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{dateStr} às {timeStr}</span>
+                  <span>{formattedDate}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
