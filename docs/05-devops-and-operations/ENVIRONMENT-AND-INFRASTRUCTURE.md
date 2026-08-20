@@ -70,7 +70,7 @@ AUTH_SECRET="prod-ultra-secure-jwt-key-generated-with-openssl"
 QR_HMAC_SECRET="prod-ultra-secure-hmac-key-generated-with-openssl"
 TMDB_API_KEY="sua-chave-tmdb-de-producao"
 TICKETMASTER_API_KEY="sua-chave-ticketmaster-de-producao"
-NEXT_PUBLIC_APP_URL="https://seu-dominio.vercel.app"
+NEXT_PUBLIC_APP_URL="https://ticket-platform-verzel.vercel.app"
 ```
 
 ### Passo 3: Iniciar o Banco de Dados com Docker Compose

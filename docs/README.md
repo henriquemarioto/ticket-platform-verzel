@@ -46,6 +46,7 @@ docs/
 ├── 06-quality-and-testing/
 │   └── TEST-PLAN-AND-CRITERIA.md      # Pirâmide de testes, cenários de concorrência ACID, DoR e DoD
 │
+├── PROJECT-EVOLUTION-AND-STORY.md     # Relato técnico: visão inicial, mudanças e decisões
 └── CHALLENGE.md                       # Enunciado original do desafio técnico
 ```
 
@@ -82,7 +83,7 @@ Para facilitar a avaliação e garantir total conformidade com o edital do **Des
 
 | Diferencial Opcional                         | Valor Agregado ao Projeto                                                                                                            |   Status no Projeto    | Documento de Referência                                                                             |
 | :------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :--------------------: | :-------------------------------------------------------------------------------------------------- |
-| **Deploy em Produção na Nuvem**              | **+1 Ponto na Nota Final**: Aplicação ao vivo na **Vercel** + **Supabase PostgreSQL** com Connection Pooler Supavisor na porta 6543. | 🎯 **Prioridade Alta** | [`ENVIRONMENT-AND-INFRASTRUCTURE.md`](./05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md) |
+| **Deploy em Produção na Nuvem**              | **+1 Ponto na Nota Final**: Aplicação ao vivo na **Vercel** ([ticket-platform-verzel.vercel.app](https://ticket-platform-verzel.vercel.app/)) + **Supabase PostgreSQL** com Connection Pooler Supavisor na porta 6543. | ✅ **Concluído** | [`ENVIRONMENT-AND-INFRASTRUCTURE.md`](./05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md) |
 | **Orquestração Docker Compose**              | Inicialização completa da aplicação e banco local com um único comando (`docker compose up`).                                        |  ✅ **Especificado**   | [`05-ANALYTICS-AND-ADVANCED.md`](./01-use-cases/05-ANALYTICS-AND-ADVANCED.md#uc29)                  |
 | **Bateria de Testes Automatizados**          | Testes unitários, de concorrência ACID (anti-double booking) e validação HMAC.                                                       |  ✅ **Especificado**   | [`TEST-PLAN-AND-CRITERIA.md`](./06-quality-and-testing/TEST-PLAN-AND-CRITERIA.md)                   |
 | **Filtros Multicritério**                    | Busca combinada por categoria, faixa de preço, intervalo de datas e cidade.                                                          |  ✅ **Especificado**   | [`05-ANALYTICS-AND-ADVANCED.md`](./01-use-cases/05-ANALYTICS-AND-ADVANCED.md#uc25)                  |
@@ -107,6 +108,7 @@ Conforme orientação direta do enunciado do desafio, os seguintes itens **não 
 
 ## 🧭 Guias Rápidos de Navegação
 
+- 📖 **Relato Técnico & Evolução do Projeto**: [`PROJECT-EVOLUTION-AND-STORY.md`](./PROJECT-EVOLUTION-AND-STORY.md).
 - 🚀 **Setup & Execução Local**: [`05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md`](./05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md).
 - 🏗️ **Arquitetura & Banco de Dados**: [`02-architecture/ARCHITECTURE-OVERVIEW.md`](./02-architecture/ARCHITECTURE-OVERVIEW.md) e [`02-architecture/DATABASE-MODELING.md`](./02-architecture/DATABASE-MODELING.md).
 - 🎨 **Design System & UI/UX**: [`03-design/DESIGN-SYSTEM.md`](./03-design/DESIGN-SYSTEM.md).

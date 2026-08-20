@@ -1,5 +1,9 @@
 # Ticket Platform Verzel
 
+🌐 **Deploy / Demonstração Online:** [https://ticket-platform-verzel.vercel.app/](https://ticket-platform-verzel.vercel.app/)
+
+> 📖 **Leitura Recomendada para Avaliadores**: Confira o **[Relato Técnico & Evolução do Projeto](./docs/PROJECT-EVOLUTION-AND-STORY.md)** para entender a visão inicial, o que mudou ao longo do desenvolvimento, desafios com APIs externas, decisões de backend/design e o uso do Graphify.
+
 Bem-vindo ao repositório principal da **Plataforma de Eventos e Ingressos** (Desafio Elite Dev).
 
 Este projeto é uma plataforma full-stack moderna construída com **Next.js 16 (App Router)**, **TypeScript**, **TailwindCSS 4** e **Prisma ORM** (PostgreSQL). A plataforma permite a criação de eventos, reserva de ingressos (Pista e Assentos Numerados) com prevenção de *double-booking*, geração de QR Codes seguros via HMAC, além de um sistema de portaria e check-in contínuo (WebRTC).
@@ -11,6 +15,7 @@ Toda a arquitetura, regras de negócio, wireframes, modelagem de banco de dados 
 👉 **[Acesse a Documentação Completa (Índice Mestre)](./docs/README.md)**
 
 ### Guias de Destaque
+- 📖 **[Relato Técnico & Evolução do Projeto](./docs/PROJECT-EVOLUTION-AND-STORY.md)**: Visão sobre o que foi planejado, mudanças técnicas e decisões.
 - 🚀 **[Setup & Execução Local](./docs/05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md)**: Como rodar a aplicação e o banco de dados via Docker.
 - 🏗️ **[Arquitetura e Modelagem](./docs/02-architecture/ARCHITECTURE-OVERVIEW.md)**: Desenho da solução, C4 Model e diagrama ERD.
 - 🎨 **[Design System](./docs/03-design/DESIGN-SYSTEM.md)**: Padrões de UI, tokens HSL e componentes atômicos.
