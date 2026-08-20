@@ -268,7 +268,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Configurar `output: "standalone"` no `next.config.ts` e regras de exclusão em `.dockerignore`.
   - [x] Implementar `docker-entrypoint.sh` com suporte a migrações Prisma (`migrate deploy`/`db push`) e seed idempotente.
   - [x] Atualizar `docker-compose.yml` com orquestração completa dos serviços `app` e `postgres` com healthcheck.
-- [ ] **Task 3.6: Bateria Completa de Testes Automatizados (UC30)**
-  - [ ] Testes unitários de HMAC, RBAC e schemas Zod.
-  - [ ] Testes de concorrência ACID anti-double booking.
-  - [ ] Testes de validação de portaria nos 4 estados.
+- [x] **Task 3.6: Bateria Completa de Testes Automatizados (UC30)**
+  - [x] Testes unitários de HMAC, RBAC e schemas Zod.
+  - [x] Testes de concorrência ACID anti-double booking.
+  - [x] Testes de validação de portaria nos 4 estados.

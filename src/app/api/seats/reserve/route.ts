@@ -119,8 +119,6 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("[RESERVE_SEATS_ERROR]", error);
-
     if (error.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Setor não encontrado" }, { status: 404 });
     }
@@ -131,6 +129,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Um ou mais assentos selecionados já foram reservados por outro cliente." }, { status: 409 });
     }
 
+    console.error("[RESERVE_SEATS_ERROR]", error);
     return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
   }
 }

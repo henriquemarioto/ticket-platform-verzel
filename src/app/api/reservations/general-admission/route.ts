@@ -97,8 +97,6 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("[RESERVE_GA_ERROR]", error);
-
     if (error.message === "NOT_FOUND") {
       return NextResponse.json({ error: "Setor não encontrado" }, { status: 404 });
     }
@@ -109,6 +107,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Vagas insuficientes no setor para a quantidade solicitada." }, { status: 409 });
     }
 
+    console.error("[RESERVE_GA_ERROR]", error);
     return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
   }
 }
