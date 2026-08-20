@@ -45,6 +45,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ## 🎯 Fase 2: Casos de Uso Core (Obrigatórios)
 
 ### Módulo 1: Autenticação, RBAC e Carga de Testes (UC01 a UC05)
+
 - [x] **Task 2.1: Serviços de Criptografia de Senha e Sessão JWT**
   - [x] Implementar `src/lib/auth.ts` com hash bcrypt/argon2 e geração/verificação de JWT stateless (`jose`).
   - [x] Implementar helpers para manipulação de cookies `httpOnly`, `SameSite=Lax` e `Secure`.
@@ -69,6 +70,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ---
 
 ### Módulo 2: Integração Externa e Gestão de Eventos (UC06 a UC10)
+
 - [x] **Task 2.7: Integração TMDb com Catálogo Fallback Mock (UC06)**
   - [x] Implementar Route Handler `GET /api/external-catalog/tmdb`.
   - [x] Implementar catálogo mock embutido com filmes populares caso `TMDB_API_KEY` esteja ausente.
@@ -115,6 +117,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ---
 
 ### Módulo 3: Vitrine, Reserva Anti-Double Booking, Checkout e Ingressos (UC11 a UC20)
+
 - [x] **Task 2.12: Vitrine Pública de Eventos e Catálogo (UC11)**
   - [x] Implementar `src/app/(customer)/page.tsx` com banner hero, destaques em 2 fileiras e carrosséis horizontais por categoria.
   - [x] Criar componente `ViewAllCard` interativo.
@@ -134,7 +137,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Implementar componente interativo `SeatMap` com indicação de assentos livres, selecionados, em reserva e ocupados.
   - [x] Implementar Route Handler `POST /api/seats/reserve` com transação atômica serializada (`WHERE status = 'AVAILABLE'`).
 - [x] **Task 2.16: Expiração de TTL e Liberação de Assentos (UC15)**
-  - [x] Implementar rotina de *lazy expiration* nas consultas de assentos (`GET /api/events/[id]/seats`).
+  - [x] Implementar rotina de _lazy expiration_ nas consultas de assentos (`GET /api/events/[id]/seats`).
   - [x] Restaurar assentos expirados para `AVAILABLE` e devolver cotas de pista ao estoque.
 - [x] **Task 2.17: Checkout e Pagamento Simulado Aprovado (UC16)**
   - [x] Implementar tela `src/app/(customer)/checkout/page.tsx` com cronômetro regressivo de 10 minutos sincronizado.
@@ -157,6 +160,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 ---
 
 ### Módulo 4: Portaria e Controle de Acesso (UC21 a UC24)
+
 - [x] **Task 2.22: Painel Operacional da Portaria (UC21)**
   - [x] Implementar tela `src/app/(gatekeeper)/gatekeeper/page.tsx` com seletor de evento e contadores de check-in em tempo real.
 - [x] **Task 2.23: Scanner Contínuo de Câmera WebRTC (UC22)**
@@ -243,10 +247,14 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
 
 ## 🌟 Fase 3: Escala, Opcionais e Excelência (Bônus)
 
-- [ ] **Task 3.1: Filtros Avançados Multicritério (UC25)**
-  - [ ] Implementar gaveta de filtros por categoria, faixa de preço, intervalo de datas, cidade e ordenação dinâmica com sincronização na URL.
-- [ ] **Task 3.2: Dashboard Analítico do Organizador (UC26)**
-  - [ ] Exibir cards com faturamento total, taxa de ocupação dos setores e gráfico de vendas.
+- [x] **Task 3.1: Filtros Multicritério (UC25)**
+  - [x] Implementar gaveta de filtros por categoria, faixa de preço, intervalo de datas, cidade e ordenação dinâmica com sincronização na URL.
+- [x] **Task 3.2: Dashboard Analítico do Organizador (UC26)**
+  - [x] Exibir cards com faturamento total, total de ingressos vendidos, taxa de ocupação, presença na portaria e ticket médio.
+  - [x] Implementar gráficos interativos com a biblioteca `recharts` (`AreaChart` para timeline de vendas, `BarChart` para ocupação por setor e `PieChart`/Donut para distribuição de público).
+  - [x] Seletor dinâmico de evento para alternar entre visão geral consolidada e métricas individuais.
+  - [x] Exportação de relatórios reais em CSV (com BOM UTF-8) e JSON formatado.
+  - [x] Definir `/organizer/analytics` como rota padrão pós-autenticação do perfil Organizador (login, registro e proxy).
 - [ ] **Task 3.3: Cancelamento de Ingressos com Devolução ao Estoque (UC27)**
   - [ ] Implementar botão de cancelamento voluntário pelo cliente no painel "Meus Ingressos", liberando imediatamente o assento/cota.
 - [ ] **Task 3.4: Sincronização em Tempo Real (UC28)**

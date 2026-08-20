@@ -47,7 +47,7 @@ flowchart TD
     end
 
     subgraph M5["📊 05-ANALYTICS-AND-ADVANCED (Módulo 5)"]
-        UC25["UC25: Busca e Filtros Avançados"]
+        UC25["UC25: Busca e Filtros"]
         UC26["UC26: Dashboard Analítico do Organizador"]
         UC27["UC27: Cancelamento & Restituição de Estoque"]
         UC28["UC28: Sincronização em Tempo Real WebSockets"]
@@ -61,7 +61,9 @@ flowchart TD
 ## 2. Índice dos 5 Módulos Consolidados
 
 ### 🔐 1. [Módulo de Autenticação e Acesso](./01-AUTH-AND-ACCESS.md) — 🔴 **OBRIGATÓRIO (Requisito Mínimo do Desafio)**
-*Consolida os casos de uso UC01 a UC05:*
+
+_Consolida os casos de uso UC01 a UC05:_
+
 - **UC01**: Autenticação com credenciais e sessão JWT HttpOnly `[Obrigatório]`
 - **UC02**: Cadastro de novas contas (Cliente / Organizador) com hashing bcrypt `[Obrigatório]`
 - **UC03**: Controle de Acesso Baseado em Papéis (RBAC) e proteção no Middleware `[Obrigatório]`
@@ -71,7 +73,9 @@ flowchart TD
 ---
 
 ### 🎭 2. [Módulo de Eventos e Catálogo](./02-EVENTS-AND-CATALOG.md) — 🔴 **OBRIGATÓRIO (Requisito Mínimo do Desafio)**
-*Consolida os casos de uso UC06 a UC10:*
+
+_Consolida os casos de uso UC06 a UC10:_
+
 - **UC06**: Busca e importação de filmes populares via API do TMDb `[Obrigatório]`
 - **UC07**: Consulta de shows e concertos ao vivo via Ticketmaster Discovery API `[Obrigatório]`
 - **UC08**: Publicação de eventos com setor de Pista (capacidade livre) `[Obrigatório]`
@@ -81,7 +85,9 @@ flowchart TD
 ---
 
 ### 🎟️ 3. [Módulo de Venda, Reserva e Ingressos](./03-SALES-AND-TICKETS.md) — 🔴 **OBRIGATÓRIO (Requisito Mínimo do Desafio)**
-*Consolida os casos de uso UC11 a UC20:*
+
+_Consolida os casos de uso UC11 a UC20:_
+
 - **UC11**: Vitrine pública de eventos com hero dinâmico e busca rápida `[Obrigatório]`
 - **UC12**: Detalhes do evento com local, data, sinopse e setores disponíveis `[Obrigatório]`
 - **UC13**: Seleção de ingressos de pista e reserva atômica `[Obrigatório]`
@@ -96,7 +102,9 @@ flowchart TD
 ---
 
 ### 📱 4. [Módulo de Portaria e Check-in](./04-GATE-AND-CHECKIN.md) — 🔴 **OBRIGATÓRIO (Requisito Mínimo do Desafio)**
-*Consolida os casos de uso UC21 a UC24:*
+
+_Consolida os casos de uso UC21 a UC24:_
+
 - **UC21**: Painel da Portaria com seleção de evento e contadores em tempo real `[Obrigatório]`
 - **UC22**: Scanner de QR Code contínuo via câmera WebRTC `[Obrigatório]`
 - **UC23**: Digitação manual de código de ingresso para contingência `[Obrigatório]`
@@ -105,12 +113,12 @@ flowchart TD
 ---
 
 ### 📊 5. [Módulo de Analytics, Infraestrutura e Qualidade](./05-ANALYTICS-AND-ADVANCED.md) — 🟢 **OPCIONAL (Diferencial de Excelência / Bônus)**
-*Consolida os casos de uso UC25 a UC30:*
+
+_Consolida os casos de uso UC25 a UC30:_
+
 - **UC25**: Busca e filtros multicritério avançados `[Opcional]`
 - **UC26**: Dashboard analítico do organizador com KPIs de faturamento e comparecimento `[Opcional]`
 - **UC27**: Cancelamento voluntário de ingressos com restituição de assentos `[Opcional]`
 - **UC28**: Sincronização em tempo real do mapa de assentos (WebSockets / SSE) `[Opcional]`
 - **UC29**: Containerização completa com Docker Compose `[Opcional]`
 - **UC30**: Execução da suíte de testes automatizados unitários e de concorrência `[Opcional]`
-
-

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     // Determine redirect URL
     let redirectUrl = "/";
     if (user.role === "ORGANIZER") {
-      redirectUrl = "/organizer";
+      redirectUrl = "/organizer/analytics";
     } else if (user.role === "GATEKEEPER") {
       redirectUrl = "/gatekeeper";
     } else if (body.returnUrl) {

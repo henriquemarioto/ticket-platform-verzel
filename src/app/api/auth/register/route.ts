@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       role: user.role,
     });
 
-    const redirectUrl = user.role === "ORGANIZER" ? "/organizer" : "/";
+    const redirectUrl = user.role === "ORGANIZER" ? "/organizer/analytics" : "/";
 
     return NextResponse.json({
       data: {

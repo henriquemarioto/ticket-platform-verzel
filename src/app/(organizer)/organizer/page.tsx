@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
 import { EventGatekeeperButton } from "@/components/modules/organizer/EventGatekeeperButton";
 import { formatShortDateRange } from "@/lib/utils/date-formatters";
-import { Edit, Plus, PlusCircle } from "lucide-react";
+import { Edit, Plus, PlusCircle, BarChart2 } from "lucide-react";
 
 export default async function OrganizerDashboardPage() {
   const headersList = await headers();
@@ -56,12 +56,20 @@ export default async function OrganizerDashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">Meus Eventos</h1>
           <p className="text-text-muted mt-1">Gerencie os eventos que você organiza.</p>
         </div>
-        <Link href="/organizer/events/create">
-          <Button>
-            <PlusCircle className="mr-2" />
-            Criar Evento
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/organizer/analytics">
+            <Button variant="outline">
+              <BarChart2 className="mr-2 h-4 w-4" />
+              Analytics
+            </Button>
+          </Link>
+          <Link href="/organizer/events/create">
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Criar Evento
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {events.length === 0 ? (

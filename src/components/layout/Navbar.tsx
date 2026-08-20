@@ -55,7 +55,10 @@ export function Navbar({ user }: { user: UserPayload | null }) {
             <Link href="/gatekeeper" className="text-sm font-medium text-primary hover:text-primary-hover transition-colors font-semibold">Portaria</Link>
           )}
           {user && user.role === "ORGANIZER" && (
-            <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Painel do Organizador</Link>
+            <>
+              <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Meus Eventos</Link>
+              <Link href="/organizer/analytics" className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors">Analytics</Link>
+            </>
           )}
           <div className="flex items-center gap-3 ml-4">
             {user ? (
@@ -96,7 +99,10 @@ export function Navbar({ user }: { user: UserPayload | null }) {
               <Link href="/gatekeeper" className="text-sm font-medium text-primary font-semibold" onClick={() => setIsOpen(false)}>Portaria</Link>
             )}
             {user && user.role === "ORGANIZER" && (
-              <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Painel do Organizador</Link>
+              <>
+                <Link href="/organizer" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Meus Eventos</Link>
+                <Link href="/organizer/analytics" className="text-sm font-medium text-text-muted hover:text-text-primary" onClick={() => setIsOpen(false)}>Analytics</Link>
+              </>
             )}
             <div className="flex flex-col gap-2 pt-4 shadow-sm">
               {user ? (

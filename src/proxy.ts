@@ -53,7 +53,7 @@ export async function proxy(request: NextRequest) {
 
     if (pathname === "/login" || pathname === "/register") {
       if (role === "ORGANIZER") {
-        return NextResponse.redirect(new URL("/organizer", request.url));
+        return NextResponse.redirect(new URL("/organizer/analytics", request.url));
       }
       if (role === "GATEKEEPER") {
         return NextResponse.redirect(new URL("/gatekeeper", request.url));
@@ -64,7 +64,7 @@ export async function proxy(request: NextRequest) {
     }
 
     if (role === "ORGANIZER" && pathname.startsWith("/checkout")) {
-      return NextResponse.redirect(new URL("/organizer", request.url));
+      return NextResponse.redirect(new URL("/organizer/analytics", request.url));
     }
 
     if (role === "GATEKEEPER") {

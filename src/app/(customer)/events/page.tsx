@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { EventSearchBar } from "@/components/modules/events/event-search-bar";
 import { CategoryPills } from "@/components/modules/events/category-pills";
 import { EventCard } from "@/components/modules/events/event-card";
+import { AdvancedFiltersDrawer } from "@/components/modules/events/advanced-filters-drawer";
+import { ActiveFilterChips } from "@/components/modules/events/active-filter-chips";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -13,13 +15,25 @@ export default async function EventsCatalogPage({
   const resolvedSearchParams = await searchParams;
   const query = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : undefined;
   const category = typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : undefined;
+  const categoriesParam = typeof resolvedSearchParams.categories === "string" ? resolvedSearchParams.categories : undefined;
+  const city = typeof resolvedSearchParams.city === "string" ? resolvedSearchParams.city : undefined;
+  const minPrice = typeof resolvedSearchParams.minPrice === "string" ? parseFloat(resolvedSearchParams.minPrice) : undefined;
+  const maxPrice = typeof resolvedSearchParams.maxPrice === "string" ? parseFloat(resolvedSearchParams.maxPrice) : undefined;
+  const startDate = typeof resolvedSearchParams.startDate === "string" ? new Date(resolvedSearchParams.startDate) : undefined;
+  const endDate = typeof resolvedSearchParams.endDate === "string" ? new Date(resolvedSearchParams.endDate) : undefined;
+  const sort = typeof resolvedSearchParams.sort === "string" ? resolvedSearchParams.sort : "date_asc";
+
+  const categoriesArray = categoriesParam ? categoriesParam.split(",") : (category ? [category] : undefined);
 
   const events = await prisma.event.findMany({
     where: {
       status: "PUBLISHED",
-      eventDate: {
-        gte: new Date(),
-      },
+      ...(startDate || endDate ? {
+        eventDate: {
+          ...(startDate ? { gte: startDate } : { gte: new Date() }),
+          ...(endDate ? { lte: endDate } : {}),
+        }
+      } : { eventDate: { gte: new Date() } }),
       ...(query && {
         OR: [
           { title: { contains: query, mode: "insensitive" } },
@@ -28,49 +42,71 @@ export default async function EventsCatalogPage({
           { description: { contains: query, mode: "insensitive" } },
         ],
       }),
-      ...(category && {
-        category: category as import("@prisma/client").EventCategory,
+      ...(categoriesArray && categoriesArray.length > 0 && {
+        category: { in: categoriesArray as import("@prisma/client").EventCategory[] },
+      }),
+      ...(city && {
+        city: { contains: city, mode: "insensitive" }
+      }),
+      ...((minPrice !== undefined || maxPrice !== undefined) && {
+        sectors: {
+          some: {
+            price: {
+              ...(minPrice !== undefined && !isNaN(minPrice) && { gte: minPrice }),
+              ...(maxPrice !== undefined && !isNaN(maxPrice) && { lte: maxPrice }),
+            }
+          }
+        }
       }),
     },
     include: {
       sectors: true,
     },
-    orderBy: {
-      eventDate: "asc",
-    },
+  });
+
+  // Calculate minPrice and sort in memory
+  const formattedEvents = events.map((event) => {
+    const minPriceVal =
+      event.sectors.length > 0
+        ? Math.min(...event.sectors.map((s) => s.price))
+        : 0;
+    return { ...event, minPrice: minPriceVal };
+  });
+
+  formattedEvents.sort((a, b) => {
+    if (sort === "price_asc") return a.minPrice - b.minPrice;
+    if (sort === "price_desc") return b.minPrice - a.minPrice;
+    if (sort === "title_asc") return a.title.localeCompare(b.title);
+    return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime();
   });
 
   return (
     <div className="min-h-screen pb-16 pt-8">
       <main className="container mx-auto px-4">
         {/* Header Section */}
-        <div className="mb-8 space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-text-primary">Explorar Eventos</h1>
-              <p className="mt-1 text-text-muted">
-                {events.length} {events.length === 1 ? "evento encontrado" : "eventos encontrados"}
-              </p>
-            </div>
-            <div className="w-full sm:w-auto">
-              <EventSearchBar />
-            </div>
+        <div className="mb-8 space-y-4">
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">Explorar Eventos</h1>
+            <p className="mt-1 text-text-muted">
+              {formattedEvents.length} {formattedEvents.length === 1 ? "evento encontrado" : "eventos encontrados"}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4">
+            <EventSearchBar />
+            <AdvancedFiltersDrawer />
+            <CategoryPills />
           </div>
           
           <div className="pt-2">
-            <CategoryPills />
+            <ActiveFilterChips />
           </div>
         </div>
 
         {/* Results Grid */}
-        {events.length > 0 ? (
+        {formattedEvents.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {events.map((event) => {
-              const minPrice =
-                event.sectors.length > 0
-                  ? Math.min(...event.sectors.map((s) => s.price))
-                  : 0;
-
+            {formattedEvents.map((event) => {
               return (
                 <EventCard
                   key={event.id}
@@ -81,7 +117,7 @@ export default async function EventsCatalogPage({
                   locationName={event.locationName}
                   city={event.city}
                   bannerUrl={event.bannerUrl}
-                  minPrice={minPrice}
+                  minPrice={event.minPrice}
                   category={event.category}
                   isAdult={event.isAdult}
                 />

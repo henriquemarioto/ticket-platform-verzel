@@ -5,28 +5,32 @@ Este documento consolida os casos de uso detalhados do módulo.
 > [!NOTE]
 > **Status do Módulo**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
 
-
 ---
-# Caso de Uso: UC25 - Busca e Filtros Avançados Multicritério de Eventos
+
+# Caso de Uso: UC25 - Busca e Filtros Multicritério de Eventos
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC25`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
-- **Nome**: Busca e Filtros Avançados Multicritério (Categoria, Faixa de Preço, Data, Cidade e Ordenação)
+- **Nome**: Busca e Filtros Multicritério (Categoria, Faixa de Preço, Data, Cidade e Ordenação)
 - **Objetivo**: Permitir que os clientes localizem eventos com precisão através de um painel de filtros combináveis (múltiplas categorias, range de preço min/max, seletor de datas e períodos, dropdown de cidades atendidas e ordenação dinâmica por menor preço, maior preço ou data mais próxima).
 
 ---
 
 ## 2. Atores
+
 - **Cliente / Visitante**: Aplica critérios combinados para encontrar eventos específicos.
 - **Engine de Busca (Backend / PostgreSQL)**: Executa queries indexadas com múltiplos filtros combinados em `WHERE` clauses.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O usuário acessa a área de busca ou aplica filtros na vitrine.
 - **Pós-condição**:
@@ -58,21 +62,21 @@ sequenceDiagram
 
 ## 5. Fluxo Principal de Execução
 
-1. O usuário clica no botão "Filtros Avançados" na vitrine de eventos.
+1. O usuário clica no botão "Filtros" na vitrine de eventos.
 2. Um painel expansível / gaveta lateral se abre contendo:
    - **Categorias (Multi-select)**: `Shows`, `Filmes`, `Teatro`, `Festivais`.
    - **Faixa de Preço (Dual Slider / Inputs)**: Preço mínimo (R$) e Preço máximo (R$).
    - **Período de Realização**:
-     - Atalhos rápidos: *"Hoje"*, *"Este Fim de Semana"*, *"Este Mês"*.
+     - Atalhos rápidos: _"Hoje"_, _"Este Fim de Semana"_, _"Este Mês"_.
      - Seletor de intervalo de datas customizado (`Data Início` até `Data Fim`).
    - **Cidade**: Dropdown com cidades que possuem eventos ativos cadastrados.
    - **Ordenação**:
-     - *Data mais próxima* (padrão)
-     - *Menor preço*
-     - *Maior preço*
-     - *Nome (A-Z)*
+     - _Data mais próxima_ (padrão)
+     - _Menor preço_
+     - _Maior preço_
+     - _Nome (A-Z)_
 3. O usuário seleciona os filtros desejados.
-4. O front-end sincroniza o estado nos *searchParams* do Next.js e dispara a requisição com debounce de 300ms.
+4. O front-end sincroniza o estado nos _searchParams_ do Next.js e dispara a requisição com debounce de 300ms.
 5. O backend executa a query relacional no banco de dados e retorna os resultados.
 6. A página exibe a grade filtrada com chips/tags removíveis para cada filtro ativo (ex: `[Shows x]`, `[Até R$ 200 x]`, `[São Paulo x]`).
 7. O usuário pode clicar em "Limpar Todos os Filtros" para restaurar a listagem padrão.
@@ -82,6 +86,7 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Compartilhamento de Link de Busca Filtrada
+
 - **Cenário**: O usuário copia a URL com os filtros aplicados e envia para um amigo.
 - **Comportamento**: Ao abrir a URL, o front-end reidrata os filtros a partir dos parâmetros de busca e renderiza exatamente a mesma seleção de eventos.
 
@@ -99,6 +104,7 @@ sequenceDiagram
 ### Requisição: `GET /api/events/search?category=SHOW&city=São%20Paulo&minPrice=50&maxPrice=250&sortBy=price&sortOrder=asc&page=1`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -116,7 +122,7 @@ sequenceDiagram
       "eventDate": "2026-11-20T20:00:00.000Z",
       "locationName": "Espaço Hall Cultural",
       "city": "São Paulo, SP",
-      "minPrice": 120.00,
+      "minPrice": 120.0,
       "bannerUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745"
     }
   ]
@@ -128,7 +134,7 @@ sequenceDiagram
 ## 9. Critérios de Aceite (BDD / Gherkin)
 
 ```gherkin
-Funcionalidade: Busca e Filtros Avançados de Eventos
+Funcionalidade: Busca e Filtros de Eventos
   Como um Cliente
   Eu quero filtrar eventos por múltiplos critérios combinados
   Para encontrar rapidamente opções dentro do meu orçamento e cidade
@@ -140,29 +146,32 @@ Funcionalidade: Busca e Filtros Avançados de Eventos
     E os chips dos filtros ativos devem ser exibidos no topo da grade
 ```
 
-
 ---
 
 # Caso de Uso: UC26 - Painel Analítico e Métricas do Organizador
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC26`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
-- **Nome**: Dashboard Analítico de Vendas, Faturamento e Monitoramento de Check-in em Tempo Real
-- **Objetivo**: Prover ao Organizador uma visão gerencial gráfica e consolidada da performance de seus eventos, detalhando faturamento bruto acumulado, taxa de conversão, percentual de ocupação por setor (pista vs. assentos numerados) e velocímetro de comparecimento da portaria em tempo real.
+- **Nome**: Dashboard Analítico de Vendas, Faturamento e Monitoramento de Check-in
+- **Objetivo**: Prover ao Organizador uma visão gerencial gráfica e consolidada da performance de seus eventos, detalhando faturamento bruto acumulado, taxa de conversão, percentual de ocupação por setor (pista vs. assentos numerados) e comparecimento da portaria através de consulta e sincronização sob demanda via botão "Atualizar".
 
 ---
 
 ## 2. Atores
+
 - **Organizador (`ORGANIZER`)**: Consulta métricas financeiras e operacionais para tomada de decisão.
 - **Engine de Métricas (Backend / Aggregations)**: Realiza cálculos agregados no banco de dados (`SUM`, `COUNT`, `GROUP BY`).
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O usuário autenticado possui o papel `ORGANIZER`.
 - **Pós-condição**:
@@ -192,26 +201,28 @@ sequenceDiagram
 
 ## 5. Fluxo Principal de Execução
 
-1. O organizador acessa o painel de métricas em `/organizer/analytics` ou a partir da listagem de eventos.
+1. O organizador acessa o painel de métricas em `/organizer/analytics` (tela padrão no login do perfil Organizador).
 2. A tela exibe um seletor de evento (com opção de "Todos os Eventos" ou evento específico).
 3. O painel renderiza os **KPIs Principais (Cards de Topo)**:
    - 💰 **Receita Bruta Total**: Ex: `R$ 38.200,00` (soma de todos os pedidos aprovados).
    - 🎟️ **Total de Ingressos Vendidos**: Ex: `215 / 230` (taxa de ocupação global de `93.4%`).
    - 🚪 **Presença na Portaria**: Ex: `180` check-ins efetuados (`83.7%` de comparecimento dos compradores).
-   - 👥 **Ticket Médio**: Ex: `R$ 177,67` por pedido.
-4. **Gráficos Visuais**:
-   - **Ocupação por Setor**: Gráfico de barras comparando Pista Geral vs. Plateia VIP Numerada.
-   - **Evolução de Vendas no Tempo**: Gráfico de linha demonstrando vendas por dia/semana.
-   - **Velocímetro de Check-in (Gauge Chart)**: Proporção de pessoas que já entraram vs. pessoas que ainda não chegaram ao local do evento.
-5. O organizador pode exportar um relatório resumido em CSV/JSON.
+   - 👥 **Ticket Médio**: Ex: `R$ 177,67` por ingresso vendido.
+4. **Gráficos Visuais com Recharts**:
+   - **Evolução de Vendas no Tempo (`AreaChart`)**: Curva suave com gradiente demonstrando receita e ingressos por dia.
+   - **Ocupação e Vendas por Setor (`BarChart`)**: Gráfico de barras comparando capacidade total vs ingressos vendidos por setor (exibido e buscado no banco exclusivamente ao selecionar um evento específico; ordenado por receita decrescente).
+   - **Distribuição de Comparecimento (`PieChart` / Donut)**: Fatias detalhando Presentes (check-in realizado), Aguardando Check-in e Vagas Disponíveis.
+   - **Tabela Detalhada de Setores**: Listagem dos setores do evento específico ordenada por receita em ordem decrescente.
+5. O organizador pode exportar o relatório real baixando arquivo em formato CSV.
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Evento Sem Vendas Ainda
+
 - **Cenário**: O evento foi recém-publicado e não possui compras registradas.
-- **Comportamento**: Os gráficos exibem estado zero amigável com mensagem: *"Aguardando as primeiras vendas deste evento."*.
+- **Comportamento**: Os gráficos exibem estado zero amigável com mensagem: _"Aguardando as primeiras vendas deste evento."_.
 
 ---
 
@@ -219,6 +230,8 @@ sequenceDiagram
 
 - **RN01 - Isolamento Estrito de Faturamento**: O organizador só pode visualizar métricas e faturamento dos eventos que ele próprio criou (`event.organizerId === user.id`).
 - **RN02 - Exclusão de Pedidos Cancelados e Recusados**: Pedidos com status `REJECTED` ou ingressos com status `CANCELLED` são devidamente debitados do faturamento líquido exibido.
+- **RN03 - Tela Padrão de Entrada**: A rota `/organizer/analytics` é a tela inicial padrão pós-autenticação para usuários com papel `ORGANIZER`.
+- **RN04 - Escopo de Vendas por Setor e Ordenação**: A agregação e listagem de vendas por setor é restrita à visualização de eventos individuais (quando `eventId !== 'all'`), devendo ser ordenada pela receita em ordem decrescente.
 
 ---
 
@@ -227,30 +240,55 @@ sequenceDiagram
 ### Requisição: `GET /api/organizer/analytics?eventId=evt_rock2026`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
+  "events": [
+    {
+      "id": "evt_rock2026",
+      "title": "Festival Indie Rock Verzel 2026"
+    }
+  ],
   "summary": {
-    "totalRevenue": 38200.00,
+    "totalRevenue": 38200.0,
     "totalTicketsSold": 215,
     "totalCapacity": 230,
     "occupancyRate": 93.48,
     "checkedInCount": 180,
-    "checkInRate": 83.72
+    "checkInRate": 83.72,
+    "averageTicketPrice": 177.67
   },
   "sectors": [
     {
       "sectorName": "Pista Geral",
       "sold": 185,
       "capacity": 200,
-      "revenue": 22200.00
+      "available": 15,
+      "revenue": 22200.0,
+      "occupancyRate": 92.5
     },
     {
       "sectorName": "Plateia VIP Numerada",
       "sold": 30,
       "capacity": 30,
-      "revenue": 16000.00
+      "available": 0,
+      "revenue": 16000.0,
+      "occupancyRate": 100.0
     }
+  ],
+  "salesTimeline": [
+    {
+      "date": "2026-08-14",
+      "formattedDate": "14/08",
+      "amount": 22200.0,
+      "tickets": 185
+    }
+  ],
+  "attendanceDistribution": [
+    { "name": "Presentes (Check-in)", "value": 180, "color": "#005d3f" },
+    { "name": "Aguardando Entrada", "value": 35, "color": "#0057ff" },
+    { "name": "Vagas Disponíveis", "value": 15, "color": "#e2e8f0" }
   ]
 }
 ```
@@ -262,26 +300,29 @@ sequenceDiagram
 ```gherkin
 Funcionalidade: Painel Analítico do Organizador
   Como um Organizador
-  Eu quero visualizar métricas consolidadas de vendas e check-in
+  Eu quero visualizar métricas consolidadas de vendas e check-in com gráficos Recharts
   Para acompanhar a receita e a taxa de comparecimento do meu evento
 
-  Cenário: Visualização do dashboard analítico
+  Cenário: Visualização do dashboard analítico com evento filtrado
     Dado que meu evento possui 215 ingressos vendidos e R$ 38.200,00 faturados
     Quando eu acesso a rota "/organizer/analytics?eventId=evt_rock2026"
     Então o sistema deve exibir o total de receita "R$ 38.200,00"
     E deve exibir a taxa de ocupação de "93.48%"
-    E deve detalhar o faturamento individual por setor
+    E deve renderizar os setores ordenados por receita em ordem decrescente
+    E deve renderizar gráficos interativos com a biblioteca Recharts
+    E deve permitir exportação real em CSV
 ```
-
 
 ---
 
 # Caso de Uso: UC27 - Cancelamento de Ingresso com Devolução ao Estoque
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC27`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
 - **Nome**: Cancelamento Voluntário de Ingresso pelo Cliente com Devolução Automática ao Estoque
@@ -290,12 +331,14 @@ Funcionalidade: Painel Analítico do Organizador
 ---
 
 ## 2. Atores
+
 - **Cliente (`CUSTOMER`)**: Solicita o cancelamento de um ingresso específico.
 - **Banco de Dados / Transação Atômica**: Transiciona o ingresso para `CANCELLED` e restaura o assento para `AVAILABLE`.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O ingresso pertence ao cliente autenticado.
   - O ingresso está com status `ACTIVE` (não foi utilizado na portaria).
@@ -340,8 +383,8 @@ sequenceDiagram
 2. No card do ingresso ativo que deseja cancelar, clica no botão secundário **"Cancelar Ingresso"**.
 3. Um modal de segurança é exibido:
    - Resumo do ingresso (Evento, Setor, Assento e Valor).
-   - Informação de estorno: *"O valor de R$ XXX,XX será estornado no método original de pagamento."*.
-   - Aviso de irreversibilidade: *"Após o cancelamento, seu QR Code será desativado e o assento voltará a ficar disponível para outros clientes."*.
+   - Informação de estorno: _"O valor de R$ XXX,XX será estornado no método original de pagamento."_.
+   - Aviso de irreversibilidade: _"Após o cancelamento, seu QR Code será desativado e o assento voltará a ficar disponível para outros clientes."_.
 4. O cliente clica no botão de confirmação **"Sim, Cancelar Ingresso"**.
 5. O front-end dispara `POST /api/tickets/:id/cancel`.
 6. O backend valida a regra e executa a transação atômica no banco de dados.
@@ -354,12 +397,14 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Tentativa de Cancelar Ingresso Já Utilizado
+
 - **Condição**: O cliente tenta cancelar um ingresso cujo status já é `USED` (já realizou check-in).
-- **Comportamento**: A API bloqueia a ação com `400 Bad Request`: *"Não é possível cancelar um ingresso que já foi utilizado na entrada do evento."*.
+- **Comportamento**: A API bloqueia a ação com `400 Bad Request`: _"Não é possível cancelar um ingresso que já foi utilizado na entrada do evento."_.
 
 ### Fluxo de Exceção 2: Tentativa de Cancelar Evento Já Realizado
+
 - **Condição**: A data do evento já passou.
-- **Comportamento**: O botão de cancelamento fica desabilitado na interface e a API recusa com `400 Bad Request` (*"Cancelamentos só são permitidos antes da realização do evento."*).
+- **Comportamento**: O botão de cancelamento fica desabilitado na interface e a API recusa com `400 Bad Request` (_"Cancelamentos só são permitidos antes da realização do evento."_).
 
 ---
 
@@ -376,13 +421,14 @@ sequenceDiagram
 ### Requisição: `POST /api/tickets/tkt_clx123456/cancel`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
   "ticketId": "tkt_clx123456",
   "status": "CANCELLED",
   "seatRestored": "A1",
-  "refundAmount": 250.00,
+  "refundAmount": 250.0,
   "cancelledAt": "2026-08-14T03:58:00.000Z"
 }
 ```
@@ -405,29 +451,32 @@ Funcionalidade: Cancelamento de Ingressos com Devolução ao Estoque
     E o QR Code deste ingresso não deve mais permitir entrada na portaria
 ```
 
-
 ---
 
 # Caso de Uso: UC28 - Sincronização em Tempo Real do Mapa de Assentos
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC28`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
 - **Nome**: Sincronização em Tempo Real do Mapa de Assentos via WebSockets / SSE
-- **Objetivo**: Transmitir eventos de seleção, reserva (`seat:reserved`), liberação (`seat:released`) e venda definitiva (`seat:sold`) instantaneamente para todos os usuários que estiverem com a tela do mapa de assentos aberta, eliminando conflitos visuais e atualizando as cores das poltronas em tempo real sem necessidade de *refresh* manual da página.
+- **Objetivo**: Transmitir eventos de seleção, reserva (`seat:reserved`), liberação (`seat:released`) e venda definitiva (`seat:sold`) instantaneamente para todos os usuários que estiverem com a tela do mapa de assentos aberta, eliminando conflitos visuais e atualizando as cores das poltronas em tempo real sem necessidade de _refresh_ manual da página.
 
 ---
 
 ## 2. Atores
+
 - **Clientes Concorrentes (Cliente A, Cliente B, Cliente C)**: Navegam e escolhem assentos ao mesmo tempo no mesmo evento.
 - **Servidor de Eventos em Tempo Real (WebSockets / SSE Channel)**: Gerencia as salas por `eventId` e propaga broadcasts de alteração de assento.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O cliente acessa o mapa de assentos de um evento e estabelece conexão WebSocket ou canal Server-Sent Events (SSE).
 - **Pós-condição**:
@@ -451,7 +500,7 @@ sequenceDiagram
     UIA->>API: POST /api/seats/reserve { seatIds: ["B4"] }
     API->>API: Reserva atômica no banco com sucesso
     API->>WS: Broadcast evento "seat:reserved" { seatId: "B4", reservedBy: "user_a" }
-    
+
     WS-->>UIA: Evento confirmado: poltrona B4 fica AZUL (Selecionada por mim)
     WS-->>UIB: Broadcast recebido: poltrona B4 muda instantaneamente para AMARELO (Em reserva por outro cliente)
     UIB->>CliB: Exibe animação de bloqueio na poltrona B4 e impede novo clique
@@ -477,18 +526,19 @@ sequenceDiagram
 3. A tela do **Cliente B**, que estava visualizando o mesmo mapa:
    - Recebe a mensagem via WebSocket/SSE em milissegundos.
    - Aplica uma transição visual suave na poltrona `C7`, alterando a cor de verde para amarelo.
-   - Adiciona um tooltip: *"Poltrona em processo de compra por outro usuário"*.
+   - Adiciona um tooltip: _"Poltrona em processo de compra por outro usuário"_.
    - Desabilita o clique sobre o assento `C7`.
-4. Se o Cliente A concluir a compra, o evento `SEAT_SOLD` transforma a poltrona em cinza escuro (*"Ocupada"*).
-5. Se a reserva do Cliente A expirar ou for cancelada, o evento `SEAT_RELEASED` restaura a cor verde (*"Disponível"*) para todos os clientes conectados.
+4. Se o Cliente A concluir a compra, o evento `SEAT_SOLD` transforma a poltrona em cinza escuro (_"Ocupada"_).
+5. Se a reserva do Cliente A expirar ou for cancelada, o evento `SEAT_RELEASED` restaura a cor verde (_"Disponível"_) para todos os clientes conectados.
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Queda ou Falha de Conexão WebSocket
+
 - **Cenário**: O dispositivo móvel perde o sinal Wi-Fi momentaneamente.
-- **Comportamento**: O cliente WebSocket tenta reconectar automaticamente com *exponential backoff* e realiza uma consulta HTTP REST para ressincronizar o estado completo da sala ao restabelecer a conexão.
+- **Comportamento**: O cliente WebSocket tenta reconectar automaticamente com _exponential backoff_ e realiza uma consulta HTTP REST para ressincronizar o estado completo da sala ao restabelecer a conexão.
 
 ---
 
@@ -502,6 +552,7 @@ sequenceDiagram
 ## 8. Contratos de Eventos em Tempo Real
 
 ### Payload de Broadcast: `SEAT_STATUS_CHANGED`
+
 ```json
 {
   "event": "seat:status_update",
@@ -531,15 +582,16 @@ Funcionalidade: Sincronização em Tempo Real do Mapa de Assentos
     E o Cliente B não deve conseguir clicar na poltrona "C7"
 ```
 
-
 ---
 
 # Caso de Uso: UC29 - Containerização e Orquestração com Docker Compose
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC29`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
 - **Nome**: Containerização e Orquestração do Ambiente Completo com Docker Compose
@@ -548,12 +600,14 @@ Funcionalidade: Sincronização em Tempo Real do Mapa de Assentos
 ---
 
 ## 2. Atores
+
 - **Avaliador / Desenvolvedor**: Inicializa o ambiente com comandos do Docker CLI.
-- **Docker Engine / Compose**: Compila as imagens com *multi-stage build* e orquestra a rede interna e volumes persistentes.
+- **Docker Engine / Compose**: Compila as imagens com _multi-stage build_ e orquestra a rede interna e volumes persistentes.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O Docker e o Docker Compose estão instalados na máquina do avaliador.
 - **Pós-condição**:
@@ -610,6 +664,7 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Execução em Segundo Plano (Modo Detached)
+
 - **Comando**: `docker compose up -d`
 - **Comportamento**: Os containers sobem em background e o usuário pode acompanhar os logs com `docker compose logs -f app`.
 
@@ -638,11 +693,11 @@ services:
       POSTGRES_PASSWORD: verzel_password
       POSTGRES_DB: ticket_platform_db
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U verzel_user -d ticket_platform_db"]
+      test: ['CMD-SHELL', 'pg_isready -U verzel_user -d ticket_platform_db']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -654,13 +709,13 @@ services:
     container_name: ticket_platform_app
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
-      DATABASE_URL: "postgresql://verzel_user:verzel_password@postgres:5432/ticket_platform_db?schema=public"
-      DIRECT_URL: "postgresql://verzel_user:verzel_password@postgres:5432/ticket_platform_db?schema=public"
-      AUTH_SECRET: "super_secret_jwt_key_ticket_platform_2026_production"
-      QR_HMAC_SECRET: "super_secret_hmac_key_for_qr_code_signature_2026"
-      NODE_ENV: "production"
+      DATABASE_URL: 'postgresql://verzel_user:verzel_password@postgres:5432/ticket_platform_db?schema=public'
+      DIRECT_URL: 'postgresql://verzel_user:verzel_password@postgres:5432/ticket_platform_db?schema=public'
+      AUTH_SECRET: 'super_secret_jwt_key_ticket_platform_2026_production'
+      QR_HMAC_SECRET: 'super_secret_hmac_key_for_qr_code_signature_2026'
+      NODE_ENV: 'production'
     depends_on:
       postgres:
         condition: service_healthy
@@ -687,29 +742,32 @@ Funcionalidade: Execução do Ambiente com Docker Compose
     E a aplicação deve ficar acessível em "http://localhost:3000"
 ```
 
-
 ---
 
 # Caso de Uso: UC30 - Bateria Completa de Testes Automatizados
+
 ## Plataforma de Eventos e Ingressos (Fase 3 - Diferenciais)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC30`
 - **Classificação**: 🟢 OPCIONAL (Diferencial de Excelência / Bônus)
 - **Nome**: Execução da Suíte Completa de Testes Automatizados (Unitários, Concorrência e E2E)
-- **Objetivo**: Fornecer uma suíte automatizada de testes robusta cobrindo os pontos críticos do sistema: testes unitários (criptografia HMAC e regras RBAC), testes de integração e concorrência (prevenção de *double-booking* e validação dupla na portaria) e testes de ponta a ponta (E2E com Playwright) cobrindo a jornada completa: Login -> Escolha de Evento -> Reserva de Assento -> Checkout -> Emissão de Ingresso -> Validação na Portaria.
+- **Objetivo**: Fornecer uma suíte automatizada de testes robusta cobrindo os pontos críticos do sistema: testes unitários (criptografia HMAC e regras RBAC), testes de integração e concorrência (prevenção de _double-booking_ e validação dupla na portaria) e testes de ponta a ponta (E2E com Playwright) cobrindo a jornada completa: Login -> Escolha de Evento -> Reserva de Assento -> Checkout -> Emissão de Ingresso -> Validação na Portaria.
 
 ---
 
 ## 2. Atores
+
 - **Engenheiro de Testes / Avaliador**: Dispara os comandos de teste no terminal (`npm test`, `npm run test:e2e`).
 - **Framework de Testes (Vitest / Jest & Playwright)**: Executa as asserções e gera relatórios de cobertura.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - As dependências do projeto estão instaladas.
 - **Pós-condição**:
@@ -726,7 +784,7 @@ flowchart TD
         E2E["Testes E2E (Playwright)<br/>Jornada Completa: Cadastro -> Compra -> QR Code -> Portaria"]
         Integration["Testes de Integração & Concorrência (Vitest)<br/>Race Conditions em Assentos e Catracas Simultâneas"]
         Unit["Testes Unitários (Vitest)<br/>Assinatura HMAC-SHA256, Middleware RBAC e Schemas Zod"]
-        
+
         Unit --> Integration --> E2E
     end
 ```
@@ -736,6 +794,7 @@ flowchart TD
 ## 5. Cenários de Teste Essenciais Cobertos
 
 ### 5.1 Testes Unitários (`/tests/unit`)
+
 1. **Assinatura Criptográfica do QR Code**:
    - Geração de payload assinado válido.
    - Verificação de rejeição imediata quando 1 único caractere do hash é alterado.
@@ -746,6 +805,7 @@ flowchart TD
    - Bloqueio de organizadores acessando `/gatekeeper` (403 Forbidden).
 
 ### 5.2 Testes de Concorrência e Integração (`/tests/integration`)
+
 1. **Teste de Corrida Anti-Double Booking**:
    - Disparo simultâneo (`Promise.all`) de 10 requisições concorrentes para reservar o mesmo assento `A1`.
    - **Asserção**: Exatamente 1 requisição recebe HTTP 200/201 (Sucesso) e 9 requisições recebem HTTP 409 (Conflito).
@@ -754,6 +814,7 @@ flowchart TD
    - **Asserção**: Exatamente 1 conexão recebe status `VALID` e a outra recebe `ALREADY_USED`.
 
 ### 5.3 Testes End-to-End (`/tests/e2e`)
+
 1. **Jornada de Compra e Check-in Ponta a Ponta**:
    - Autenticação como Cliente.
    - Navegação na vitrine e abertura do evento modelo.
@@ -802,6 +863,4 @@ Funcionalidade: Bateria Completa de Testes Automatizados
     E o processo deve encerrar com exit code 0
 ```
 
-
 ---
-

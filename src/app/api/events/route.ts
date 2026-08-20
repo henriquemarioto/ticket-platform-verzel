@@ -8,14 +8,26 @@ export async function GET(req: NextRequest) {
     const { searchParams } = req.nextUrl;
     const q = searchParams.get("q") || searchParams.get("query") || undefined;
     const category = searchParams.get("category") || undefined;
+    const categoriesParam = searchParams.get("categories") || undefined;
+    const city = searchParams.get("city") || undefined;
+    const minPrice = searchParams.has("minPrice") ? Number(searchParams.get("minPrice")) : undefined;
+    const maxPrice = searchParams.has("maxPrice") ? Number(searchParams.get("maxPrice")) : undefined;
+    const startDate = searchParams.get("startDate") || undefined;
+    const endDate = searchParams.get("endDate") || undefined;
+    const sort = searchParams.get("sort") || "date_asc";
     const status = (searchParams.get("status") as EventStatus) || "PUBLISHED";
+
+    const categoriesArray = categoriesParam ? categoriesParam.split(",") : (category ? [category] : undefined);
 
     const events = await prisma.event.findMany({
       where: {
         status,
-        eventDate: {
-          gte: new Date(),
-        },
+        ...(startDate || endDate ? {
+          eventDate: {
+            ...(startDate ? { gte: new Date(startDate) } : { gte: new Date() }),
+            ...(endDate ? { lte: new Date(endDate) } : {}),
+          }
+        } : { eventDate: { gte: new Date() } }),
         ...(q && {
           OR: [
             { title: { contains: q, mode: "insensitive" } },
@@ -26,20 +38,30 @@ export async function GET(req: NextRequest) {
             { neighborhood: { contains: q, mode: "insensitive" } },
           ],
         }),
-        ...(category && {
-          category: category as EventCategory,
+        ...(categoriesArray && categoriesArray.length > 0 && {
+          category: { in: categoriesArray as EventCategory[] },
         }),
+        ...(city && {
+          city: { contains: city, mode: "insensitive" }
+        }),
+        ...((minPrice !== undefined || maxPrice !== undefined) && {
+          sectors: {
+            some: {
+              price: {
+                ...(minPrice !== undefined && !isNaN(minPrice) ? { gte: minPrice } : {}),
+                ...(maxPrice !== undefined && !isNaN(maxPrice) ? { lte: maxPrice } : {}),
+              }
+            }
+          }
+        })
       },
       include: {
         sectors: true,
       },
-      orderBy: {
-        eventDate: "asc",
-      },
     });
 
-    const formattedEvents = events.map((event) => {
-      const minPrice =
+    let formattedEvents = events.map((event) => {
+      const minPriceVal =
         event.sectors.length > 0
           ? Math.min(...event.sectors.map((s) => s.price))
           : 0;
@@ -59,10 +81,19 @@ export async function GET(req: NextRequest) {
         endDate: event.endDate,
         entryStartTime: event.entryStartTime,
         isAdult: event.isAdult,
-        minPrice,
+        minPrice: minPriceVal,
         status: event.status,
         sectors: event.sectors,
       };
+    });
+
+    // Sort in memory as we need minPrice which is calculated
+    formattedEvents.sort((a, b) => {
+      if (sort === "price_asc") return a.minPrice - b.minPrice;
+      if (sort === "price_desc") return b.minPrice - a.minPrice;
+      if (sort === "title_asc") return a.title.localeCompare(b.title);
+      // default: date_asc
+      return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime();
     });
 
     return NextResponse.json({

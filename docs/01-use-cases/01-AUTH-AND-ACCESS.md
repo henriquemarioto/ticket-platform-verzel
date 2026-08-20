@@ -118,11 +118,11 @@ sequenceDiagram
 - **RN01 - Criptografia de Senha**: Nenhuma senha em texto puro é armazenada. O hash deve ser gerado utilizando `bcrypt` (mínimo de 10 rounds) ou `argon2`.
 - **RN02 - Segurança de Cookies**: O token JWT de autenticação nunca deve ser exposto no `localStorage` ou acessível via `document.cookie` em JavaScript client-side; deve trafegar estritamente via cookie `httpOnly`, `SameSite=Lax`, e `Secure` em produção.
 - **RN03 - Redirecionamento Baseado em Papel**:
-  - Usuários com papel `ORGANIZER` devem ser redirecionados por padrão para `/organizer`.
+  - Usuários com papel `ORGANIZER` devem ser redirecionados por padrão para `/organizer/analytics`.
   - Usuários com papel `GATEKEEPER` devem ser redirecionados imediatamente para `/gatekeeper`.
   - Usuários com papel `CUSTOMER` devem ser redirecionados para a vitrine `/` ou `/my-tickets`.
 - **RN04 - Duração da Sessão**: A sessão tem validade padrão de 7 dias, expirando automaticamente após esse período se não renovada.
-- **RN05 - Bloqueio de Login/Cadastro para Usuários Autenticados**: Usuários com sessão ativa não podem acessar as rotas `/login` e `/register`. O sistema deve interceptar a requisição e redirecionar o usuário para a página correspondente ao seu perfil (`ORGANIZER` -> `/organizer`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/`).
+- **RN05 - Bloqueio de Login/Cadastro para Usuários Autenticados**: Usuários com sessão ativa não podem acessar as rotas `/login` e `/register`. O sistema deve interceptar a requisição e redirecionar o usuário para a página correspondente ao seu perfil (`ORGANIZER` -> `/organizer/analytics`, `GATEKEEPER` -> `/gatekeeper`, `CUSTOMER` -> `/`).
 
 ---
 
@@ -146,7 +146,7 @@ sequenceDiagram
     "email": "organizador@verzel.com.br",
     "role": "ORGANIZER"
   },
-  "redirectUrl": "/organizer"
+  "redirectUrl": "/organizer/analytics"
 }
 ```
 
@@ -175,7 +175,7 @@ Funcionalidade: Autenticação de Usuários
     E clico no botão "Entrar"
     Então o sistema deve autenticar a sessão gerando o cookie "auth_session"
     E deve exibir uma mensagem de sucesso "Bem-vindo de volta, Organizador Oficial Verzel!"
-    E deve me redirecionar para a rota "/organizer"
+    E deve me redirecionar para a rota "/organizer/analytics"
 
   Cenário: Login bem-sucedido como Portaria (Gatekeeper)
     Dado que existe um usuário cadastrado com e-mail "portaria@verzel.com.br", senha "Senha123!" e papel "GATEKEEPER"

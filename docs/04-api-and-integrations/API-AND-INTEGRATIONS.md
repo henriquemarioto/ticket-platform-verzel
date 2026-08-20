@@ -454,3 +454,48 @@ export interface GatekeeperAssignmentResponse {
   };
 }
 ```
+
+---
+
+## 8. Analytics do Organizador (`GET /api/organizer/analytics`)
+- **Acesso**: Restrito a `ORGANIZER`.
+- **Query Params**:
+  - `eventId` (Opcional): Filtra as métricas para um evento específico ou `all` para todos os eventos. Quando `eventId !== 'all'`, `sectors` é buscado e retornado ordenado por receita em ordem decrescente; quando `eventId === 'all'`, `sectors` retorna `[]`.
+- **Resposta**:
+```typescript
+export interface AnalyticsResponse {
+  success: boolean;
+  events: Array<{
+    id: string;
+    title: string;
+  }>;
+  summary: {
+    totalRevenue: number;
+    totalTicketsSold: number;
+    totalCapacity: number;
+    occupancyRate: number;
+    checkedInCount: number;
+    checkInRate: number;
+    averageTicketPrice: number;
+  };
+  sectors: Array<{
+    sectorName: string;
+    capacity: number;
+    sold: number;
+    available: number;
+    revenue: number;
+    occupancyRate: number;
+  }>;
+  salesTimeline: Array<{
+    date: string;
+    formattedDate: string;
+    amount: number;
+    tickets: number;
+  }>;
+  attendanceDistribution: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+}
+```

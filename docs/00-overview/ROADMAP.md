@@ -33,12 +33,14 @@ gantt
 ## 2. Detalhamento dos Marcos
 
 ### 🏗️ Marco 1: Fase 1 - Estruturação da Base Técnica e Infraestrutura
+
 - [x] **Setup & Estrutura**: Setup Next.js 16 (App Router), TypeScript `strict`, ESLint e Prettier ([`docs/02-architecture/PROJECT-STRUCTURE.md`](../02-architecture/PROJECT-STRUCTURE.md)).
 - [x] **Infraestrutura**: Containerização Docker e topologia Supabase + Vercel com pooler Supavisor ([`docs/05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md`](../05-devops-and-operations/ENVIRONMENT-AND-INFRASTRUCTURE.md)).
 - [x] **Design System & Tema**: Layout raiz, `ToastProvider`, paleta Kinetic Pulse, tokens HEX no `@theme` e biblioteca atômica de UI ([`docs/03-design/DESIGN-SYSTEM.md`](../03-design/DESIGN-SYSTEM.md)).
 - [x] **Banco de Dados**: Modelagem `schema.prisma`, conexões dual-URL e client singleton ([`docs/02-architecture/DATABASE-MODELING.md`](../02-architecture/DATABASE-MODELING.md)).
 
 ### 🎯 Marco 2: Fase 2 - Desenvolvimento dos Casos de Uso Core (Obrigatórios)
+
 - [x] **Módulo 1: Autenticação & Acesso (UC01 a UC05)**: [`docs/01-use-cases/01-AUTH-AND-ACCESS.md`](../01-use-cases/01-AUTH-AND-ACCESS.md)
   - [x] UC01: Autenticação e Login com Perfis RBAC
   - [x] UC02: Cadastro e Registro de Novos Usuários
@@ -69,8 +71,9 @@ gantt
   - [x] UC24: Motor de Validação da Portaria e os 4 Estados Claros (com Anti-Duplicação Concorrente)
 
 ### 🌟 Marco 3: Fase 3 - Diferenciais de Escala e Excelência (Opcionais)
+
 - [ ] **Módulo 5: Analytics e Recursos Avançados (UC25 a UC30)**: [`docs/01-use-cases/05-ANALYTICS-AND-ADVANCED.md`](../01-use-cases/05-ANALYTICS-AND-ADVANCED.md)
-  - UC25: Busca e Filtros Avançados Multicritério
+  - UC25: Busca e Filtros Multicritério
   - UC26: Painel Analítico e Métricas do Organizador
   - UC27: Cancelamento de Ingresso com Devolução ao Estoque
   - UC28: Sincronização em Tempo Real do Mapa via WebSockets
@@ -82,14 +85,13 @@ gantt
 
 ## 3. Matriz de Cobertura e Rastreabilidade do Desafio
 
-| Requisito do Edital | Nível de Prioridade | Marco de Entrega | Documento Consolidado |
-| :--- | :---: | :---: | :--- |
-| **Setup Next.js, TypeScript e Layout** | Base | Fase 1 | [`PROJECT-STRUCTURE.md`](../02-architecture/PROJECT-STRUCTURE.md) |
-| **Design System e Componentes Base** | Base | Fase 1 | [`DESIGN-SYSTEM.md`](../03-design/DESIGN-SYSTEM.md) |
-| **Modelagem de Banco & Conexões** | Base | Fase 1 | [`DATABASE-MODELING.md`](../02-architecture/DATABASE-MODELING.md) |
-| **Autenticação, Registro, RBAC e Seed** | Obrigatório | Fase 2 | [`01-AUTH-AND-ACCESS.md`](../01-use-cases/01-AUTH-AND-ACCESS.md) |
-| **TMDb, Ticketmaster e Gestão de Eventos** | Obrigatório | Fase 2 | [`02-EVENTS-AND-CATALOG.md`](../01-use-cases/02-EVENTS-AND-CATALOG.md) |
-| **Vitrine, Reserva, Lock ACID, Checkout e QR** | Obrigatório | Fase 2 | [`03-SALES-AND-TICKETS.md`](../01-use-cases/03-SALES-AND-TICKETS.md) |
-| **Portaria, WebRTC e 4 Estados de Check-in** | Obrigatório | Fase 2 | [`04-GATE-AND-CHECKIN.md`](../01-use-cases/04-GATE-AND-CHECKIN.md) |
-| **Analytics, Cancelamento, Docker e Testes** | Opcional | Fase 3 | [`05-ANALYTICS-AND-ADVANCED.md`](../01-use-cases/05-ANALYTICS-AND-ADVANCED.md) |
-
+| Requisito do Edital                            | Nível de Prioridade | Marco de Entrega | Documento Consolidado                                                          |
+| :--------------------------------------------- | :-----------------: | :--------------: | :----------------------------------------------------------------------------- |
+| **Setup Next.js, TypeScript e Layout**         |        Base         |      Fase 1      | [`PROJECT-STRUCTURE.md`](../02-architecture/PROJECT-STRUCTURE.md)              |
+| **Design System e Componentes Base**           |        Base         |      Fase 1      | [`DESIGN-SYSTEM.md`](../03-design/DESIGN-SYSTEM.md)                            |
+| **Modelagem de Banco & Conexões**              |        Base         |      Fase 1      | [`DATABASE-MODELING.md`](../02-architecture/DATABASE-MODELING.md)              |
+| **Autenticação, Registro, RBAC e Seed**        |     Obrigatório     |      Fase 2      | [`01-AUTH-AND-ACCESS.md`](../01-use-cases/01-AUTH-AND-ACCESS.md)               |
+| **TMDb, Ticketmaster e Gestão de Eventos**     |     Obrigatório     |      Fase 2      | [`02-EVENTS-AND-CATALOG.md`](../01-use-cases/02-EVENTS-AND-CATALOG.md)         |
+| **Vitrine, Reserva, Lock ACID, Checkout e QR** |     Obrigatório     |      Fase 2      | [`03-SALES-AND-TICKETS.md`](../01-use-cases/03-SALES-AND-TICKETS.md)           |
+| **Portaria, WebRTC e 4 Estados de Check-in**   |     Obrigatório     |      Fase 2      | [`04-GATE-AND-CHECKIN.md`](../01-use-cases/04-GATE-AND-CHECKIN.md)             |
+| **Analytics, Cancelamento, Docker e Testes**   |      Opcional       |      Fase 3      | [`05-ANALYTICS-AND-ADVANCED.md`](../01-use-cases/05-ANALYTICS-AND-ADVANCED.md) |
