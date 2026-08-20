@@ -57,12 +57,6 @@ export default async function OrganizerDashboardPage() {
           <p className="text-text-muted mt-1">Gerencie os eventos que você organiza.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/organizer/analytics">
-            <Button variant="outline">
-              <BarChart2 className="mr-2 h-4 w-4" />
-              Analytics
-            </Button>
-          </Link>
           <Link href="/organizer/events/create">
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />

@@ -5,14 +5,16 @@ Este documento consolida os casos de uso detalhados do módulo.
 > [!IMPORTANT]
 > **Status do Módulo**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 
-
 ---
+
 # Caso de Uso: UC11 - Vitrine Pública e Navegação de Eventos
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC11`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Vitrine Pública, Navegação e Busca Rápida de Eventos
@@ -21,12 +23,14 @@ Este documento consolida os casos de uso detalhados do módulo.
 ---
 
 ## 2. Atores
+
 - **Visitante / Cliente (`CUSTOMER`)**: Navega na plataforma para encontrar atrações de interesse.
 - **Sistema / Vitrine Pública**: Apresenta os eventos com paginação, cartazes otimizados e ordenação temporal.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - Existem eventos cadastrados com status `PUBLISHED` e data futura no banco de dados.
 - **Pós-condição**:
@@ -66,17 +70,17 @@ sequenceDiagram
    - Carrega eventos futuros com status `PUBLISHED`.
    - Calcula o menor preço entre os setores ativos para cada evento (`minPrice`).
 3. A página inicial exibe:
-   - **Hero Banner**: Destaque com headline interativa utilizando animação de digitação (*typewriter effect*), alternando ciclicamente entre 9 frases, onde a palavra/termo-chave dinâmico é destacado com uma cor temática exclusiva para cada categoria:
-     1. *"Seu próximo <span style="color:#0057ff">show</span> começa aqui."* (Azul Action Blue `#0057ff`)
-     2. *"Seu próximo <span style="color:#731be5">filme</span> começa aqui."* (Roxo Vibrant Purple `#731be5`)
-     3. *"Sua próxima <span style="color:#e11d48">festa</span> começa aqui."* (Rosa/Rose `#e11d48`)
-     4. *"Sua próxima <span style="color:#f59e0b">peça de teatro</span> começa aqui."* (Âmbar/Teatro `#f59e0b`)
-     5. *"Sua próxima <span style="color:#059669">palestra</span> começa aqui."* (Verde Esmeralda `#059669`)
-     6. *"Seu próximo <span style="color:#0891b2">workshop</span> começa aqui."* (Ciano `#0891b2`)
-     7. *"Seu próximo <span style="color:#4f46e5">networking</span> começa aqui."* (Índigo `#4f46e5`)
-     8. *"Sua próxima <span style="color:#dc2626">história</span> começa aqui."* (Vermelho `#dc2626`)
-     9. *"Sua próxima <span style="color:#0d9488">experiência</span> começa aqui."* (Teal/Turquesa `#0d9488`)
-     A animação digita a frase progressivamente simulando uma pessoa digitando, mantém o texto por 3 segundos (3000ms), apaga suavemente e avança para a próxima frase. O container do título possui altura fixa calibrada responsivamente para acomodar 1 ou 2 linhas sem qualquer variação de altura ou pulo na página. Logo abaixo da barra de pesquisa, exibe os **Filtros Rápidos de Categoria** (Pílulas interativas).
+   - **Hero Banner**: Destaque com headline interativa utilizando animação de digitação (_typewriter effect_), alternando ciclicamente entre 9 frases, onde a palavra/termo-chave dinâmico é destacado com uma cor temática exclusiva para cada categoria:
+     1. _"Seu próximo <span style="color:#0057ff">show</span> começa aqui."_ (Azul Action Blue `#0057ff`)
+     2. _"Seu próximo <span style="color:#731be5">filme</span> começa aqui."_ (Roxo Vibrant Purple `#731be5`)
+     3. _"Sua próxima <span style="color:#e11d48">festa</span> começa aqui."_ (Rosa/Rose `#e11d48`)
+     4. _"Sua próxima <span style="color:#f59e0b">peça de teatro</span> começa aqui."_ (Âmbar/Teatro `#f59e0b`)
+     5. _"Sua próxima <span style="color:#059669">palestra</span> começa aqui."_ (Verde Esmeralda `#059669`)
+     6. _"Seu próximo <span style="color:#0891b2">workshop</span> começa aqui."_ (Ciano `#0891b2`)
+     7. _"Seu próximo <span style="color:#4f46e5">networking</span> começa aqui."_ (Índigo `#4f46e5`)
+     8. _"Sua próxima <span style="color:#dc2626">história</span> começa aqui."_ (Vermelho `#dc2626`)
+     9. _"Sua próxima <span style="color:#0d9488">experiência</span> começa aqui."_ (Teal/Turquesa `#0d9488`)
+        A animação digita a frase progressivamente simulando uma pessoa digitando, mantém o texto por 3 segundos (3000ms), apaga suavemente e avança para a próxima frase. O container do título possui altura fixa calibrada responsivamente para acomodar 1 ou 2 linhas sem qualquer variação de altura ou pulo na página. Logo abaixo da barra de pesquisa, exibe os **Filtros Rápidos de Categoria** (Pílulas interativas).
    - **Navegação de Categorias**: Ao clicar em uma pílula de categoria específica (ex: "Shows"), o visitante é redirecionado para a página do catálogo (`/events`) exibindo apenas aqueles eventos. Ao clicar em "Todos", retorna para a vitrine inicial padrão (`/`).
    - **Barra de Busca Rápida**: Campo de texto com busca instantânea por título, artista ou cidade. Redireciona buscas do contexto principal para a página de catálogo.
    - **Grade de Destaques (2 Fileiras)**: Grade responsiva exibindo até 7 eventos. No 8º slot, é exibido um card de chamada de ação dinâmico "Ver todos os eventos", redirecionando o cliente para a página de catálogo `/events`.
@@ -89,10 +93,12 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Nenhum Evento Cadastrado
+
 - **Cenário**: O banco de dados ainda não possui eventos publicados.
-- **Comportamento**: A vitrine exibe uma tela de estado vazio (*empty state*) elegante, com ilustração e mensagem convidativa: *"Nenhum evento em cartaz no momento. Fique atento às próximas novidades!"*.
+- **Comportamento**: A vitrine exibe uma tela de estado vazio (_empty state_) elegante, com ilustração e mensagem convidativa: _"Nenhum evento em cartaz no momento. Fique atento às próximas novidades!"_.
 
 ### Fluxo Alternativo 2: Filtragem por Pílula de Categoria
+
 - **Cenário**: O cliente clica na pílula "Filmes".
 - **Comportamento**: Apenas eventos com categoria `MOVIE` permanecem visíveis na grade.
 
@@ -113,6 +119,7 @@ sequenceDiagram
 ### Requisição: `GET /api/events?category=SHOW&query=Indie`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -126,7 +133,7 @@ sequenceDiagram
       "locationName": "Espaço Hall Cultural",
       "city": "São Paulo, SP",
       "bannerUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
-      "minPrice": 120.00,
+      "minPrice": 120.0,
       "status": "PUBLISHED"
     }
   ]
@@ -156,15 +163,16 @@ Funcionalidade: Vitrine Pública de Eventos
     Então a aplicação deve realizar a busca e exibir os eventos correspondentes sem exigir autenticação
 ```
 
-
 ---
 
 # Caso de Uso: UC12 - Visualização Detalhada do Evento
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC12`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Visualização Detalhada do Evento (`/events/:id`)
@@ -173,12 +181,14 @@ Funcionalidade: Vitrine Pública de Eventos
 ---
 
 ## 2. Atores
+
 - **Cliente / Visitante**: Consulta os detalhes completos antes de decidir pela compra.
 - **Sistema / Página de Detalhes**: Renderiza o layout imersivo com os dados consolidados do evento e setores.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O evento com o ID solicitado existe no banco de dados.
 - **Pós-condição**:
@@ -238,14 +248,17 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Evento com Ingressos Esgotados
+
 - **Cenário**: Todos os setores estão com `availableCapacity = 0`.
-- **Comportamento**: O botão de compra é desabilitado exibindo o status *"Ingressos Esgotados"* em cinza, impedindo avanço para o checkout.
+- **Comportamento**: O botão de compra é desabilitado exibindo o status _"Ingressos Esgotados"_ em cinza, impedindo avanço para o checkout.
 
 ### Fluxo Alternativo 2: Abertura de Rota em Aplicativo de Navegação
+
 - **Cenário**: O cliente clica no botão "Abrir no Waze" ou "Abrir no Google Maps".
 - **Comportamento**: Uma nova aba é aberta diretamente com as coordenadas/endereço do local (`https://waze.com/ul?q=...` ou `https://www.google.com/maps/dir/?api=1&destination=...`).
 
 ### Fluxo de Exceção 1: ID Inválido ou Evento Inexistente (404)
+
 - **Condição**: O ID na URL não existe no banco de dados.
 - **Comportamento**: A aplicação renderiza a página de erro `404 - Evento Não Encontrado` com botão de retorno à vitrine.
 
@@ -264,6 +277,7 @@ sequenceDiagram
 ### Requisição: `GET /api/events/evt_rock2026`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -282,7 +296,7 @@ sequenceDiagram
         "id": "sec_pista_01",
         "name": "Pista Geral",
         "type": "GENERAL_ADMISSION",
-        "price": 120.00,
+        "price": 120.0,
         "totalCapacity": 200,
         "availableCapacity": 185
       },
@@ -290,7 +304,7 @@ sequenceDiagram
         "id": "sec_vip_01",
         "name": "Plateia VIP Numerada",
         "type": "NUMBERED_SEATS",
-        "price": 250.00,
+        "price": 250.0,
         "totalCapacity": 30,
         "availableCapacity": 24
       }
@@ -317,15 +331,16 @@ Funcionalidade: Visualização Detalhada do Evento
     E o botão "Comprar Ingressos" deve estar habilitado
 ```
 
-
 ---
 
 # Caso de Uso: UC13 - Reserva e Seleção de Quantidade em Setores de Pista
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC13`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Seleção de Quantidade e Reserva Atômica em Setores de Pista (General Admission)
@@ -334,12 +349,14 @@ Funcionalidade: Visualização Detalhada do Evento
 ---
 
 ## 2. Atores
+
 - **Cliente (`CUSTOMER`)**: Seleciona o número de ingressos de pista e inicia o checkout.
 - **Backend / Engine de Reserva**: Realiza o bloqueio atômico decrementando a capacidade disponível durante o TTL de 10 minutos.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O setor selecionado é do tipo `GENERAL_ADMISSION` e possui `availableCapacity >= quantidade solicitada`.
 - **Pós-condição**:
@@ -384,7 +401,7 @@ sequenceDiagram
 
 1. Na página do evento, o cliente localiza a seção do setor de Pista.
 2. O componente exibe:
-   - Nome do setor (ex: *"Pista Comum"*).
+   - Nome do setor (ex: _"Pista Comum"_).
    - Preço unitário (ex: `R$ 120,00`).
    - Contador de quantidade com botões `[-]` e `[+]` (mínimo 1, máximo 6 por compra).
    - Mostrador dinâmico do valor total.
@@ -399,10 +416,12 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Quantidade Solicitada Maior que o Estoque Atual
+
 - **Condição**: Outro comprador finalizou a compra milissegundos antes e restam menos vagas do que o solicitado.
 - **Comportamento**: O backend rejeita a transação (`409 Conflict`), retorna a capacidade restante real e a UI atualiza o limite máximo do botão `[+]`.
 
 ### Fluxo de Exceção 2: Tentativa de Compra por Conta de Organizador
+
 - **Condição**: Um usuário autenticado com o papel `ORGANIZER` tenta reservar ingressos de pista.
 - **Comportamento**: O sistema não permite a compra. A interface exibe um modal informativo solicitando login com uma conta de cliente (com ação para alternar de conta). No backend, a API retorna `403 Forbidden` (`code: "ORGANIZER_CANNOT_BUY"`).
 
@@ -420,6 +439,7 @@ sequenceDiagram
 ## 8. Contratos de API
 
 ### Requisição: `POST /api/reservations/general-admission`
+
 ```json
 {
   "sectorId": "sec_pista_01",
@@ -428,6 +448,7 @@ sequenceDiagram
 ```
 
 ### Resposta de Sucesso: `HTTP 201 Created`
+
 ```json
 {
   "success": true,
@@ -435,8 +456,8 @@ sequenceDiagram
     "id": "res_ga_123456",
     "sectorId": "sec_pista_01",
     "quantity": 2,
-    "unitPrice": 120.00,
-    "totalPrice": 240.00,
+    "unitPrice": 120.0,
+    "totalPrice": 240.0,
     "expiresAt": "2026-08-14T03:50:00.000Z"
   }
 }
@@ -460,29 +481,32 @@ Funcionalidade: Reserva de Pista por Quantidade
     E eu devo ser redirecionado para a tela de checkout com a reserva ativa
 ```
 
-
 ---
 
 # Caso de Uso: UC14 - Seleção no Mapa de Assentos com Bloqueio Atômico Anti-Double Booking
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC14`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Seleção Interativa no Mapa de Assentos com Bloqueio Atômico Anti-Double Booking
-- **Objetivo**: Fornecer um mapa interativo e responsivo de poltronas (inspirado em *ingresso.com*), permitindo que o cliente clique nos assentos desejados e execute um bloqueio atômico com tempo limite (10 min) no PostgreSQL, garantindo de forma matemática que dois clientes nunca consigam reservar a mesma poltrona física simultaneamente.
+- **Objetivo**: Fornecer um mapa interativo e responsivo de poltronas (inspirado em _ingresso.com_), permitindo que o cliente clique nos assentos desejados e execute um bloqueio atômico com tempo limite (10 min) no PostgreSQL, garantindo de forma matemática que dois clientes nunca consigam reservar a mesma poltrona física simultaneamente.
 
 ---
 
 ## 2. Atores
+
 - **Cliente (`CUSTOMER`)**: Visualiza a sala, clica nas poltronas e realiza a reserva.
 - **Engine Anti-Double Booking (Banco de Dados)**: Controla concorrência via `UPDATE ... WHERE status = 'AVAILABLE'` com locks em nível de linha no PostgreSQL.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O setor selecionado possui assentos numerados cadastrados.
   - O cliente está autenticado.
@@ -505,16 +529,16 @@ sequenceDiagram
 
     CliA->>UI: Clica na poltrona "A5" (Verde - Disponível)
     CliB->>UI: Clica na mesma poltrona "A5" quase simultaneamente
-    
+
     CliA->>API: POST /api/seats/reserve { seatIds: ["A5"], userId: "usr_a" }
     CliB->>API: POST /api/seats/reserve { seatIds: ["A5"], userId: "usr_b" }
-    
+
     Note over API,DB: Transação com verificação atômica de status
     API->>DB: UPDATE seats SET status='RESERVED', reservedById='usr_a', reservedUntil=NOW()+10min WHERE id='A5' AND status='AVAILABLE'
     DB-->>API: 1 row affected (Sucesso para Cliente A)
     API-->>UI: 200 OK { success: true, seats: ["A5"], reservedUntil }
     UI->>CliA: Poltrona A5 fica azul (Selecionada) e abre botão "Ir para Checkout"
-    
+
     API->>DB: UPDATE seats SET status='RESERVED', reservedById='usr_b', ... WHERE id='A5' AND status='AVAILABLE'
     DB-->>API: 0 rows affected (Falha para Cliente B - Assento já não está AVAILABLE)
     API-->>UI: 409 Conflict { error: "O assento A5 foi reservado por outro cliente." }
@@ -535,7 +559,7 @@ sequenceDiagram
      - 🟡 `Em Reserva` (Fundo amarelo/âmbar, bloqueado temporariamente por outro usuário).
      - ⚫ `Ocupado / Vendido` (Fundo cinza escuro, opacidade reduzida, não clicável).
 3. O cliente clica na poltrona `A1` e na poltrona `A2`.
-4. O rodapé do mapa exibe o resumo imediato: *"2 assentos selecionados (A1, A2) - Total: R$ 500,00"*.
+4. O rodapé do mapa exibe o resumo imediato: _"2 assentos selecionados (A1, A2) - Total: R$ 500,00"_.
 5. O cliente clica em **"Avançar para Pagamento"**.
 6. O front-end dispara a requisição `POST /api/seats/reserve` contendo o array de IDs dos assentos.
 7. O backend executa uma transação atômica no PostgreSQL. Se todos os assentos estiverem com status `AVAILABLE`, a transação atualiza os assentos para `RESERVED`, fixa o `reservedUntil` para daqui a 10 minutos e associa ao ID do cliente.
@@ -546,6 +570,7 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Conflito de Concorrência (Race Condition / 409 Conflict)
+
 - **Condição**: Outro usuário reservou um dos assentos escolhidos frações de segundo antes.
 - **Comportamento**: A transação no banco não afeta todas as linhas solicitadas e sofre rollback imediato. O backend retorna `409 Conflict` especificando quais assentos tornaram-se indisponíveis. A interface colore imediatamente esses assentos como indisponíveis e solicita que o cliente escolha outra poltrona.
 
@@ -562,6 +587,7 @@ sequenceDiagram
 ## 8. Contratos de API
 
 ### Requisição: `POST /api/seats/reserve`
+
 ```json
 {
   "seatIds": ["seat_a1_uuid", "seat_a2_uuid"]
@@ -569,16 +595,18 @@ sequenceDiagram
 ```
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
   "reservedSeats": ["A1", "A2"],
-  "totalPrice": 500.00,
+  "totalPrice": 500.0,
   "reservedUntil": "2026-08-14T03:52:00.000Z"
 }
 ```
 
 ### Resposta de Conflito: `HTTP 409 Conflict`
+
 ```json
 {
   "success": false,
@@ -612,15 +640,16 @@ Funcionalidade: Bloqueio Atômico de Assentos Numerados
     E o assento "A1" nunca deve ser concedido aos dois clientes
 ```
 
-
 ---
 
 # Caso de Uso: UC15 - Expiração de Tempo Limite (TTL) e Liberação de Assentos
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC15`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Expiração Automática de Reservas por Tempo Limite (TTL) e Liberação de Estoque
@@ -629,12 +658,14 @@ Funcionalidade: Bloqueio Atômico de Assentos Numerados
 ---
 
 ## 2. Atores
+
 - **Sistema / Rotina de Limpeza (Lazy Cleanup / Worker)**: Identifica e expira reservas ultrapassadas.
 - **Visitantes e Clientes Concorrentes**: Passam a ter acesso imediato às vagas que foram liberadas.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - Existem assentos com status `RESERVED` cujo `reservedUntil < NOW()` ou reservas de pista `PENDING` com `expiresAt < NOW()`.
 - **Pós-condição**:
@@ -671,7 +702,7 @@ sequenceDiagram
 1. O cliente A reserva a poltrona `B3` às `14:00`, recebendo prazo de pagamento até às `14:10`.
 2. O cliente A fecha o navegador ou abandona a tela de checkout sem finalizar a compra.
 3. Às `14:11`, o cliente B abre o mapa de assentos do mesmo evento.
-4. Antes de entregar a lista de assentos para o cliente B, o backend executa a rotina de verificação e limpeza (*lazy expiration*):
+4. Antes de entregar a lista de assentos para o cliente B, o backend executa a rotina de verificação e limpeza (_lazy expiration_):
    - Localiza todos os assentos com `status = 'RESERVED'` e `reservedUntil < NOW()`.
    - Executa `UPDATE seats SET status = 'AVAILABLE', "reservedById" = NULL, "reservedUntil" = NULL WHERE status = 'RESERVED' AND "reservedUntil" < NOW()`.
    - Para reservas de pista expiradas, atualiza `status = 'EXPIRED'` e incrementa a `availableCapacity` do setor correspondente.
@@ -682,14 +713,15 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Cliente Tentando Pagar Após o Vencimento do TTL
+
 - **Cenário**: O cliente A ficou 15 minutos na tela de checkout e clica em "Pagar" após o cronômetro zerar.
-- **Comportamento**: A API de checkout rejeita o pagamento com `410 Gone` (*"Sua reserva de 10 minutos expirou. Por favor, selecione os assentos novamente."*), exibindo o estado de reserva expirada com botão de retorno direto para a página do evento (`/events/[id]`) para reiniciar a seleção.
+- **Comportamento**: A API de checkout rejeita o pagamento com `410 Gone` (_"Sua reserva de 10 minutos expirou. Por favor, selecione os assentos novamente."_), exibindo o estado de reserva expirada com botão de retorno direto para a página do evento (`/events/[id]`) para reiniciar a seleção.
 
 ---
 
 ## 7. Regras de Negócio (RN)
 
-- **RN01 - Dupla Camada de Expiração**: A liberação deve ocorrer de forma reativa (em cada requisição de leitura do mapa - *lazy expiration*) e preventivamente antes de qualquer tentativa de checkout.
+- **RN01 - Dupla Camada de Expiração**: A liberação deve ocorrer de forma reativa (em cada requisição de leitura do mapa - _lazy expiration_) e preventivamente antes de qualquer tentativa de checkout.
 - **RN02 - Cronômetro Sincronizado**: O front-end do checkout deve calcular a contagem regressiva baseado na diferença entre o timestamp do servidor (`expiresAt`) e o relógio local.
 
 ---
@@ -699,6 +731,7 @@ sequenceDiagram
 ### Requisição Interna / Trigger: `POST /api/cron/release-expired-reservations`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -725,15 +758,16 @@ Funcionalidade: Liberação Automática de Reservas Expiradas
     E a poltrona "B3" deve aparecer livre para compra
 ```
 
-
 ---
 
 # Caso de Uso: UC16 - Checkout e Simulação de Pagamento Aprovado
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC16`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Checkout e Simulação de Pagamento com Sucesso (Aprovação e Emissão)
@@ -742,6 +776,7 @@ Funcionalidade: Liberação Automática de Reservas Expiradas
 ---
 
 ## 2. Atores
+
 - **Cliente (`CUSTOMER`)**: Revisa o pedido e confirma o pagamento simulado.
 - **Gateway de Pagamento Simulado**: Processa a aprovação da transação financeira fictícia.
 - **Engine de Emissão de Ingressos**: Cria os registros de `Ticket` e assina os QR Codes via HMAC.
@@ -749,6 +784,7 @@ Funcionalidade: Liberação Automática de Reservas Expiradas
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O cliente possui uma reserva ativa válida (dentro do prazo de 10 minutos).
   - O cliente está autenticado na plataforma.
@@ -793,12 +829,12 @@ sequenceDiagram
 ## 5. Fluxo Principal de Execução
 
 1. O cliente é direcionado para a tela `/checkout` contendo:
-   - Resumo da compra: Nome do evento, data/hora, local, setor e etiquetas dos assentos (ex: *"Plateia VIP - Poltronas A1, A2"*).
+   - Resumo da compra: Nome do evento, data/hora, local, setor e etiquetas dos assentos (ex: _"Plateia VIP - Poltronas A1, A2"_).
    - Discriminação de valores: Subtotal, taxas de serviço (se aplicável) e valor total a pagar.
    - Cronômetro regressivo destacado indicando os minutos/segundos restantes para expiração.
    - Painel de Simulação de Pagamento com dados fictícios de cartão e botões de teste.
 2. O cliente clica no botão verde **"Simular Pagamento Aprovado"**.
-3. O front-end exibe estado de carregamento (*loading spinner*) no botão para evitar cliques duplicados.
+3. O front-end exibe estado de carregamento (_loading spinner_) no botão para evitar cliques duplicados.
 4. O front-end envia `POST /api/checkout/process` com `action: "APPROVE"`.
 5. O backend executa em transação atômica:
    - Verifica se os assentos ainda estão associados ao usuário e dentro do TTL.
@@ -815,6 +851,7 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Reserva Expirada Durante a Finalização
+
 - **Condição**: O cliente clicou no momento exato em que os 10 minutos se esgotaram.
 - **Comportamento**: A transação é abortada com `410 Gone`. Os assentos são liberados e o usuário recebe a mensagem explicativa com botão para voltar diretamente para a página do evento (`/events/[id]`) e reiniciar a seleção dos ingressos.
 
@@ -832,6 +869,7 @@ sequenceDiagram
 ## 8. Contratos de API
 
 ### Requisição: `POST /api/checkout/process`
+
 ```json
 {
   "reservationId": "res_a1a2_uuid",
@@ -841,12 +879,13 @@ sequenceDiagram
 ```
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
   "orderId": "ord_8829104",
   "status": "APPROVED",
-  "totalPaid": 500.00,
+  "totalPaid": 500.0,
   "tickets": [
     {
       "id": "tkt_1",
@@ -886,15 +925,16 @@ Funcionalidade: Pagamento Simulado Aprovado
     E deve me redirecionar para a página de confirmação "/checkout/success"
 ```
 
-
 ---
 
 # Caso de Uso: UC17 - Checkout e Simulação de Pagamento Recusado
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC17`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Checkout e Simulação de Pagamento com Recusa (Tratamento de Falha e Liberação Imediata)
@@ -903,6 +943,7 @@ Funcionalidade: Pagamento Simulado Aprovado
 ---
 
 ## 2. Atores
+
 - **Cliente / Avaliador (`CUSTOMER`)**: Testa o fluxo de erro de pagamento.
 - **Gateway de Pagamento Simulado**: Processa o evento de recusa intencional.
 - **Engine de Estoque (PostgreSQL)**: Desbloqueia os assentos de volta para `AVAILABLE` no mesmo instante.
@@ -910,6 +951,7 @@ Funcionalidade: Pagamento Simulado Aprovado
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O cliente está na tela de checkout com uma reserva válida.
 - **Pós-condição**:
@@ -953,7 +995,7 @@ sequenceDiagram
    - Para setores de pista, restaura a cota de `availableCapacity`.
 4. A API retorna a resposta de recusa detalhada.
 5. O front-end exibe o bloco/card de aviso **"Reserva Expirada ou Cancelada"**:
-   - *"Sua reserva expirou ou o pagamento foi recusado, e os assentos foram liberados para o público."*
+   - _"Sua reserva expirou ou o pagamento foi recusado, e os assentos foram liberados para o público."_
 6. A interface fornece o botão de ação:
    - **"Voltar para o Evento"** (redireciona para a página do evento correspondente `/events/[id]`, permitindo ao usuário selecionar novos assentos ou tentar novamente a compra no mesmo evento).
 
@@ -962,6 +1004,7 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Tentativa Imediata de Nova Compra
+
 - **Cenário**: O cliente deseja tentar comprar novamente no mesmo evento após a simulação de recusa ou cancelamento.
 - **Comportamento**: Ao clicar em "Voltar para o Evento", o cliente é levado diretamente à página do evento (`/events/[id]`) onde a poltrona/setor acabou de ser liberado (`AVAILABLE`) e pode ser selecionado novamente.
 
@@ -977,6 +1020,7 @@ sequenceDiagram
 ## 8. Contratos de API
 
 ### Requisição: `POST /api/checkout/process`
+
 ```json
 {
   "reservationId": "res_a1a2_uuid",
@@ -986,6 +1030,7 @@ sequenceDiagram
 ```
 
 ### Resposta de Recusa: `HTTP 200 OK`
+
 ```json
 {
   "success": false,
@@ -1016,15 +1061,16 @@ Funcionalidade: Pagamento Simulado Recusado
     E nenhum ingresso deve ser emitido
 ```
 
-
 ---
 
 # Caso de Uso: UC18 - Visualização e Gestão de Ingressos no Painel "Meus Ingressos"
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC18`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Visualização, Organização e Gestão de Ingressos no Painel do Cliente (`/my-tickets`)
@@ -1033,12 +1079,14 @@ Funcionalidade: Pagamento Simulado Recusado
 ---
 
 ## 2. Atores
+
 - **Cliente (`CUSTOMER`)**: Consulta seus ingressos adquiridos.
 - **Banco de Dados (PostgreSQL / Prisma)**: Retorna a listagem de ingressos com os dados de eventos e assentos associados.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O cliente deve estar autenticado na plataforma.
 - **Pós-condição**:
@@ -1079,20 +1127,21 @@ sequenceDiagram
    - Imagem do banner do evento em miniatura.
    - Título do evento, data e horário por extenso.
    - Local físico e cidade.
-   - Setor (ex: *"Plateia VIP"*) e Identificação do Assento (ex: *"Poltrona A1"*).
+   - Setor (ex: _"Plateia VIP"_) e Identificação do Assento (ex: _"Poltrona A1"_).
    - Nome do titular.
    - Código alfanumérico do ingresso (ex: `ELT-4819`).
    - Badge de status (`Ativo`, `Utilizado na Portaria`, `Cancelado`).
-   - Botões de ação: **"Exibir QR Code"** e **"Compartilhar"**.
-5. Ao clicar em "Exibir QR Code", um modal exibe o código bidimensional gerado com brilho otimizado para leitura por câmeras.
+   - Botões de ação: **"QR Code"** e **"Compartilhar"**.
+5. Ao clicar em "QR Code", um modal exibe o código bidimensional gerado com brilho otimizado para leitura por câmeras.
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo Alternativo 1: Nenhum Ingresso Comprado
+
 - **Cenário**: O usuário recém-cadastrado não possui compras anteriores.
-- **Comportamento**: A tela exibe mensagem *"Você ainda não possui ingressos comprados"* com um botão convidativo *"Explorar Eventos"*.
+- **Comportamento**: A tela exibe mensagem _"Você ainda não possui ingressos comprados"_ com um botão convidativo _"Explorar Eventos"_.
 
 ---
 
@@ -1109,6 +1158,7 @@ sequenceDiagram
 ### Requisição: `GET /api/my-tickets`
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -1148,7 +1198,7 @@ Funcionalidade: Painel Meus Ingressos
     Dado que comprei um ingresso para o "Festival Indie Rock Verzel 2026"
     Quando eu acesso a rota "/my-tickets"
     Então eu devo ver o card do ingresso com o código "ELT-4819", poltrona "A1" e data do evento
-    Quando eu clico em "Exibir QR Code"
+    Quando eu clico em "QR Code"
     Então um modal com o QR Code criptografado em alta definição deve ser exibido
 
   Cenário: Atualização de status após fechamento do modal do QR Code
@@ -1158,7 +1208,8 @@ Funcionalidade: Painel Meus Ingressos
     Então a listagem de ingressos deve ser atualizada automaticamente
     E o ingresso validado deve ser movido para a aba "Histórico / Passados" com badge "Já Utilizado"
 ```
-```
+
+````
 
 
 ---
@@ -1211,7 +1262,7 @@ sequenceDiagram
     DB-->>System: Persistido com sucesso
     System-->>UI: Envia qrPayload via API
     UI->>UI: Renderiza QR Code em SVG/Canvas com nível de correção de erro 'M' (15%)
-```
+````
 
 ---
 
@@ -1236,8 +1287,9 @@ sequenceDiagram
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Chave Secreta Ausente no `.env`
+
 - **Condição**: A aplicação é iniciada sem a variável `QR_HMAC_SECRET`.
-- **Comportamento**: A validação de inicialização do servidor bloqueia a subida do serviço (*fail-fast*) com erro explícito no console: *"ERRO FATAL: Variável QR_HMAC_SECRET não definida."*.
+- **Comportamento**: A validação de inicialização do servidor bloqueia a subida do serviço (_fail-fast_) com erro explícito no console: _"ERRO FATAL: Variável QR_HMAC_SECRET não definida."_.
 
 ---
 
@@ -1252,18 +1304,20 @@ sequenceDiagram
 ## 8. Contratos de API / Exemplo de Payload
 
 ### Payload Gerado no QR Code
+
 ```text
 v1:ELT-4819:evt_rock2026:1786579200:e9f1a238b76c8d4e9901ac88f4e2b10a
 ```
 
 ### Decomposição do Payload
-| Parte | Valor de Exemplo | Descrição |
-| :--- | :--- | :--- |
-| `prefix` | `v1` | Versão da estrutura do QR Code |
-| `ticketCode` | `ELT-4819` | Código legível do ingresso |
-| `eventId` | `evt_rock2026` | Identificador do evento |
-| `timestamp` | `1786579200` | Momento da emissão do ingresso |
-| `hmacSignature` | `e9f1a238b7...` | Hash criptográfico assinado com segredo do servidor |
+
+| Parte           | Valor de Exemplo | Descrição                                           |
+| :-------------- | :--------------- | :-------------------------------------------------- |
+| `prefix`        | `v1`             | Versão da estrutura do QR Code                      |
+| `ticketCode`    | `ELT-4819`       | Código legível do ingresso                          |
+| `eventId`       | `evt_rock2026`   | Identificador do evento                             |
+| `timestamp`     | `1786579200`     | Momento da emissão do ingresso                      |
+| `hmacSignature` | `e9f1a238b7...`  | Hash criptográfico assinado com segredo do servidor |
 
 ---
 
@@ -1282,15 +1336,16 @@ Funcionalidade: Assinatura Criptográfica de QR Code
     E a assinatura deve coincidir com o HMAC gerado a partir da chave secreta
 ```
 
-
 ---
 
 # Caso de Uso: UC20 - Compartilhamento de Ingresso via Link Público Tokenizado
+
 ## Plataforma de Eventos e Ingressos (Fase 2 - Core)
 
 ---
 
 ## 1. Identificação e Descrição
+
 - **Identificador**: `UC20`
 - **Classificação**: 🔴 OBRIGATÓRIO (Requisito Mínimo do Desafio)
 - **Nome**: Compartilhamento Seguro de Ingresso Individual por Link Público Tokenizado
@@ -1299,12 +1354,14 @@ Funcionalidade: Assinatura Criptográfica de QR Code
 ---
 
 ## 2. Atores
+
 - **Titular da Compra (`CUSTOMER`)**: Gera e envia o link para o acompanhante.
 - **Convidado / Portador do Ingresso (Visitante)**: Acessa o link no celular para apresentar o QR Code na entrada do evento.
 
 ---
 
 ## 3. Pré-condições e Pós-condições
+
 - **Pré-condição**:
   - O ingresso pertence ao usuário autenticado e está com status `ACTIVE`.
 - **Pós-condição**:
@@ -1332,7 +1389,7 @@ sequenceDiagram
     API->>API: Calcula passcode (HMAC do shareToken)
     API-->>UI: 200 OK { shareUrl: "https://.../tickets/share/stk_8f9a2b?key=a1b2c3" }
     UI->>Owner: Copia link para o clipboard e exibe toast "Link copiado!"
-    
+
     Owner->>Guest: Envia o link via WhatsApp / Mensagem
     Guest->>SharePage: Abre link /tickets/share/stk_8f9a2b?key=a1b2c3 no navegador do smartphone
     SharePage->>SharePage: Valida `key` na URL (Passcode HMAC)
@@ -1354,22 +1411,24 @@ sequenceDiagram
 7. A página pública renderiza:
    - Capa e nome do evento.
    - Data, horário e endereço do local.
-   - Setor e número do assento (ex: *"Plateia VIP - Poltrona A2"*).
+   - Setor e número do assento (ex: _"Plateia VIP - Poltrona A2"_).
    - **QR Code oficial de entrada** com alta nitidez para leitura na portaria.
    - Status atual do ingresso (`Válido para entrada`, `Já utilizado`, etc.).
-   - **Aviso de Segurança**: *"Este ingresso confere direito a uma única entrada. Não compartilhe este link com outras pessoas."*.
+   - **Aviso de Segurança**: _"Este ingresso confere direito a uma única entrada. Não compartilhe este link com outras pessoas."_.
 
 ---
 
 ## 6. Fluxos Alternativos e Exceções
 
 ### Fluxo de Exceção 1: Token de Compartilhamento Inválido ou Inexistente (404)
+
 - **Condição**: O link compartilhado foi digitado incorretamente ou o token não existe.
-- **Comportamento**: A página pública exibe aviso de erro amigável: *"Link de ingresso inválido ou expirado."*.
+- **Comportamento**: A página pública exibe aviso de erro amigável: _"Link de ingresso inválido ou expirado."_.
 
 ### Fluxo de Exceção 2: Ingresso Compartilhado Já Cancelado
+
 - **Condição**: O titular cancelou o ingresso após enviar o link.
-- **Comportamento**: A página pública renderiza tarja vermelha indicando *"Ingresso Cancelado pelo Titular"*, e o QR Code é ocultado.
+- **Comportamento**: A página pública renderiza tarja vermelha indicando _"Ingresso Cancelado pelo Titular"_, e o QR Code é ocultado.
 
 ---
 
@@ -1385,6 +1444,7 @@ sequenceDiagram
 ### Requisição: `POST /api/tickets/tkt_clx123456/share` (ou `POST /api/tickets/share`)
 
 ### Resposta de Sucesso: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -1396,6 +1456,7 @@ sequenceDiagram
 ### Requisição Pública: `GET /api/tickets/share/stk_91af238c11e247b9a?key=a1b2c3`
 
 ### Resposta Pública: `HTTP 200 OK`
+
 ```json
 {
   "success": true,
@@ -1444,6 +1505,4 @@ Funcionalidade: Compartilhamento de Ingresso por Link Público
     E não deve renderizar nenhum dado do ingresso
 ```
 
-
 ---
-
