@@ -263,8 +263,11 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Implementar canal Server-Sent Events (`GET /api/events/[id]/seats/stream`) e hub Pub/Sub em memória (`seat-events.ts`).
   - [x] Transmitir atualizações instantâneas de assentos (`SEAT_STATUS_CHANGED`) e cotas de setores (`SECTOR_CAPACITY_CHANGED`) em reservas, checkouts, cancelamentos e expiração.
   - [x] Conectar `SeatMap` ao stream SSE com indicador visual "Ao vivo", reconexão automática e resolução proativa de conflitos de assentos.
-- [ ] **Task 3.5: Dockerfile Multi-Stage e Empacotamento de Produção (UC29)**
-  - [ ] Configurar `Dockerfile` otimizado em múltiplos estágios para build de produção.
+- [x] **Task 3.5: Dockerfile Multi-Stage e Empacotamento de Produção (UC29)**
+  - [x] Configurar `Dockerfile` otimizado em múltiplos estágios para build de produção (`deps`, `builder`, `runner` com `node:22-alpine`, `USER nextjs`, `libc6-compat`, `openssl`).
+  - [x] Configurar `output: "standalone"` no `next.config.ts` e regras de exclusão em `.dockerignore`.
+  - [x] Implementar `docker-entrypoint.sh` com suporte a migrações Prisma (`migrate deploy`/`db push`) e seed idempotente.
+  - [x] Atualizar `docker-compose.yml` com orquestração completa dos serviços `app` e `postgres` com healthcheck.
 - [ ] **Task 3.6: Bateria Completa de Testes Automatizados (UC30)**
   - [ ] Testes unitários de HMAC, RBAC e schemas Zod.
   - [ ] Testes de concorrência ACID anti-double booking.

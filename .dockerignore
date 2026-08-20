@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js Build Artifacts
+.next
+out
+
+# Environment Variables
+.env
+.env*.local
+.env.development
+.env.test
+.env.production
+!.env.example
+
+# Documentation & Specifications
+docs
+AGENTS.md
+CHALLENGE.md
+tasks.md
+README.md
+
+# Tests & Coverage
+tests
+coverage
+playwright-report
+test-results
+
+# IDE & OS Files
+.vscode
+.idea
+.DS_Store
+*.pem
+
+# Docker & CI
+Dockerfile*
+docker-compose*
+.github

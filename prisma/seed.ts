@@ -6,7 +6,26 @@ import { generateTicketQRPayload } from '../src/lib/crypto';
 const prisma = new PrismaClient();
 
 async function main() {
+  const isProduction =
+    process.env.APP_ENV === 'production' ||
+    (process.env.NODE_ENV === 'production' &&
+      process.env.APP_ENV !== 'development' &&
+      process.env.APP_ENV !== 'local');
+
+  if (isProduction) {
+    console.log('Ambiente de produção detectado. Pulando execução de seed de teste.');
+    return;
+  }
+
   console.log('Iniciando carga da seed...');
+
+  // Verifica se o banco já está populado
+  const userCount = await prisma.user.count();
+  if (userCount > 0) {
+    console.log('Banco de dados já populado. Pulando seed automático.');
+    console.log('Para forçar o reset do banco, utilize o comando: npm run db:reset');
+    return;
+  }
 
   // Senha padrão para todos os usuários do ambiente de demonstração/testes
   const defaultPassword = 'Senha123!';
