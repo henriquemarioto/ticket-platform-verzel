@@ -174,7 +174,13 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
 - Estabilidade de Layout (Zero CLS): container com altura fixa calibrada responsivamente (`h-[96px] sm:h-[120px] lg:h-[140px] flex items-center justify-center`) impedindo qualquer variação de altura ou pulo de layout quando o texto varia entre 1 e 2 linhas.
 - Acessibilidade: suporte a `prefers-reduced-motion` e atributos ARIA para leitores de tela sem causar deslocamentos bruscos de layout (CLS).
 
+---
 
+## 11. `LoadingScreen` & Tela Global de Carregamento (`src/app/loading.tsx`, `src/components/ui/loading-screen.tsx`)
+- Indicador de carregamento global do Next.js App Router (React Suspense nativo) exibido automaticamente durante navegações e transições de rotas ou consultas de Server Components com latência de banco de dados.
+- **Design Minimalista**: Focado exclusivamente no indicador de progresso (*loading*), sem logotipos, textos poluídos ou interferências visuais, utilizando os tokens semânticos do TailwindCSS 4 (`text-primary`, `bg-primary/10`).
+- **Acessibilidade**: Elemento com `role="status"`, `aria-label="Carregando"` e texto acessível para leitores de tela (`sr-only`).
+- **Flexibilidade**: Suporte a modo tela cheia (`fullScreen={true}`) ou container local (`fullScreen={false}`).
 
 ---
 

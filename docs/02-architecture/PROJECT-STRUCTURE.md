@@ -56,6 +56,7 @@ src/
 │   │   ├── my-tickets/                 # Listagem de ingressos do cliente
 │   │   └── tickets/[id]/share/         # Geração de shareToken público
 │   ├── layout.tsx                      # Layout raiz com ToastProvider, Navbar e Footer
+│   ├── loading.tsx                     # Tela de carregamento global (React Suspense)
 │   ├── globals.css                     # Tokens semânticos HEX (@theme)
 │   ├── not-found.tsx                   # Página 404 global
 │   ├── forbidden.tsx                   # Página 403 Forbidden
@@ -67,6 +68,7 @@ src/
 │   │   ├── button.tsx                  # Botões acessíveis com spinner loading
 │   │   ├── danger-modal.tsx            # Modal de confirmação para ações destrutivas
 │   │   ├── input.tsx                   # Inputs, Selects e Textareas com Zod feedback
+│   │   ├── loading-screen.tsx          # Indicador minimalista de carregamento
 │   │   ├── modal.tsx                   # Modal com backdrop blur e tecla Escape
 │   │   ├── skeleton.tsx                # Skeletons pulsantes anti-CLS
 │   │   ├── toast.tsx                   # Feedback flutuante unificado (useToast)

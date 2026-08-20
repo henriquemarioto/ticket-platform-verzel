@@ -35,6 +35,11 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
     - [x] `Skeleton` (indicadores pulsantes para prevenção de CLS).
   - [x] Critério de Aceite: Componentes renderizam visualmente refinados conforme [`docs/03-design/DESIGN-SYSTEM.md`](./docs/03-design/DESIGN-SYSTEM.md).
 
+- [x] **Task 1.4c: Tela Global de Carregamento (Loading Screen) (Design System)**
+  - [x] Implementar componente atômico `src/components/ui/loading-screen.tsx` com spinner e tokens semânticos.
+  - [x] Implementar `src/app/loading.tsx` para feedback visual instantâneo em transições de rotas e latência de banco de dados.
+  - [x] Critério de Aceite: Transições de página e Server Components exibem feedback visual de carregamento centralizado e acessível sem saltos de layout.
+
 - [x] **Task 1.5: Layout Raiz e Navbar**
   - [x] Implementar `src/app/layout.tsx` com `ToastProvider`, fonte `Plus Jakarta Sans` e tema escuro.
   - [x] Implementar `Navbar` responsiva e `Footer`.
