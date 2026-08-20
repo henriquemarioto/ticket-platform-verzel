@@ -209,6 +209,24 @@ paths:
         '200':
           description: Lista de assentos com status AVAILABLE, RESERVED, SOLD
 
+  /events/{id}/seats/stream:
+    get:
+      summary: Stream Server-Sent Events (SSE) para sincronização em tempo real do mapa de assentos
+      tags: [Eventos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Canal de eventos SSE (text/event-stream)
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
   /events/{id}/status:
     patch:
       summary: Altera o status do evento (DRAFT, PUBLISHED, CLOSED, CANCELLED) pelo Organizador
@@ -392,6 +410,51 @@ paths:
                     example: "/tickets/share/stk_8f9a2b?key=a1b2c3"
         '403':
           description: Acesso negado - apenas o titular pode compartilhar o ingresso
+
+  /tickets/{id}/cancel:
+    post:
+      summary: Cancela voluntariamente um ingresso ativo, liberando o assento/cota e estornando o valor
+      tags: [Ingressos]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único do ingresso a ser cancelado
+      responses:
+        '200':
+          description: Ingresso cancelado com sucesso e assento devolvido ao estoque
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  ticketId:
+                    type: string
+                  status:
+                    type: string
+                    example: "CANCELLED"
+                  seatRestored:
+                    type: string
+                    nullable: true
+                    example: "A1"
+                  refundAmount:
+                    type: number
+                    example: 250.0
+                  cancelledAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Ingresso já utilizado, já cancelado ou evento já ocorrido
+        '401':
+          description: Não autenticado
+        '403':
+          description: Acesso negado - apenas o titular do ingresso pode cancelá-lo
+        '404':
+          description: Ingresso não encontrado
 
   /tickets/share/{token}:
     get:

@@ -191,6 +191,25 @@ export async function POST(req: Request) {
       });
     }
 
+    // Validação específica para status CANCELLED
+    if (ticket.status === "CANCELLED") {
+      await prisma.ticketValidationLog.create({
+        data: {
+          ticketId: ticket.id,
+          gatekeeperId: session.id,
+          result: "INVALID_CODE",
+          rawPayload,
+          message: "Ingresso Cancelado pelo Cliente",
+        },
+      });
+      const eventMetrics = await getEventMetrics(targetEventId);
+      return NextResponse.json({
+        result: "INVALID_CODE",
+        message: "Ingresso Cancelado",
+        eventMetrics,
+      });
+    }
+
     if (ticket.status !== "ACTIVE") {
       await prisma.ticketValidationLog.create({
         data: {

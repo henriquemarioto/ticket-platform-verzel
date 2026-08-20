@@ -265,6 +265,35 @@ export interface EventSeatsResponse {
 
 ---
 
+## 5. Sincronização em Tempo Real via SSE (`GET /api/events/[id]/seats/stream`)
+
+Estabelece conexão Server-Sent Events (SSE) com o canal do evento correspondente, transmitindo eventos de alteração de estado dos assentos (`seat:reserved`, `seat:released`, `seat:sold`) e atualização de capacidade dos setores de pista:
+
+- **Headers de Resposta**:
+  - `Content-Type: text/event-stream`
+  - `Cache-Control: no-cache, no-transform`
+  - `Connection: keep-alive`
+- **Heartbeat**: Pings periódicos a cada 20 segundos (`: ping\n\n`) para manter a conexão ativa.
+- **Formato dos Eventos**:
+  ```json
+  {
+    "type": "SEAT_STATUS_CHANGED",
+    "eventId": "evt_clx123",
+    "seats": [
+      {
+        "id": "seat_c7",
+        "row": "C",
+        "number": 7,
+        "status": "RESERVED",
+        "reservedById": "usr_customer1",
+        "reservedUntil": "2026-08-19T22:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+---
+
 # Contratos de Ingressos, Reservas, Checkout e Portaria
 
 Este documento estabelece os contratos de reserva temporária, checkout, gestão de vouchers e validação na portaria.
@@ -372,7 +401,31 @@ export interface ShareTicketResponse {
 
 ---
 
-## 5. Eventos Operacionais da Portaria (`GET /api/gate/events`)
+## 5. Cancelamento de Ingresso com Devolução ao Estoque (`POST /api/tickets/[id]/cancel`)
+
+Permite ao cliente cancelar um ingresso ativo antes da data do evento, invalidando o QR Code e restaurando o assento ou cota de pista:
+
+- **Acesso**: Restrito a `CUSTOMER` com verificação de titularidade (`ticket.customerId === session.id`).
+- **Regras de Negócio**:
+  - Apenas ingressos com status `ACTIVE` podem ser cancelados (`400 Bad Request` se já `USED` ou `CANCELLED`).
+  - O evento não pode ter ocorrido (`event.eventDate > NOW()`).
+  - Executa transação atômica que invalida o ingresso, restaura o assento para `AVAILABLE` (ou incrementa `availableCapacity` se pista) e reabre o evento para `PUBLISHED` se estiver `CLOSED` por lotação.
+  - Dispara evento de tempo real no canal do evento (`seat:released` ou `sector:capacity_updated`).
+- **Resposta de Sucesso (`200 OK`)**:
+  ```json
+  {
+    "success": true,
+    "ticketId": "tkt_clx123456",
+    "status": "CANCELLED",
+    "seatRestored": "A1",
+    "refundAmount": 250.0,
+    "cancelledAt": "2026-08-19T22:00:00.000Z"
+  }
+  ```
+
+---
+
+## 6. Eventos Operacionais da Portaria (`GET /api/gate/events`)
 
 ```typescript
 export interface GatekeeperEventItem {

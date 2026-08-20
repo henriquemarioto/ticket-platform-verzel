@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { checkoutSchema } from "@/lib/validations/checkout";
 import { generateTicketQRPayload } from "@/lib/crypto";
+import { publishSeatEvent } from "@/lib/seat-events";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -26,7 +27,11 @@ export async function POST(req: Request) {
     const reservation = await prisma.reservation.findUnique({
       where: { id: reservationId },
       include: {
-        items: true,
+        items: {
+          include: {
+            seat: true,
+          },
+        },
       },
     });
 
@@ -215,6 +220,78 @@ export async function POST(req: Request) {
         };
       }
     });
+
+    // Publica eventos SSE após o commit da transação
+    if (action === "APPROVE") {
+      const soldSeats = reservation.items
+        .filter((item) => item.seatId)
+        .map((item) => ({
+          id: item.seatId!,
+          status: "SOLD",
+          row: item.seat?.row,
+          number: item.seat?.number,
+        }));
+
+      if (soldSeats.length > 0) {
+        publishSeatEvent(reservation.eventId, {
+          type: "SEAT_STATUS_CHANGED",
+          eventId: reservation.eventId,
+          seats: soldSeats,
+        });
+      }
+
+      const gaItems = reservation.items.filter((item) => !item.seatId);
+      for (const item of gaItems) {
+        const sector = await prisma.sector.findUnique({
+          where: { id: item.sectorId },
+          select: { availableCapacity: true },
+        });
+        if (sector) {
+          publishSeatEvent(reservation.eventId, {
+            type: "SECTOR_CAPACITY_CHANGED",
+            eventId: reservation.eventId,
+            sectorId: item.sectorId,
+            availableCapacity: sector.availableCapacity,
+          });
+        }
+      }
+    } else {
+      // REJECT
+      const releasedSeats = reservation.items
+        .filter((item) => item.seatId)
+        .map((item) => ({
+          id: item.seatId!,
+          status: "AVAILABLE",
+          reservedUntil: null,
+          reservedById: null,
+          row: item.seat?.row,
+          number: item.seat?.number,
+        }));
+
+      if (releasedSeats.length > 0) {
+        publishSeatEvent(reservation.eventId, {
+          type: "SEAT_STATUS_CHANGED",
+          eventId: reservation.eventId,
+          seats: releasedSeats,
+        });
+      }
+
+      const gaItems = reservation.items.filter((item) => !item.seatId);
+      for (const item of gaItems) {
+        const sector = await prisma.sector.findUnique({
+          where: { id: item.sectorId },
+          select: { availableCapacity: true },
+        });
+        if (sector) {
+          publishSeatEvent(reservation.eventId, {
+            type: "SECTOR_CAPACITY_CHANGED",
+            eventId: reservation.eventId,
+            sectorId: item.sectorId,
+            availableCapacity: sector.availableCapacity,
+          });
+        }
+      }
+    }
 
     return NextResponse.json({ success: action === "APPROVE", ...result });
   } catch (error) {

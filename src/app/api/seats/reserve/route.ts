@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { reserveSeatsSchema } from "@/lib/validations/reservation";
+import { publishSeatEvent } from "@/lib/seat-events";
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,6 +90,22 @@ export async function POST(request: NextRequest) {
       return res;
     });
 
+    // Dispara evento SSE em tempo real
+    if (eventId) {
+      publishSeatEvent(eventId, {
+        type: "SEAT_STATUS_CHANGED",
+        eventId,
+        seats: reservation.items.map((i) => ({
+          id: i.seatId!,
+          status: "RESERVED",
+          reservedUntil: reservation.expiresAt.toISOString(),
+          reservedById: session.id,
+          row: i.seat?.row,
+          number: i.seat?.number,
+        })),
+      });
+    }
+
     const totalPrice = reservation.items.reduce((acc, item) => acc + item.unitPrice, 0);
 
     return NextResponse.json(
@@ -99,7 +116,7 @@ export async function POST(request: NextRequest) {
         totalPrice,
         reservedUntil: reservation.expiresAt,
       },
-      { status: 200 } // Or 201
+      { status: 200 }
     );
   } catch (error: any) {
     console.error("[RESERVE_SEATS_ERROR]", error);

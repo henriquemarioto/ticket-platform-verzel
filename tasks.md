@@ -255,10 +255,14 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Seletor dinâmico de evento para alternar entre visão geral consolidada e métricas individuais.
   - [x] Exportação de relatórios reais em CSV (com BOM UTF-8) e JSON formatado.
   - [x] Definir `/organizer/analytics` como rota padrão pós-autenticação do perfil Organizador (login, registro e proxy).
-- [ ] **Task 3.3: Cancelamento de Ingressos com Devolução ao Estoque (UC27)**
-  - [ ] Implementar botão de cancelamento voluntário pelo cliente no painel "Meus Ingressos", liberando imediatamente o assento/cota.
-- [ ] **Task 3.4: Sincronização em Tempo Real (UC28)**
-  - [ ] Atualização automática do mapa de assentos via polling inteligente ou Server-Sent Events/WebSockets.
+- [x] **Task 3.3: Cancelamento de Ingressos com Devolução ao Estoque (UC27)**
+  - [x] Implementar botão de cancelamento voluntário pelo cliente no painel "Meus Ingressos", liberando imediatamente o assento/cota.
+  - [x] Transação atômica ACID no backend (`POST /api/tickets/[id]/cancel`), reabrindo evento caso esgotado e invalidando o QR Code na portaria (`INVALID_CODE`).
+  - [x] Modal defensivo de confirmação com valor do estorno e aviso de irreversibilidade.
+- [x] **Task 3.4: Sincronização em Tempo Real (UC28)**
+  - [x] Implementar canal Server-Sent Events (`GET /api/events/[id]/seats/stream`) e hub Pub/Sub em memória (`seat-events.ts`).
+  - [x] Transmitir atualizações instantâneas de assentos (`SEAT_STATUS_CHANGED`) e cotas de setores (`SECTOR_CAPACITY_CHANGED`) em reservas, checkouts, cancelamentos e expiração.
+  - [x] Conectar `SeatMap` ao stream SSE com indicador visual "Ao vivo", reconexão automática e resolução proativa de conflitos de assentos.
 - [ ] **Task 3.5: Dockerfile Multi-Stage e Empacotamento de Produção (UC29)**
   - [ ] Configurar `Dockerfile` otimizado em múltiplos estágios para build de produção.
 - [ ] **Task 3.6: Bateria Completa de Testes Automatizados (UC30)**
