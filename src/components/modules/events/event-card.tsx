@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { formatShortDateRange } from "@/lib/utils/date-formatters";
+import { getEventCategoryLabel } from "@/lib/constants/event-categories";
 
 interface EventCardProps {
   id: string;
@@ -54,7 +55,7 @@ export function EventCard({
           )}
           <div className="absolute left-3 top-3 flex items-center gap-1.5">
             <Badge variant="neutral" className="bg-black/60 text-white backdrop-blur-md">
-              {category}
+              {getEventCategoryLabel(category)}
             </Badge>
             {isAdult && (
               <span 

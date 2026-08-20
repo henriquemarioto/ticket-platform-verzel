@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EventStatusActions } from "@/components/modules/events/EventStatusActions";
 import { EventGatekeeperButton } from "@/components/modules/organizer/EventGatekeeperButton";
 import { formatShortDateRange } from "@/lib/utils/date-formatters";
+import { getEventCategoryLabel } from "@/lib/constants/event-categories";
 import { Edit, Plus, PlusCircle, BarChart2 } from "lucide-react";
 
 export default async function OrganizerDashboardPage() {
@@ -108,7 +109,7 @@ export default async function OrganizerDashboardPage() {
                         <div>
                           <p className="font-semibold text-text-primary">{event.title}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-xs text-text-muted">{event.category}</span>
+                            <span className="text-xs text-text-muted">{getEventCategoryLabel(event.category)}</span>
                             {event.isAdult && (
                               <span 
                                 className="inline-flex items-center justify-center rounded bg-danger/15 px-1 py-0.2 text-[10px] font-bold text-danger leading-none"

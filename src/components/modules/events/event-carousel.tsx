@@ -58,7 +58,7 @@ export function EventCarousel({
         <div>
           <h2 className="text-2xl font-bold text-text-primary">{title}</h2>
           {categoryLabel && (
-            <p className="text-sm text-text-muted">Destaques selecionados em {categoryLabel}</p>
+            <p className="text-sm text-text-muted mt-0.5">{categoryLabel}</p>
           )}
         </div>
 

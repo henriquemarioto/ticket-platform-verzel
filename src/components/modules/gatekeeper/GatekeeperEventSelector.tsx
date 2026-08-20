@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { formatShortDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
+import { getEventCategoryLabel } from "@/lib/constants/event-categories";
 import { GatekeeperEvent } from "./types";
 
 interface GatekeeperEventSelectorProps {
@@ -121,7 +122,7 @@ export function GatekeeperEventSelector({
                 ) : (
                   <div className="h-28 w-full bg-bg-surface-hover flex items-center justify-between p-4 shadow-sm">
                     <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-                      {event.category}
+                      {getEventCategoryLabel(event.category)}
                     </span>
                     {renderStatusBadge()}
                   </div>

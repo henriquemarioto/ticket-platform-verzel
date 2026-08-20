@@ -9,6 +9,7 @@ import { ExternalCatalogModal, CatalogItem } from "@/components/modules/events/E
 import { Film, Music, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
+import { EVENT_CATEGORIES_OPTIONS } from "@/lib/constants/event-categories";
 import { updateEventSchema } from "@/lib/validations/events";
 import { formatToDatetimeLocal } from "@/lib/utils/date-formatters";
 
@@ -256,10 +257,11 @@ export function EditEventForm({ eventId, initialData }: EditEventFormProps) {
                   onChange={(e) => setCategory(e.target.value as "SHOW" | "MOVIE" | "THEATER" | "FESTIVAL")}
                   error={errors["category"]}
                 >
-                  <option value="SHOW">Show</option>
-                  <option value="MOVIE">Filme</option>
-                  <option value="THEATER">Teatro</option>
-                  <option value="FESTIVAL">Festival</option>
+                  {EVENT_CATEGORIES_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Select>
               </div>
             </div>

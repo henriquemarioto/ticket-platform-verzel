@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock } from "lucide-react";
 import { SectorItem } from "@/components/modules/events/SectorItem";
 import { formatEventDateRange, formatEntryTime } from "@/lib/utils/date-formatters";
+import { getEventCategoryLabel } from "@/lib/constants/event-categories";
 
 type Params = Promise<{ id: string }>;
 
@@ -62,7 +63,7 @@ export default async function EventDetailsPage({ params }: { params: Params }) {
             <div className="flex w-full sm:w-1/2 flex-col gap-4 justify-end sm:justify-center">
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="neutral" className="w-fit bg-white/20 text-white backdrop-blur-md border-white/20">
-                  {event.category}
+                  {getEventCategoryLabel(event.category)}
                 </Badge>
                 {event.isAdult && (
                   <Badge variant="danger" className="w-fit bg-black text-white backdrop-blur-md border-danger font-bold text-xs">

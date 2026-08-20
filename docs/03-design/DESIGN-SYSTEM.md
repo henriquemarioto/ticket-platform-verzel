@@ -105,6 +105,12 @@ Este documento especifica a biblioteca de componentes atômicos fundamentais (`s
   - `warning`: Fundo âmbar suave com texto escuro (`bg-warning text-warning`).
   - `danger`: Fundo vermelho suave com texto escuro (`bg-danger text-danger`).
   - `neutral`: Fundo branco/superfície com texto suave (`bg-surface text-text-muted border border-border-subtle`).
+- **Categorias de Evento & Breadcrumb/Badges (`EVENT_CATEGORY_LABELS` / `getEventCategoryLabel`)**:
+  - Exibição obrigatória em português em todas as interfaces públicas e administrativas:
+    - `SHOW` -> **Show** (ou **Shows** em filtros/listagens)
+    - `MOVIE` -> **Cinema**
+    - `THEATER` -> **Teatro**
+    - `FESTIVAL` -> **Festival** (ou **Festivais** em filtros/listagens)
 - **Classificação Indicativa +18**:
   - **Na Tela do Evento (`/events/:id`)**: Badge destacado em tom de perigo/alerta ao lado da categoria principal (`bg-danger/80 text-white backdrop-blur-md border-danger font-bold text-xs`).
   - **No Card de Evento (`EventCard`)**: Indicador translúcido discreto no canto superior do banner sobreposto (`bg-black/60 text-rose-300 text-[11px] font-semibold backdrop-blur-md border border-rose-500/30`).

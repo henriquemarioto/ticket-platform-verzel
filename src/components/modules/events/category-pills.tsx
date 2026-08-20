@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Music, Film, Drama, PartyPopper } from "lucide-react";
+import { Music, Film, Drama, PartyPopper } from "lucide-react";
+import { EventCategoryEnum, EVENT_CATEGORY_PLURAL_LABELS } from "@/lib/constants/event-categories";
 
 const CATEGORIES = [
-  { value: "", label: "Todos", icon: "" },
-  { value: "SHOW", label: "Shows", icon: Music },
-  { value: "MOVIE", label: "Cinema", icon: Film },
-  { value: "THEATER", label: "Teatro", icon: Drama },
-  { value: "FESTIVAL", label: "Festivais", icon: PartyPopper },
+  { value: "", label: "Todos", icon: null },
+  { value: EventCategoryEnum.SHOW, label: EVENT_CATEGORY_PLURAL_LABELS[EventCategoryEnum.SHOW], icon: Music },
+  { value: EventCategoryEnum.MOVIE, label: EVENT_CATEGORY_PLURAL_LABELS[EventCategoryEnum.MOVIE], icon: Film },
+  { value: EventCategoryEnum.THEATER, label: EVENT_CATEGORY_PLURAL_LABELS[EventCategoryEnum.THEATER], icon: Drama },
+  { value: EventCategoryEnum.FESTIVAL, label: EVENT_CATEGORY_PLURAL_LABELS[EventCategoryEnum.FESTIVAL], icon: PartyPopper },
 ];
 
 export function CategoryPills() {
@@ -49,7 +50,7 @@ export function CategoryPills() {
                   : "bg-surface text-text-muted border-border-subtle hover:bg-surface-hover hover:text-text-primary hover:border-primary/40 hover:shadow-xs active:scale-95"
               }`}
             >
-              {category.icon ? ( 
+              {Icon ? ( 
                 <Icon className="mr-1.5 h-4 w-4 shrink-0" aria-hidden="true" />
               ) : null}
               <span>{category.label}</span>

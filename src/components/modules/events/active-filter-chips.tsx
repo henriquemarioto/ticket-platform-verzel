@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { getEventCategoryLabel } from "@/lib/constants/event-categories";
 
 export function ActiveFilterChips() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function ActiveFilterChips() {
       <span className="text-sm text-text-muted mr-2">Filtros ativos:</span>
       {filters.map((f) => (
         <Badge key={f.key} variant="neutral" className="flex items-center gap-1 bg-surface-hover">
-          {f.label}: {f.value}
+          {f.label}: {f.key === "category" ? getEventCategoryLabel(f.value) : f.value}
           <button onClick={() => removeFilter(f.key)} className="ml-1 hover:text-danger focus:outline-none cursor-pointer">
             <X className="w-3 h-3" />
           </button>

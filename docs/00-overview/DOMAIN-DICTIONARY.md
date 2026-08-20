@@ -87,3 +87,7 @@ Este documento estabelece o glossário oficial de termos e conceitos do negócio
 | Assinatura do QR | `secureToken` | `Ticket.secureToken` |
 | Link Compartilhado | `shareToken` | `Ticket.shareToken` |
 | Log de Check-in | `TicketValidationLog` | `ticket_validation_logs` |
+| Categoria Show | `EventCategory.SHOW` ("Show") | `Event.category` |
+| Categoria Cinema | `EventCategory.MOVIE` ("Cinema") | `Event.category` |
+| Categoria Teatro | `EventCategory.THEATER` ("Teatro") | `Event.category` |
+| Categoria Festival | `EventCategory.FESTIVAL` ("Festival") | `Event.category` |

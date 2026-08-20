@@ -8,6 +8,7 @@ import { Film, Music, Plus, Trash, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { createEventSchema } from "@/lib/validations/events";
 import { BRAZIL_STATES } from "@/lib/constants/brazil-states";
+import { EVENT_CATEGORIES_OPTIONS } from "@/lib/constants/event-categories";
 import { formatToDatetimeLocal } from "@/lib/utils/date-formatters";
 import { useRouter } from "next/navigation";
 
@@ -261,10 +262,11 @@ export default function CreateEventPage() {
                   onChange={(e) => setCategory(e.target.value)}
                   error={errors["category"]}
                 >
-                  <option value="SHOW">Show</option>
-                  <option value="MOVIE">Filme</option>
-                  <option value="THEATER">Teatro</option>
-                  <option value="FESTIVAL">Festival</option>
+                  {EVENT_CATEGORIES_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Select>
               </div>
             </div>

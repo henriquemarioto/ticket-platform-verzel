@@ -134,7 +134,7 @@ export default async function CustomerHomePage() {
 
         {/* Carrossel de Shows */}
         {shows.length > 0 && (
-          <EventCarousel title="Shows & Concertos" categoryLabel="Música ao vivo">
+          <EventCarousel title="Shows & Concertos">
             {shows.slice(0, 8).map(renderEventCard)}
             <ViewAllCard 
               href="/events?category=SHOW" 

@@ -243,6 +243,13 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Adicionar atributo `min` nos inputs de `datetime-local` no formulário de criação `CreateEventPage` e `EditEventForm`.
   - [x] Atualizar documentação em `docs/01-use-cases/02-EVENTS-AND-CATALOG.md` e `docs/04-api-and-integrations/API-AND-INTEGRATIONS.md`.
 
+- [x] **Task 2.38: Enum e Tradução de Categorias de Eventos no Frontend (UC11, UC12)**
+  - [x] Criar constante e enum centralizado `src/lib/constants/event-categories.ts` com mapeamento em português (`Show`, `Cinema`, `Teatro`, `Festival`).
+  - [x] Atualizar breadcrumb/badge de categoria na página de detalhes do evento (`/events/[id]`).
+  - [x] Atualizar badges de categoria no `EventCard`, `ActiveFilterChips`, painel da portaria (`GatekeeperEventSelector`) e listagem do organizador.
+  - [x] Padronizar selects e pílulas de categorias (`CategoryPills`, `CreateEventPage`, `EditEventForm`).
+  - [x] Auditar e validar qualidade com testes e TypeScript estrito.
+
 ---
 
 ## 🌟 Fase 3: Escala, Opcionais e Excelência (Bônus)
