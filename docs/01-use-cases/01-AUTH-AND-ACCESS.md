@@ -631,6 +631,8 @@ flowchart TD
 - **RN01 - Idempotência Estrita**: Executar o comando `npm run db:seed` múltiplas vezes não deve causar duplicação de usuários ou quebra de restrições únicas (`unique constraints`). O script utiliza `upsert` com base no `email` do usuário e identificadores dos setores.
 - **RN02 - Capacidade Real dos Setores**: No setor numerado, a capacidade total (`totalCapacity`) deve corresponder exatamente à soma dos assentos cadastrados na tabela `seats`.
 - **RN03 - Assentos com Status Inicial Disponível**: Todos os assentos criados no seed inicial devem ter o status `AVAILABLE`, permitindo que o avaliador teste a reserva imediatamente.
+- **RN04 - Vínculo Total da Portaria**: A conta de portaria padrão (`portaria@verzel.com.br`) deve ser vinculada a todos os eventos gerados na seed através da tabela `event_gatekeepers`, garantindo que o operador possa selecionar e validar qualquer evento do catálogo de testes.
+- **RN05 - Datas Dinâmicas e Eventos com Entrada Liberada**: As datas e horários dos eventos semeados são calculados dinamicamente a partir do momento de execução (`Date.now()`). O catálogo contempla múltiplos eventos ocorrendo na data atual com portões abertos (`entryStartTime <= now`, `endDate > now`) e ingressos de teste emitidos para validação imediata na portaria, além de eventos distribuídos nos dias e semanas seguintes.
 
 ---
 

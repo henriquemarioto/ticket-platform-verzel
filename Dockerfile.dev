@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# Dockerfile para Desenvolvimento (Hot Reload / Fast Refresh)
+# ------------------------------------------------------
+FROM node:22-alpine
+
+RUN apk add --no-cache libc6-compat openssl
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma/
+COPY postcss.config.mjs ./
+COPY next.config.ts ./
+COPY tsconfig.json ./
+
+RUN npm ci
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=development
+ENV WATCHPACK_POLLING=true
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["npm", "run", "dev"]

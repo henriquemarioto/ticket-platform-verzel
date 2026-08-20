@@ -207,7 +207,7 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Restringir listagem `GET /api/gate/events` e validação `POST /api/gate/validate` para permitir apenas operadores vinculados ao evento (`403 Forbidden` se não vinculado).
   - [x] Implementar endpoints de gestão de portaria para o organizador (`GET`, `POST`, `DELETE` em `/api/events/[id]/gatekeepers`).
   - [x] Criar modal de gerenciamento de portaria (`EventGatekeepersModal`) no painel do organizador (`/organizer`) com geração rápida de credenciais temporárias (1 clique) e botão de cópia.
-  - [x] Atualizar `prisma/seed.ts` populando `entryStartTime` em todos os eventos e vinculando a conta `portaria@verzel.com.br` ao evento de demonstração.
+  - [x] Atualizar `prisma/seed.ts` com datas e horários dinâmicos (`Date.now()`), eventos com portões abertos hoje para validação de ingressos e vínculo da conta `portaria@verzel.com.br` a todos os eventos.
 
 - [x] **Task 2.31: Padronização de Letras dos Assentos em Maiúsculo (UC09, UC14, UC18, UC24)**
   - [x] Normalizar letras de fileiras (`row`) para maiúsculas no Zod (`createSectorSchema`), criação (`POST /api/events`), formulário (`CreateEventPage`), mapa de assentos (`SeatMap`), checkout, vouchers e leitura na portaria.

@@ -1,4 +1,4 @@
-import { PrismaClient, Role, EventCategory, EventStatus, SectorType, SeatStatus } from '@prisma/client';
+import { PrismaClient, Role, EventCategory, EventStatus, SectorType, SeatStatus, Event, Sector, Seat } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { generateTicketQRPayload } from '../src/lib/crypto';
@@ -18,14 +18,6 @@ async function main() {
   }
 
   console.log('Iniciando carga da seed...');
-
-  // Verifica se o banco já está populado
-  const userCount = await prisma.user.count();
-  if (userCount > 0) {
-    console.log('Banco de dados já populado. Pulando seed automático.');
-    console.log('Para forçar o reset do banco, utilize o comando: npm run db:reset');
-    return;
-  }
 
   // Senha padrão para todos os usuários do ambiente de demonstração/testes
   const defaultPassword = 'Senha123!';
@@ -93,16 +85,30 @@ async function main() {
   const cliente2Id = users['cliente2@verzel.com.br'].id;
   const portariaId = users['portaria@verzel.com.br'].id;
 
-  // Função auxiliar para calcular datas futuras relativas a hoje
+  // 2. Funções Auxiliares para Datas e Horários Dinâmicos
   const now = new Date();
-  const getFutureDate = (daysAhead: number, hours = 20, minutes = 0) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() + daysAhead);
-    d.setHours(hours, minutes, 0, 0);
-    return d;
+
+  // Para eventos de HOJE com portões já abertos (prontos para validação na portaria)
+  const getTodayOpenEvent = (entryHoursAgo = 2, startHoursAhead = 1, durationHours = 4) => {
+    const entryStartTime = new Date(now.getTime() - entryHoursAgo * 60 * 60 * 1000);
+    const eventDate = new Date(now.getTime() + startHoursAhead * 60 * 60 * 1000);
+    const endDate = new Date(eventDate.getTime() + durationHours * 60 * 60 * 1000);
+    return { entryStartTime, eventDate, endDate };
   };
 
-  // 2. Definição do Catálogo com 16 Eventos em Locais Famosos e Reais
+  // Para eventos futuros dinâmicos a partir de hoje
+  const getFutureDate = (daysAhead: number, hours = 20, minutes = 0, durationHours = 3, gateOpeningHours = 1) => {
+    const eventDate = new Date(now);
+    eventDate.setDate(eventDate.getDate() + daysAhead);
+    eventDate.setHours(hours, minutes, 0, 0);
+
+    const endDate = new Date(eventDate.getTime() + durationHours * 60 * 60 * 1000);
+    const entryStartTime = new Date(eventDate.getTime() - gateOpeningHours * 60 * 60 * 1000);
+
+    return { eventDate, endDate, entryStartTime };
+  };
+
+  // 3. Definição do Catálogo com 16 Eventos em Locais Famosos e Reais
   interface SectorDef {
     name: string;
     type: SectorType;
@@ -130,7 +136,9 @@ async function main() {
   }
 
   const eventsCatalog: EventDef[] = [
-    // --- SHOWS ---
+    // ==========================================
+    // --- EVENTOS DE HOJE COM ENTRADA LIBERADA ---
+    // ==========================================
     {
       title: 'Festival Indie Rock Verzel 2026',
       description:
@@ -142,8 +150,7 @@ async function main() {
       number: '795',
       neighborhood: 'Barra Funda',
       city: 'São Paulo, SP',
-      eventDate: getFutureDate(14, 20, 0),
-      endDate: getFutureDate(14, 23, 0),
+      ...getTodayOpenEvent(2, 1, 4), // Portões abertos há 2h, show em 1h
       isAdult: false,
       sectors: [
         { name: 'Pista Geral', type: SectorType.GENERAL_ADMISSION, price: 120.0, capacity: 300 },
@@ -159,148 +166,6 @@ async function main() {
       ],
     },
     {
-      title: 'Coldplay Tribute: A Sky Full of Stars Tour',
-      description:
-        'A maior e mais espetacular homenagem ao Coldplay de toda a América Latina desembarca no Allianz Parque para uma apresentação monumental. O espetáculo traz uma réplica fiel dos shows de estádio da banda britânica, com pulseiras de LED sincronizadas distribuídas ao público, show pirotécnico inesquecível, lasers multicoloridos e um repertório com todos os grandes sucessos da carreira.',
-      category: EventCategory.SHOW,
-      bannerUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200&q=80',
-      locationName: 'Allianz Parque',
-      street: 'Avenida Francisco Matarazzo',
-      number: '1705',
-      neighborhood: 'Água Branca',
-      city: 'São Paulo, SP',
-      eventDate: getFutureDate(24, 21, 0),
-      endDate: getFutureDate(25, 0, 0),
-      isAdult: false,
-      sectors: [
-        { name: 'Pista Comum', type: SectorType.GENERAL_ADMISSION, price: 160.0, capacity: 500 },
-        { name: 'Pista Premium', type: SectorType.GENERAL_ADMISSION, price: 320.0, capacity: 150 },
-        {
-          name: 'Cadeira Inferior Numerada',
-          type: SectorType.NUMBERED_SEATS,
-          price: 280.0,
-          capacity: 32,
-          rows: ['A', 'B', 'C', 'D'],
-          seatsPerRow: 8,
-        },
-      ],
-    },
-    {
-      title: 'Orquestra Sinfônica & Clássicos do Rock',
-      description:
-        'Uma fusão arrebatadora entre a sofisticação da música erudita e a energia visceral do rock and roll no imponente Theatro Municipal do Rio de Janeiro. Sob a regência de maestros renomados, mais de 60 músicos de orquestra executam arranjos sinfônicos inéditos para lendas como Queen, Pink Floyd, Led Zeppelin, Metallica e Deep Purple, criando uma atmosfera acústica emocionante e grandiosa.',
-      category: EventCategory.SHOW,
-      bannerUrl: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1200&q=80',
-      locationName: 'Theatro Municipal do Rio de Janeiro',
-      street: 'Praça Floriano',
-      number: 'S/N',
-      neighborhood: 'Centro',
-      city: 'Rio de Janeiro, RJ',
-      eventDate: getFutureDate(35, 19, 30),
-      endDate: getFutureDate(35, 22, 30),
-      isAdult: false,
-      sectors: [
-        {
-          name: 'Plateia Nobre Numerada',
-          type: SectorType.NUMBERED_SEATS,
-          price: 190.0,
-          capacity: 24,
-          rows: ['A', 'B', 'C'],
-          seatsPerRow: 8,
-        },
-        {
-          name: 'Balcão Nobre Numerado',
-          type: SectorType.NUMBERED_SEATS,
-          price: 140.0,
-          capacity: 20,
-          rows: ['A', 'B'],
-          seatsPerRow: 10,
-        },
-        { name: 'Galeria Superior', type: SectorType.GENERAL_ADMISSION, price: 80.0, capacity: 150 },
-      ],
-    },
-    {
-      title: 'Noite do Jazz & Blues na Lapa',
-      description:
-        'Uma celebração intimista e vibrante das raízes do Jazz tradicional e Blues clássico sob a mítica lona do Circo Voador, no coração boêmio da Lapa carioca. O evento reúne virtuosos instrumentistas, cantores convidados, cartas de coquetelaria autoral premiada e mesas bistrô para uma noite sofisticada voltada ao público apreciador de boa música e gastronomia noturna refinada.',
-      category: EventCategory.SHOW,
-      bannerUrl: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=1200&q=80',
-      locationName: 'Circo Voador',
-      street: 'Rua dos Arcos',
-      number: 'S/N',
-      neighborhood: 'Lapa',
-      city: 'Rio de Janeiro, RJ',
-      eventDate: getFutureDate(8, 21, 30),
-      endDate: getFutureDate(9, 1, 0),
-      isAdult: true,
-      sectors: [
-        { name: 'Ingresso Geral Lote 1', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 250 },
-        {
-          name: 'Mesa Bistrô Numerada',
-          type: SectorType.NUMBERED_SEATS,
-          price: 180.0,
-          capacity: 16,
-          rows: ['A', 'B'],
-          seatsPerRow: 8,
-        },
-      ],
-    },
-    {
-      title: 'Sunset Electronic Beats & DJ Sets',
-      description:
-        'Mais de dez horas ininterruptas de celebração ao som do melhor do Melodic Techno, Progressive House e Deep House no cenário paradisíaco da Pedreira Paulo Leminski. Com cenografia monumental inspirada nos maiores festivais europeus, DJs de renome internacional, open bar premium no setor VIP e praça gastronômica noturna, este é o evento eletrônico definitivo da temporada.',
-      category: EventCategory.SHOW,
-      bannerUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80',
-      locationName: 'Pedreira Paulo Leminski',
-      street: 'Rua João Gava',
-      number: '970',
-      neighborhood: 'Abranches',
-      city: 'Curitiba, PR',
-      eventDate: getFutureDate(42, 16, 0),
-      endDate: getFutureDate(43, 2, 0),
-      isAdult: true,
-      sectors: [
-        { name: 'Pista Sunset', type: SectorType.GENERAL_ADMISSION, price: 140.0, capacity: 400 },
-        { name: 'Backstage VIP Open Bar', type: SectorType.GENERAL_ADMISSION, price: 380.0, capacity: 100 },
-      ],
-    },
-    {
-      title: 'Nando Reis & Os Paralamas do Sucesso',
-      description:
-        'Dois dos maiores ícones da história do pop rock brasileiro dividem o palco do lendário Auditório Araújo Vianna em Porto Alegre para um show histórico e emocionante. Uma noite repleta de poesia, guitarras marcantes e refrões inesquecíveis que atravessaram gerações, contando com produção técnica impecável e setores planejados para total conforto e visão panorâmica da plateia.',
-      category: EventCategory.SHOW,
-      bannerUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1200&q=80',
-      locationName: 'Auditório Araújo Vianna',
-      street: 'Avenida Osvaldo Aranha',
-      number: '685',
-      neighborhood: 'Bom Fim',
-      city: 'Porto Alegre, RS',
-      eventDate: getFutureDate(48, 21, 0),
-      endDate: getFutureDate(49, 0, 0),
-      isAdult: false,
-      sectors: [
-        {
-          name: 'Plateia Baixa Central',
-          type: SectorType.NUMBERED_SEATS,
-          price: 180.0,
-          capacity: 24,
-          rows: ['A', 'B', 'C'],
-          seatsPerRow: 8,
-        },
-        {
-          name: 'Plateia Alta Lateral',
-          type: SectorType.NUMBERED_SEATS,
-          price: 130.0,
-          capacity: 16,
-          rows: ['A', 'B'],
-          seatsPerRow: 8,
-        },
-        { name: 'Pista Lateral', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 200 },
-      ],
-    },
-
-    // --- FESTIVAIS ---
-    {
       title: 'Festival Gastronômico & Cervejeiro Verzel',
       description:
         'O maior encontro de sabores, cultura e cervejas artesanais de São Paulo chega à grandiosa esplanada do Memorial da América Latina. O evento conta com mais de quarenta operações gastronômicas premiadas, trinta mestres cervejeiros locais, três palcos simultâneos com música ao vivo, workshops culinários interativos e espaço exclusivo para toda a família desfrutar de momentos memoráveis.',
@@ -311,8 +176,7 @@ async function main() {
       number: '664',
       neighborhood: 'Barra Funda',
       city: 'São Paulo, SP',
-      eventDate: getFutureDate(18, 12, 0),
-      endDate: getFutureDate(18, 20, 0),
+      ...getTodayOpenEvent(3, 0.5, 6), // Portões abertos há 3h, início em 30m
       isAdult: false,
       sectors: [
         { name: 'Passe Diário Geral', type: SectorType.GENERAL_ADMISSION, price: 50.0, capacity: 500 },
@@ -320,79 +184,6 @@ async function main() {
         { name: 'Experiência VIP Degustação', type: SectorType.GENERAL_ADMISSION, price: 180.0, capacity: 80 },
       ],
     },
-    {
-      title: 'Aurora Winter Lights & Music Festival',
-      description:
-        'Uma experiência multissensorial deslumbrante que transforma a arquitetura icônica da Ópera de Arame em uma instalação viva de arte e som. O festival une esculturas lumínicas futuristas, projeções holográficas sobre as águas do lago e apresentações ao vivo de indie folk, ambient e synth-pop, criando uma atmosfera mágica e imersiva sem precedentes na cena cultural de Curitiba.',
-      category: EventCategory.FESTIVAL,
-      bannerUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80',
-      locationName: 'Ópera de Arame',
-      street: 'Rua João Gava',
-      number: '920',
-      neighborhood: 'Abranches',
-      city: 'Curitiba, PR',
-      eventDate: getFutureDate(52, 18, 0),
-      endDate: getFutureDate(53, 2, 0),
-      isAdult: false,
-      sectors: [
-        { name: 'Entrada Geral Parque + Palco', type: SectorType.GENERAL_ADMISSION, price: 110.0, capacity: 350 },
-        {
-          name: 'Camarote Panorâmico Numerado',
-          type: SectorType.NUMBERED_SEATS,
-          price: 220.0,
-          capacity: 16,
-          rows: ['A', 'B'],
-          seatsPerRow: 8,
-        },
-      ],
-    },
-    {
-      title: 'Bahia Sonora: Festival de Ritmos Brasileiros',
-      description:
-        'Uma celebração contagiante da rica herança musical afro-brasileira no palco sagrado da Concha Acústica do Teatro Castro Alves em Salvador. O festival une apresentações consagradas de samba-reggae, axé raiz, MPB contemporânea e blocos afro tradicionais, proporcionando uma experiência cultural intensa, cheia de energia positiva e com estrutura de excelência para o público.',
-      category: EventCategory.FESTIVAL,
-      bannerUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&q=80',
-      locationName: 'Concha Acústica do Teatro Castro Alves',
-      street: 'Praça Dois de Julho',
-      number: 'S/N',
-      neighborhood: 'Campo Grande',
-      city: 'Salvador, BA',
-      eventDate: getFutureDate(65, 17, 0),
-      endDate: getFutureDate(66, 1, 0),
-      isAdult: false,
-      sectors: [
-        { name: 'Plateia Arquibancada', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 500 },
-        { name: 'Camarote Front TCA', type: SectorType.GENERAL_ADMISSION, price: 210.0, capacity: 150 },
-      ],
-    },
-    {
-      title: 'Horror & Sci-Fi CineFest 2026',
-      description:
-        'O tradicional festival dedicado ao cinema de gênero desembarca no histórico Cine Petra Belas Artes para noites eletrizantes de horror psicológico, ficção científica cult e maratonas noitão madrugada adentro. Com debates com diretores, exibição de cópias restauradas em altíssima definição e experiências imersivas no lobby, esta edição será inesquecível para todos os amantes da sétima arte.',
-      category: EventCategory.FESTIVAL,
-      bannerUrl: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200&q=80',
-      locationName: 'Cine Petra Belas Artes',
-      street: 'Rua da Consolação',
-      number: '2423',
-      neighborhood: 'Consolação',
-      city: 'São Paulo, SP',
-      eventDate: getFutureDate(21, 18, 30),
-      endDate: getFutureDate(22, 2, 30),
-      isAdult: true,
-      sectors: [
-        { name: 'Passaporte Festival Completo', type: SectorType.GENERAL_ADMISSION, price: 130.0, capacity: 180 },
-        {
-          name: 'Poltronas VIP Sala 1',
-          type: SectorType.NUMBERED_SEATS,
-          price: 65.0,
-          capacity: 24,
-          rows: ['A', 'B', 'C'],
-          seatsPerRow: 8,
-        },
-      ],
-    },
-
-    // --- TEATRO ---
     {
       title: 'O Fantasma da Ópera: O Musical',
       description:
@@ -404,8 +195,7 @@ async function main() {
       number: '411',
       neighborhood: 'Bela Vista',
       city: 'São Paulo, SP',
-      eventDate: getFutureDate(30, 20, 0),
-      endDate: getFutureDate(30, 22, 30),
+      ...getTodayOpenEvent(1.5, 1, 3.5), // Portões abertos há 1h30, peça em 1h
       isAdult: false,
       sectors: [
         {
@@ -435,6 +225,68 @@ async function main() {
       ],
     },
     {
+      title: 'Interestelar: Edição Especial IMAX 70mm',
+      description:
+        'A obra-prima cinematográfica de Christopher Nolan retorna com toda a sua magnitude na gigantesca tela do UCI IMAX do Bourbon Shopping Pompeia. Vivencie a épica jornada interestelar através de um buraco de minhoca com imagem cristalina em alta definição e som imersivo de 12 canais com a inconfundível trilha sonora de Hans Zimmer, oferecendo uma experiência imersiva sem igual.',
+      category: EventCategory.MOVIE,
+      bannerUrl: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80',
+      locationName: 'UCI IMAX Bourbon Shopping',
+      street: 'Rua Palestra Itália',
+      number: '500',
+      neighborhood: 'Perdizes',
+      city: 'São Paulo, SP',
+      ...getTodayOpenEvent(1, 0.5, 3.5), // Portões abertos há 1h, sessão em 30m
+      isAdult: false,
+      sectors: [
+        {
+          name: 'Poltronas VIP IMAX',
+          type: SectorType.NUMBERED_SEATS,
+          price: 72.0,
+          capacity: 24,
+          rows: ['A', 'B', 'C'],
+          seatsPerRow: 8,
+        },
+        {
+          name: 'Poltronas Centrais',
+          type: SectorType.NUMBERED_SEATS,
+          price: 54.0,
+          capacity: 16,
+          rows: ['A', 'B'],
+          seatsPerRow: 8,
+        },
+      ],
+    },
+
+    // ==========================================
+    // --- EVENTOS FUTUROS (PRÓXIMOS DIAS E SEMANAS) ---
+    // ==========================================
+    {
+      title: 'Coldplay Tribute: A Sky Full of Stars Tour',
+      description:
+        'A maior e mais espetacular homenagem ao Coldplay de toda a América Latina desembarca no Allianz Parque para uma apresentação monumental. O espetáculo traz uma réplica fiel dos shows de estádio da banda britânica, com pulseiras de LED sincronizadas distribuídas ao público, show pirotécnico inesquecível, lasers multicoloridos e um repertório com todos os grandes sucessos da carreira.',
+      category: EventCategory.SHOW,
+      bannerUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1200&q=80',
+      locationName: 'Allianz Parque',
+      street: 'Avenida Francisco Matarazzo',
+      number: '1705',
+      neighborhood: 'Água Branca',
+      city: 'São Paulo, SP',
+      ...getFutureDate(1, 21, 0, 3.5, 2), // Amanhã
+      isAdult: false,
+      sectors: [
+        { name: 'Pista Comum', type: SectorType.GENERAL_ADMISSION, price: 160.0, capacity: 500 },
+        { name: 'Pista Premium', type: SectorType.GENERAL_ADMISSION, price: 320.0, capacity: 150 },
+        {
+          name: 'Cadeira Inferior Numerada',
+          type: SectorType.NUMBERED_SEATS,
+          price: 280.0,
+          capacity: 32,
+          rows: ['A', 'B', 'C', 'D'],
+          seatsPerRow: 8,
+        },
+      ],
+    },
+    {
       title: 'O Auto da Compadecida: A Peça Clássica',
       description:
         'A consagrada obra-prima de Ariano Suassuna ganha nova e emocionante montagem no palco principal do Grande Teatro do Palácio das Artes em Belo Horizonte. As hilariantes peripécias de João Grilo e Chicó no sertão paraibano ganham vida com elenco estelar, banda regional executando trilha sonora ao vivo e uma cenografia primorosa que homenageia a rica cultura e poesia popular nordestina.',
@@ -445,8 +297,7 @@ async function main() {
       number: '1537',
       neighborhood: 'Centro',
       city: 'Belo Horizonte, MG',
-      eventDate: getFutureDate(12, 19, 0),
-      endDate: getFutureDate(12, 21, 30),
+      ...getFutureDate(2, 19, 0, 2.5, 1), // Em 2 dias
       isAdult: false,
       sectors: [
         {
@@ -468,6 +319,64 @@ async function main() {
       ],
     },
     {
+      title: 'Orquestra Sinfônica & Clássicos do Rock',
+      description:
+        'Uma fusão arrebatadora entre a sofisticação da música erudita e a energia visceral do rock and roll no imponente Theatro Municipal do Rio de Janeiro. Sob a regência de maestros renomados, mais de 60 músicos de orquestra executam arranjos sinfônicos inéditos para lendas como Queen, Pink Floyd, Led Zeppelin, Metallica e Deep Purple, criando uma atmosfera acústica emocionante e grandiosa.',
+      category: EventCategory.SHOW,
+      bannerUrl: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=1200&q=80',
+      locationName: 'Theatro Municipal do Rio de Janeiro',
+      street: 'Praça Floriano',
+      number: 'S/N',
+      neighborhood: 'Centro',
+      city: 'Rio de Janeiro, RJ',
+      ...getFutureDate(3, 19, 30, 3, 1), // Em 3 dias
+      isAdult: false,
+      sectors: [
+        {
+          name: 'Plateia Nobre Numerada',
+          type: SectorType.NUMBERED_SEATS,
+          price: 190.0,
+          capacity: 24,
+          rows: ['A', 'B', 'C'],
+          seatsPerRow: 8,
+        },
+        {
+          name: 'Balcão Nobre Numerado',
+          type: SectorType.NUMBERED_SEATS,
+          price: 140.0,
+          capacity: 20,
+          rows: ['A', 'B'],
+          seatsPerRow: 10,
+        },
+        { name: 'Galeria Superior', type: SectorType.GENERAL_ADMISSION, price: 80.0, capacity: 150 },
+      ],
+    },
+    {
+      title: 'Aurora Winter Lights & Music Festival',
+      description:
+        'Uma experiência multissensorial deslumbrante que transforma a arquitetura icônica da Ópera de Arame em uma instalação viva de arte e som. O festival une esculturas lumínicas futuristas, projeções holográficas sobre as águas do lago e apresentações ao vivo de indie folk, ambient e synth-pop, criando uma atmosfera mágica e imersiva sem precedentes na cena cultural de Curitiba.',
+      category: EventCategory.FESTIVAL,
+      bannerUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80',
+      locationName: 'Ópera de Arame',
+      street: 'Rua João Gava',
+      number: '920',
+      neighborhood: 'Abranches',
+      city: 'Curitiba, PR',
+      ...getFutureDate(4, 18, 0, 8, 1), // Em 4 dias
+      isAdult: false,
+      sectors: [
+        { name: 'Entrada Geral Parque + Palco', type: SectorType.GENERAL_ADMISSION, price: 110.0, capacity: 350 },
+        {
+          name: 'Camarote Panorâmico Numerado',
+          type: SectorType.NUMBERED_SEATS,
+          price: 220.0,
+          capacity: 16,
+          rows: ['A', 'B'],
+          seatsPerRow: 8,
+        },
+      ],
+    },
+    {
       title: 'Stand-up Comedy Night: Risos Sem Limites',
       description:
         'Uma noite inesquecível de gargalhadas garantidas no tradicional palco do Teatro Gazeta, no coração da Avenida Paulista. Quatro dos maiores comediantes da atualidade apresentam textos 100% inéditos, piadas ácidas, improvisos hilários e observações cotidianas afiadas em um espetáculo descontraído e dinâmico, recomendado para maiores de 18 anos que buscam diversão de alto nível.',
@@ -478,8 +387,7 @@ async function main() {
       number: '900',
       neighborhood: 'Bela Vista',
       city: 'São Paulo, SP',
-      eventDate: getFutureDate(6, 20, 30),
-      endDate: getFutureDate(6, 23, 0),
+      ...getFutureDate(5, 20, 30, 2.5, 1), // Em 5 dias
       isAdult: true,
       sectors: [
         {
@@ -493,35 +401,25 @@ async function main() {
         { name: 'Plateia Geral', type: SectorType.GENERAL_ADMISSION, price: 60.0, capacity: 200 },
       ],
     },
-
-    // --- CINEMA ---
     {
-      title: 'Interestelar: Edição Especial IMAX 70mm',
+      title: 'Noite do Jazz & Blues na Lapa',
       description:
-        'A obra-prima cinematográfica de Christopher Nolan retorna com toda a sua magnitude na gigantesca tela do UCI IMAX do Bourbon Shopping Pompeia. Vivencie a épica jornada interestelar através de um buraco de minhoca com imagem cristalina em alta definição e som imersivo de 12 canais com a inconfundível trilha sonora de Hans Zimmer, oferecendo uma experiência imersiva sem igual.',
-      category: EventCategory.MOVIE,
-      bannerUrl: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&q=80',
-      locationName: 'UCI IMAX Bourbon Shopping',
-      street: 'Rua Palestra Itália',
-      number: '500',
-      neighborhood: 'Perdizes',
-      city: 'São Paulo, SP',
-      eventDate: getFutureDate(5, 21, 0),
-      endDate: getFutureDate(5, 23, 50),
-      isAdult: false,
+        'Uma celebração intimista e vibrante das raízes do Jazz tradicional e Blues clássico sob a mítica lona do Circo Voador, no coração boêmio da Lapa carioca. O evento reúne virtuosos instrumentistas, cantores convidados, cartas de coquetelaria autoral premiada e mesas bistrô para uma noite sofisticada voltada ao público apreciador de boa música e gastronomia noturna refinada.',
+      category: EventCategory.SHOW,
+      bannerUrl: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=1200&q=80',
+      locationName: 'Circo Voador',
+      street: 'Rua dos Arcos',
+      number: 'S/N',
+      neighborhood: 'Lapa',
+      city: 'Rio de Janeiro, RJ',
+      ...getFutureDate(6, 21, 30, 3.5, 1), // Em 6 dias
+      isAdult: true,
       sectors: [
+        { name: 'Ingresso Geral Lote 1', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 250 },
         {
-          name: 'Poltronas VIP IMAX',
+          name: 'Mesa Bistrô Numerada',
           type: SectorType.NUMBERED_SEATS,
-          price: 72.0,
-          capacity: 24,
-          rows: ['A', 'B', 'C'],
-          seatsPerRow: 8,
-        },
-        {
-          name: 'Poltronas Centrais',
-          type: SectorType.NUMBERED_SEATS,
-          price: 54.0,
+          price: 180.0,
           capacity: 16,
           rows: ['A', 'B'],
           seatsPerRow: 8,
@@ -539,12 +437,36 @@ async function main() {
       number: 'S/N',
       neighborhood: 'Asa Norte',
       city: 'Brasília, DF',
-      eventDate: getFutureDate(10, 20, 30),
-      endDate: getFutureDate(10, 22, 45),
+      ...getFutureDate(7, 20, 30, 2.25, 1), // Em 7 dias
       isAdult: false,
       sectors: [
         { name: 'Vaga Carro (Até 4 Pessoas)', type: SectorType.GENERAL_ADMISSION, price: 65.0, capacity: 120 },
         { name: 'Vaga Front Row Carro VIP', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 30 },
+      ],
+    },
+    {
+      title: 'Horror & Sci-Fi CineFest 2026',
+      description:
+        'O tradicional festival dedicado ao cinema de gênero desembarca no histórico Cine Petra Belas Artes para noites eletrizantes de horror psicológico, ficção científica cult e maratonas noitão madrugada adentro. Com debates com diretores, exibição de cópias restauradas em altíssima definição e experiências imersivas no lobby, esta edição será inesquecível para todos os amantes da sétima arte.',
+      category: EventCategory.FESTIVAL,
+      bannerUrl: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200&q=80',
+      locationName: 'Cine Petra Belas Artes',
+      street: 'Rua da Consolação',
+      number: '2423',
+      neighborhood: 'Consolação',
+      city: 'São Paulo, SP',
+      ...getFutureDate(8, 18, 30, 8, 1), // Em 8 dias
+      isAdult: true,
+      sectors: [
+        { name: 'Passaporte Festival Completo', type: SectorType.GENERAL_ADMISSION, price: 130.0, capacity: 180 },
+        {
+          name: 'Poltronas VIP Sala 1',
+          type: SectorType.NUMBERED_SEATS,
+          price: 65.0,
+          capacity: 24,
+          rows: ['A', 'B', 'C'],
+          seatsPerRow: 8,
+        },
       ],
     },
     {
@@ -558,8 +480,7 @@ async function main() {
       number: '88',
       neighborhood: 'Botafogo',
       city: 'Rio de Janeiro, RJ',
-      eventDate: getFutureDate(40, 14, 0),
-      endDate: getFutureDate(41, 2, 0),
+      ...getFutureDate(10, 14, 0, 12, 1), // Em 10 dias
       isAdult: false,
       sectors: [
         {
@@ -580,14 +501,83 @@ async function main() {
         },
       ],
     },
+    {
+      title: 'Sunset Electronic Beats & DJ Sets',
+      description:
+        'Mais de dez horas ininterruptas de celebração ao som do melhor do Melodic Techno, Progressive House e Deep House no cenário paradisíaco da Pedreira Paulo Leminski. Com cenografia monumental inspirada nos maiores festivais europeus, DJs de renome internacional, open bar premium no setor VIP e praça gastronômica noturna, este é o evento eletrônico definitivo da temporada.',
+      category: EventCategory.SHOW,
+      bannerUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80',
+      locationName: 'Pedreira Paulo Leminski',
+      street: 'Rua João Gava',
+      number: '970',
+      neighborhood: 'Abranches',
+      city: 'Curitiba, PR',
+      ...getFutureDate(12, 16, 0, 10, 1), // Em 12 dias
+      isAdult: true,
+      sectors: [
+        { name: 'Pista Sunset', type: SectorType.GENERAL_ADMISSION, price: 140.0, capacity: 400 },
+        { name: 'Backstage VIP Open Bar', type: SectorType.GENERAL_ADMISSION, price: 380.0, capacity: 100 },
+      ],
+    },
+    {
+      title: 'Bahia Sonora: Festival de Ritmos Brasileiros',
+      description:
+        'Uma celebração contagiante da rica herança musical afro-brasileira no palco sagrado da Concha Acústica do Teatro Castro Alves em Salvador. O festival une apresentações consagradas de samba-reggae, axé raiz, MPB contemporânea e blocos afro tradicionais, proporcionando uma experiência cultural intensa, cheia de energia positiva e com estrutura de excelência para o público.',
+      category: EventCategory.FESTIVAL,
+      bannerUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&q=80',
+      locationName: 'Concha Acústica do Teatro Castro Alves',
+      street: 'Praça Dois de Julho',
+      number: 'S/N',
+      neighborhood: 'Campo Grande',
+      city: 'Salvador, BA',
+      ...getFutureDate(15, 17, 0, 8, 1), // Em 15 dias
+      isAdult: false,
+      sectors: [
+        { name: 'Plateia Arquibancada', type: SectorType.GENERAL_ADMISSION, price: 95.0, capacity: 500 },
+        { name: 'Camarote Front TCA', type: SectorType.GENERAL_ADMISSION, price: 210.0, capacity: 150 },
+      ],
+    },
+    {
+      title: 'Nando Reis & Os Paralamas do Sucesso',
+      description:
+        'Dois dos maiores ícones da história do pop rock brasileiro dividem o palco do lendário Auditório Araújo Vianna em Porto Alegre para um show histórico e emocionante. Uma noite repleta de poesia, guitarras marcantes e refrões inesquecíveis que atravessaram gerações, contando com produção técnica impecável e setores planejados para total conforto e visão panorâmica da plateia.',
+      category: EventCategory.SHOW,
+      bannerUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1200&q=80',
+      locationName: 'Auditório Araújo Vianna',
+      street: 'Avenida Osvaldo Aranha',
+      number: '685',
+      neighborhood: 'Bom Fim',
+      city: 'Porto Alegre, RS',
+      ...getFutureDate(20, 21, 0, 3, 1), // Em 20 dias
+      isAdult: false,
+      sectors: [
+        {
+          name: 'Plateia Baixa Central',
+          type: SectorType.NUMBERED_SEATS,
+          price: 180.0,
+          capacity: 24,
+          rows: ['A', 'B', 'C'],
+          seatsPerRow: 8,
+        },
+        {
+          name: 'Plateia Alta Lateral',
+          type: SectorType.NUMBERED_SEATS,
+          price: 130.0,
+          capacity: 16,
+          rows: ['A', 'B'],
+          seatsPerRow: 8,
+        },
+        { name: 'Pista Lateral', type: SectorType.GENERAL_ADMISSION, price: 90.0, capacity: 200 },
+      ],
+    },
   ];
 
   console.log(`Criando ${eventsCatalog.length} eventos em locais reais e icônicos...`);
 
   // Mapas para armazenar referências criadas para relacionamentos de pedidos de teste
-  const createdEvents: any[] = [];
-  const createdSectorsByEvent: Record<string, any[]> = {};
-  const createdSeatsBySector: Record<string, any[]> = {};
+  const createdEvents: Event[] = [];
+  const createdSectorsByEvent: Record<string, Sector[]> = {};
+  const createdSeatsBySector: Record<string, Seat[]> = {};
 
   for (const eventDef of eventsCatalog) {
     const event = await prisma.event.create({
@@ -663,64 +653,67 @@ async function main() {
   const indieSectors = createdSectorsByEvent[indieEvent.id];
   const indiePista = indieSectors.find((s) => s.type === SectorType.GENERAL_ADMISSION);
   const indieVip = indieSectors.find((s) => s.type === SectorType.NUMBERED_SEATS);
-  const indieVipSeats = createdSeatsBySector[indieVip.id];
 
-  if (indieVipSeats && indieVipSeats.length > 0) {
-    const seatA1 = indieVipSeats[0];
-    const seatA2 = indieVipSeats[1];
+  if (indieVip) {
+    const indieVipSeats = createdSeatsBySector[indieVip.id];
 
-    // Marcar A1 como SOLD
-    await prisma.seat.update({
-      where: { id: seatA1.id },
-      data: { status: SeatStatus.SOLD },
-    });
+    if (indieVipSeats && indieVipSeats.length > 0) {
+      const seatA1 = indieVipSeats[0];
+      const seatA2 = indieVipSeats[1];
 
-    // Marcar A2 como RESERVED temporariamente para demonstrar visual no mapa
-    await prisma.seat.update({
-      where: { id: seatA2.id },
-      data: {
-        status: SeatStatus.RESERVED,
-        reservedById: cliente2Id,
-        reservedUntil: new Date(Date.now() + 10 * 60 * 1000), // 10 minutos TTL
-      },
-    });
+      // Marcar A1 como SOLD
+      await prisma.seat.update({
+        where: { id: seatA1.id },
+        data: { status: SeatStatus.SOLD },
+      });
 
-    // Pedido Aprovado de Lucas Silva (cliente1)
-    const orderLucas = await prisma.order.create({
-      data: {
-        customerId: cliente1Id,
-        totalAmount: indieVip.price,
-        status: 'APPROVED',
-        paymentMethod: 'SIMULATED_CREDIT_CARD',
-      },
-    });
+      // Marcar A2 como RESERVED temporariamente para demonstrar visual no mapa
+      await prisma.seat.update({
+        where: { id: seatA2.id },
+        data: {
+          status: SeatStatus.RESERVED,
+          reservedById: cliente2Id,
+          reservedUntil: new Date(Date.now() + 10 * 60 * 1000), // 10 minutos TTL
+        },
+      });
 
-    // Ingresso do Lucas
-    const ticketCodeLucas = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-    const shareTokenLucas = crypto.randomUUID();
-    const timestampLucas = Math.floor(Date.now() / 1000);
-    const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeLucas, indieEvent.id, timestampLucas);
+      // Pedido Aprovado de Lucas Silva (cliente1)
+      const orderLucas = await prisma.order.create({
+        data: {
+          customerId: cliente1Id,
+          totalAmount: indieVip.price,
+          status: 'APPROVED',
+          paymentMethod: 'SIMULATED_CREDIT_CARD',
+        },
+      });
 
-    await prisma.ticket.create({
-      data: {
-        orderId: orderLucas.id,
-        eventId: indieEvent.id,
-        sectorId: indieVip.id,
-        seatId: seatA1.id,
-        customerId: cliente1Id,
-        ticketCode: ticketCodeLucas,
-        qrPayload,
-        secureToken,
-        shareToken: shareTokenLucas,
-        status: 'ACTIVE',
-      },
-    });
+      // Ingresso do Lucas
+      const ticketCodeLucas = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+      const shareTokenLucas = crypto.randomUUID();
+      const timestampLucas = Math.floor(Date.now() / 1000);
+      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeLucas, indieEvent.id, timestampLucas);
 
-    // Atualizar capacidade disponível do setor VIP
-    await prisma.sector.update({
-      where: { id: indieVip.id },
-      data: { availableCapacity: { decrement: 1 } },
-    });
+      await prisma.ticket.create({
+        data: {
+          orderId: orderLucas.id,
+          eventId: indieEvent.id,
+          sectorId: indieVip.id,
+          seatId: seatA1.id,
+          customerId: cliente1Id,
+          ticketCode: ticketCodeLucas,
+          qrPayload,
+          secureToken,
+          shareToken: shareTokenLucas,
+          status: 'ACTIVE',
+        },
+      });
+
+      // Atualizar capacidade disponível do setor VIP
+      await prisma.sector.update({
+        where: { id: indieVip.id },
+        data: { availableCapacity: { decrement: 1 } },
+      });
+    }
   }
 
   if (indiePista) {
@@ -781,59 +774,159 @@ async function main() {
   const imaxEvent = createdEvents.find((e) => e.title.includes('Interestelar'));
   if (imaxEvent) {
     const imaxSectors = createdSectorsByEvent[imaxEvent.id];
-    const imaxVipSector = imaxSectors.find((s) => s.name.includes('VIP'));
-    const imaxSeats = createdSeatsBySector[imaxVipSector?.id];
+    const imaxVipSector = imaxSectors?.find((s) => s.name.includes('VIP'));
 
-    if (imaxVipSector && imaxSeats && imaxSeats.length > 3) {
-      const seatB4 = imaxSeats[3];
-      await prisma.seat.update({
-        where: { id: seatB4.id },
-        data: { status: SeatStatus.SOLD },
-      });
+    if (imaxVipSector) {
+      const imaxSeats = createdSeatsBySector[imaxVipSector.id];
 
-      const orderImax = await prisma.order.create({
+      if (imaxSeats && imaxSeats.length > 3) {
+        const seatB4 = imaxSeats[3];
+        await prisma.seat.update({
+          where: { id: seatB4.id },
+          data: { status: SeatStatus.SOLD },
+        });
+
+        const orderImax = await prisma.order.create({
+          data: {
+            customerId: cliente1Id,
+            totalAmount: imaxVipSector.price,
+            status: 'APPROVED',
+            paymentMethod: 'SIMULATED_CREDIT_CARD',
+          },
+        });
+
+        const ticketCodeImax = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+        const shareTokenImax = crypto.randomUUID();
+        const timestampImax = Math.floor(Date.now() / 1000);
+        const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeImax, imaxEvent.id, timestampImax);
+
+        await prisma.ticket.create({
+          data: {
+            orderId: orderImax.id,
+            eventId: imaxEvent.id,
+            sectorId: imaxVipSector.id,
+            seatId: seatB4.id,
+            customerId: cliente1Id,
+            ticketCode: ticketCodeImax,
+            qrPayload,
+            secureToken,
+            shareToken: shareTokenImax,
+            status: 'ACTIVE',
+          },
+        });
+
+        await prisma.sector.update({
+          where: { id: imaxVipSector.id },
+          data: { availableCapacity: { decrement: 1 } },
+        });
+      }
+    }
+  }
+
+  // Evento 3 (O Fantasma da Ópera - Teatro Renault): Camila compra 1 assento VIP (A1)
+  const theaterEvent = createdEvents.find((e) => e.title.includes('Fantasma da Ópera'));
+  if (theaterEvent) {
+    const theaterSectors = createdSectorsByEvent[theaterEvent.id];
+    const theaterVipSector = theaterSectors?.find((s) => s.name.includes('VIP'));
+
+    if (theaterVipSector) {
+      const theaterSeats = createdSeatsBySector[theaterVipSector.id];
+      if (theaterSeats && theaterSeats.length > 0) {
+        const seatA1 = theaterSeats[0];
+        await prisma.seat.update({
+          where: { id: seatA1.id },
+          data: { status: SeatStatus.SOLD },
+        });
+
+        const orderTheater = await prisma.order.create({
+          data: {
+            customerId: cliente2Id,
+            totalAmount: theaterVipSector.price,
+            status: 'APPROVED',
+            paymentMethod: 'SIMULATED_CREDIT_CARD',
+          },
+        });
+
+        const ticketCodeTheater = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+        const shareTokenTheater = crypto.randomUUID();
+        const timestampTheater = Math.floor(Date.now() / 1000);
+        const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeTheater, theaterEvent.id, timestampTheater);
+
+        await prisma.ticket.create({
+          data: {
+            orderId: orderTheater.id,
+            eventId: theaterEvent.id,
+            sectorId: theaterVipSector.id,
+            seatId: seatA1.id,
+            customerId: cliente2Id,
+            ticketCode: ticketCodeTheater,
+            qrPayload,
+            secureToken,
+            shareToken: shareTokenTheater,
+            status: 'ACTIVE',
+          },
+        });
+
+        await prisma.sector.update({
+          where: { id: theaterVipSector.id },
+          data: { availableCapacity: { decrement: 1 } },
+        });
+      }
+    }
+  }
+
+  // Evento 4 (Festival Gastronômico - Memorial da América Latina): Lucas compra 1 Passe Geral
+  const festEvent = createdEvents.find((e) => e.title.includes('Gastronômico'));
+  if (festEvent) {
+    const festSectors = createdSectorsByEvent[festEvent.id];
+    const festPista = festSectors?.find((s) => s.type === SectorType.GENERAL_ADMISSION);
+
+    if (festPista) {
+      const orderFest = await prisma.order.create({
         data: {
           customerId: cliente1Id,
-          totalAmount: imaxVipSector.price,
+          totalAmount: festPista.price,
           status: 'APPROVED',
-          paymentMethod: 'SIMULATED_CREDIT_CARD',
+          paymentMethod: 'PIX',
         },
       });
 
-      const ticketCodeImax = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-      const shareTokenImax = crypto.randomUUID();
-      const timestampImax = Math.floor(Date.now() / 1000);
-      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeImax, imaxEvent.id, timestampImax);
+      const ticketCodeFest = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+      const shareTokenFest = crypto.randomUUID();
+      const timestampFest = Math.floor(Date.now() / 1000);
+      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeFest, festEvent.id, timestampFest);
 
       await prisma.ticket.create({
         data: {
-          orderId: orderImax.id,
-          eventId: imaxEvent.id,
-          sectorId: imaxVipSector.id,
-          seatId: seatB4.id,
+          orderId: orderFest.id,
+          eventId: festEvent.id,
+          sectorId: festPista.id,
           customerId: cliente1Id,
-          ticketCode: ticketCodeImax,
+          ticketCode: ticketCodeFest,
           qrPayload,
           secureToken,
-          shareToken: shareTokenImax,
+          shareToken: shareTokenFest,
           status: 'ACTIVE',
         },
       });
 
       await prisma.sector.update({
-        where: { id: imaxVipSector.id },
+        where: { id: festPista.id },
         data: { availableCapacity: { decrement: 1 } },
       });
     }
   }
 
-  console.log('Carga com locais 100% reais e famosos finalizada com sucesso!');
-  console.log(`Estatísticas:`);
-  console.log(`   - Total de Eventos: ${eventsCatalog.length}`);
-  console.log(`   - Locais Reais cadastrados:`);
-  eventsCatalog.forEach((e) => {
-    console.log(`     ${e.title} -> ${e.locationName} (${e.city})`);
-  });
+  console.log('✅ Seed executada com sucesso!');
+  console.log(`📊 Estatísticas da Carga:`);
+  console.log(`   - Total de Eventos Cadastrados: ${eventsCatalog.length}`);
+  console.log(`   - Eventos de HOJE com Portões ABERTOS (Prontos para Validação na Portaria):`);
+  console.log(`     * Festival Indie Rock Verzel 2026 (Show) -> Ingressos: ELT VIP (Lucas) & Pista (Camila)`);
+  console.log(`     * Festival Gastronômico & Cervejeiro (Festival) -> Ingresso: Passe Geral (Lucas)`);
+  console.log(`     * O Fantasma da Ópera: O Musical (Teatro) -> Ingresso: Plateia VIP (Camila)`);
+  console.log(`     * Interestelar: Edição Especial IMAX (Cinema) -> Ingresso: VIP IMAX (Lucas)`);
+  console.log(`   - Usuário de Portaria: portaria@verzel.com.br (Senha: ${defaultPassword})`);
+  console.log(`   - Todos os ${eventsCatalog.length} eventos foram vinculados à conta portaria@verzel.com.br!`);
 }
 
 main()

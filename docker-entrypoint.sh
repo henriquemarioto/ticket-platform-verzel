@@ -5,7 +5,8 @@ echo "=> [Entrypoint] Inicializando container Ticket Platform..."
 
 # Executa migrações do Prisma se DATABASE_URL estiver configurada
 if [ -n "$DATABASE_URL" ]; then
-  echo "=> [Entrypoint] DATABASE_URL detectada. Executando migrações do banco de dados..."
+  echo "=> [Entrypoint] DATABASE_URL detectada. Sincronizando Prisma e banco de dados..."
+  npx prisma generate
   npx prisma migrate deploy || npx prisma db push
   
   if [ "$APP_ENV" = "production" ] || { [ "$NODE_ENV" = "production" ] && [ "$APP_ENV" != "development" ] && [ "$APP_ENV" != "local" ]; }; then

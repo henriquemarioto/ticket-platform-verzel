@@ -21,13 +21,26 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: ticket-platform-app
     restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./prisma:/app/prisma
+      - ./postcss.config.mjs:/app/postcss.config.mjs
+      - ./next.config.ts:/app/next.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./package.json:/app/package.json
+      - /app/node_modules
+      - /app/.next
     depends_on:
       postgres:
         condition: service_healthy
