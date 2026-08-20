@@ -1,7 +1,17 @@
 import { PrismaClient, Role, EventCategory, EventStatus, SectorType, SeatStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
+
+const prisma = new PrismaClient({
+  datasources: connectionString
+    ? {
+        db: {
+          url: connectionString,
+        },
+      }
+    : undefined,
+});
 
 async function main() {
   const isProduction =
@@ -66,17 +76,19 @@ async function main() {
     users[user.email] = record;
   }
 
-  // Limpeza prévia de registros transacionais de eventos anteriores para garantir idempotência
-  console.log('Limpando dados transacionais e eventos prévios...');
-  await prisma.ticketValidationLog.deleteMany({});
-  await prisma.eventGatekeeper.deleteMany({});
-  await prisma.ticket.deleteMany({});
-  await prisma.order.deleteMany({});
-  await prisma.reservationItem.deleteMany({});
-  await prisma.reservation.deleteMany({});
-  await prisma.seat.deleteMany({});
-  await prisma.sector.deleteMany({});
-  await prisma.event.deleteMany({});
+  // Limpeza prévia de registros transacionais de eventos anteriores para garantir idempotência em lote
+  console.log('Limpando dados transacionais e eventos prévios em lote transacional...');
+  await prisma.$transaction([
+    prisma.ticketValidationLog.deleteMany({}),
+    prisma.eventGatekeeper.deleteMany({}),
+    prisma.ticket.deleteMany({}),
+    prisma.order.deleteMany({}),
+    prisma.reservationItem.deleteMany({}),
+    prisma.reservation.deleteMany({}),
+    prisma.seat.deleteMany({}),
+    prisma.sector.deleteMany({}),
+    prisma.event.deleteMany({}),
+  ]);
 
   const organizerId = users['organizador@verzel.com.br'].id;
   const portariaId = users['portaria@verzel.com.br'].id;
@@ -611,19 +623,30 @@ async function main() {
         },
       });
 
-      // Criar assentos se for setor numerado
+      // Criar assentos em lote se for setor numerado
       if (sectorDef.type === SectorType.NUMBERED_SEATS && sectorDef.rows && sectorDef.seatsPerRow) {
+        const seatsData: {
+          sectorId: string;
+          row: string;
+          number: number;
+          status: SeatStatus;
+        }[] = [];
+
         for (const row of sectorDef.rows) {
           for (let number = 1; number <= sectorDef.seatsPerRow; number++) {
-            await prisma.seat.create({
-              data: {
-                sectorId: sector.id,
-                row: row.trim().toUpperCase(),
-                number,
-                status: SeatStatus.AVAILABLE,
-              },
+            seatsData.push({
+              sectorId: sector.id,
+              row: row.trim().toUpperCase(),
+              number,
+              status: SeatStatus.AVAILABLE,
             });
           }
+        }
+
+        if (seatsData.length > 0) {
+          await prisma.seat.createMany({
+            data: seatsData,
+          });
         }
       }
     }
