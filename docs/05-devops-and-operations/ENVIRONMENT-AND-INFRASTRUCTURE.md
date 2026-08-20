@@ -184,6 +184,7 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV BUILD_STANDALONE=true
 RUN npx prisma generate
 RUN npm run build
 
@@ -197,6 +198,11 @@ COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
 CMD ["node", "server.js"]
 ```
+
+### 2.1 Ativação Condicional do Modo Standalone (`BUILD_STANDALONE`)
+
+- **Vercel (Serverless)**: Não utiliza o modo standalone (`output: undefined`). O empacotador da Vercel (NFT - Node File Trace) gerencia automaticamente as dependências e o bundling das Serverless Functions. O uso de `output: "standalone"` na Vercel causa o erro de arquivo ausente `.next/next-server.js.nft.json`.
+- **Docker / Containers**: Define `ENV BUILD_STANDALONE=true` no stage `builder` do Dockerfile para que o Next.js gere o diretório `.next/standalone`, produzindo imagens enxutas contendo apenas as dependências e arquivos mínimos para execução com Node.js (`server.js`).
 
 ---
 

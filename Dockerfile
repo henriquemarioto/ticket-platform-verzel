@@ -22,6 +22,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV BUILD_STANDALONE=true
 
 RUN npx prisma generate
 RUN npm run build
