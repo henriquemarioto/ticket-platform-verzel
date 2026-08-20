@@ -1,7 +1,5 @@
-import { PrismaClient, Role, EventCategory, EventStatus, SectorType, SeatStatus, Event, Sector, Seat } from '@prisma/client';
+import { PrismaClient, Role, EventCategory, EventStatus, SectorType, SeatStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { generateTicketQRPayload } from '../src/lib/crypto';
 
 const prisma = new PrismaClient();
 
@@ -81,8 +79,6 @@ async function main() {
   await prisma.event.deleteMany({});
 
   const organizerId = users['organizador@verzel.com.br'].id;
-  const cliente1Id = users['cliente1@verzel.com.br'].id;
-  const cliente2Id = users['cliente2@verzel.com.br'].id;
   const portariaId = users['portaria@verzel.com.br'].id;
 
   // 2. Funções Auxiliares para Datas e Horários Dinâmicos
@@ -574,11 +570,6 @@ async function main() {
 
   console.log(`Criando ${eventsCatalog.length} eventos em locais reais e icônicos...`);
 
-  // Mapas para armazenar referências criadas para relacionamentos de pedidos de teste
-  const createdEvents: Event[] = [];
-  const createdSectorsByEvent: Record<string, Sector[]> = {};
-  const createdSeatsBySector: Record<string, Seat[]> = {};
-
   for (const eventDef of eventsCatalog) {
     const event = await prisma.event.create({
       data: {
@@ -600,9 +591,6 @@ async function main() {
       },
     });
 
-    createdEvents.push(event);
-    createdSectorsByEvent[event.id] = [];
-
     // Vincular conta de portaria de teste ao evento
     await prisma.eventGatekeeper.create({
       data: {
@@ -623,14 +611,11 @@ async function main() {
         },
       });
 
-      createdSectorsByEvent[event.id].push(sector);
-      createdSeatsBySector[sector.id] = [];
-
       // Criar assentos se for setor numerado
       if (sectorDef.type === SectorType.NUMBERED_SEATS && sectorDef.rows && sectorDef.seatsPerRow) {
         for (const row of sectorDef.rows) {
           for (let number = 1; number <= sectorDef.seatsPerRow; number++) {
-            const seat = await prisma.seat.create({
+            await prisma.seat.create({
               data: {
                 sectorId: sector.id,
                 row: row.trim().toUpperCase(),
@@ -638,294 +623,21 @@ async function main() {
                 status: SeatStatus.AVAILABLE,
               },
             });
-            createdSeatsBySector[sector.id].push(seat);
           }
         }
       }
     }
   }
 
-  // 3. Pré-popular Pedidos, Ingressos e Validações de Demonstração
-  console.log('Gerando pedidos e ingressos de demonstração para os clientes...');
-
-  // Evento 1 (Festival Indie Rock no Espaço Unimed): Lucas compra 1 ingresso VIP numerado (A1) e Camila compra 2 ingressos de Pista Geral
-  const indieEvent = createdEvents[0];
-  const indieSectors = createdSectorsByEvent[indieEvent.id];
-  const indiePista = indieSectors.find((s) => s.type === SectorType.GENERAL_ADMISSION);
-  const indieVip = indieSectors.find((s) => s.type === SectorType.NUMBERED_SEATS);
-
-  if (indieVip) {
-    const indieVipSeats = createdSeatsBySector[indieVip.id];
-
-    if (indieVipSeats && indieVipSeats.length > 0) {
-      const seatA1 = indieVipSeats[0];
-      const seatA2 = indieVipSeats[1];
-
-      // Marcar A1 como SOLD
-      await prisma.seat.update({
-        where: { id: seatA1.id },
-        data: { status: SeatStatus.SOLD },
-      });
-
-      // Marcar A2 como RESERVED temporariamente para demonstrar visual no mapa
-      await prisma.seat.update({
-        where: { id: seatA2.id },
-        data: {
-          status: SeatStatus.RESERVED,
-          reservedById: cliente2Id,
-          reservedUntil: new Date(Date.now() + 10 * 60 * 1000), // 10 minutos TTL
-        },
-      });
-
-      // Pedido Aprovado de Lucas Silva (cliente1)
-      const orderLucas = await prisma.order.create({
-        data: {
-          customerId: cliente1Id,
-          totalAmount: indieVip.price,
-          status: 'APPROVED',
-          paymentMethod: 'SIMULATED_CREDIT_CARD',
-        },
-      });
-
-      // Ingresso do Lucas
-      const ticketCodeLucas = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-      const shareTokenLucas = crypto.randomUUID();
-      const timestampLucas = Math.floor(Date.now() / 1000);
-      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeLucas, indieEvent.id, timestampLucas);
-
-      await prisma.ticket.create({
-        data: {
-          orderId: orderLucas.id,
-          eventId: indieEvent.id,
-          sectorId: indieVip.id,
-          seatId: seatA1.id,
-          customerId: cliente1Id,
-          ticketCode: ticketCodeLucas,
-          qrPayload,
-          secureToken,
-          shareToken: shareTokenLucas,
-          status: 'ACTIVE',
-        },
-      });
-
-      // Atualizar capacidade disponível do setor VIP
-      await prisma.sector.update({
-        where: { id: indieVip.id },
-        data: { availableCapacity: { decrement: 1 } },
-      });
-    }
-  }
-
-  if (indiePista) {
-    // Pedido de Camila Santos (cliente2) com 2 ingressos de Pista Geral
-    const orderCamila = await prisma.order.create({
-      data: {
-        customerId: cliente2Id,
-        totalAmount: indiePista.price * 2,
-        status: 'APPROVED',
-        paymentMethod: 'PIX',
-      },
-    });
-
-    for (let i = 1; i <= 2; i++) {
-      const ticketCode = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-      const shareToken = crypto.randomUUID();
-      const timestamp = Math.floor(Date.now() / 1000);
-      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCode, indieEvent.id, timestamp);
-
-      const ticket = await prisma.ticket.create({
-        data: {
-          orderId: orderCamila.id,
-          eventId: indieEvent.id,
-          sectorId: indiePista.id,
-          customerId: cliente2Id,
-          ticketCode,
-          qrPayload,
-          secureToken,
-          shareToken,
-          status: i === 1 ? 'USED' : 'ACTIVE', // 1 já validado na portaria, 1 ativo
-          usedAt: i === 1 ? new Date(Date.now() - 30 * 60 * 1000) : null,
-        },
-      });
-
-      // Se foi marcado como USED, cria o log de validação correspondente
-      if (i === 1) {
-        await prisma.ticketValidationLog.create({
-          data: {
-            ticketId: ticket.id,
-            gatekeeperId: portariaId,
-            result: 'VALID',
-            rawPayload: qrPayload,
-            message: 'Acesso Liberado com Sucesso',
-            validatedAt: new Date(Date.now() - 30 * 60 * 1000),
-          },
-        });
-      }
-    }
-
-    // Decrementar capacidade da pista
-    await prisma.sector.update({
-      where: { id: indiePista.id },
-      data: { availableCapacity: { decrement: 2 } },
-    });
-  }
-
-  // Evento Interestelar (UCI IMAX Bourbon Shopping): Lucas compra 1 assento VIP (B4)
-  const imaxEvent = createdEvents.find((e) => e.title.includes('Interestelar'));
-  if (imaxEvent) {
-    const imaxSectors = createdSectorsByEvent[imaxEvent.id];
-    const imaxVipSector = imaxSectors?.find((s) => s.name.includes('VIP'));
-
-    if (imaxVipSector) {
-      const imaxSeats = createdSeatsBySector[imaxVipSector.id];
-
-      if (imaxSeats && imaxSeats.length > 3) {
-        const seatB4 = imaxSeats[3];
-        await prisma.seat.update({
-          where: { id: seatB4.id },
-          data: { status: SeatStatus.SOLD },
-        });
-
-        const orderImax = await prisma.order.create({
-          data: {
-            customerId: cliente1Id,
-            totalAmount: imaxVipSector.price,
-            status: 'APPROVED',
-            paymentMethod: 'SIMULATED_CREDIT_CARD',
-          },
-        });
-
-        const ticketCodeImax = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-        const shareTokenImax = crypto.randomUUID();
-        const timestampImax = Math.floor(Date.now() / 1000);
-        const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeImax, imaxEvent.id, timestampImax);
-
-        await prisma.ticket.create({
-          data: {
-            orderId: orderImax.id,
-            eventId: imaxEvent.id,
-            sectorId: imaxVipSector.id,
-            seatId: seatB4.id,
-            customerId: cliente1Id,
-            ticketCode: ticketCodeImax,
-            qrPayload,
-            secureToken,
-            shareToken: shareTokenImax,
-            status: 'ACTIVE',
-          },
-        });
-
-        await prisma.sector.update({
-          where: { id: imaxVipSector.id },
-          data: { availableCapacity: { decrement: 1 } },
-        });
-      }
-    }
-  }
-
-  // Evento 3 (O Fantasma da Ópera - Teatro Renault): Camila compra 1 assento VIP (A1)
-  const theaterEvent = createdEvents.find((e) => e.title.includes('Fantasma da Ópera'));
-  if (theaterEvent) {
-    const theaterSectors = createdSectorsByEvent[theaterEvent.id];
-    const theaterVipSector = theaterSectors?.find((s) => s.name.includes('VIP'));
-
-    if (theaterVipSector) {
-      const theaterSeats = createdSeatsBySector[theaterVipSector.id];
-      if (theaterSeats && theaterSeats.length > 0) {
-        const seatA1 = theaterSeats[0];
-        await prisma.seat.update({
-          where: { id: seatA1.id },
-          data: { status: SeatStatus.SOLD },
-        });
-
-        const orderTheater = await prisma.order.create({
-          data: {
-            customerId: cliente2Id,
-            totalAmount: theaterVipSector.price,
-            status: 'APPROVED',
-            paymentMethod: 'SIMULATED_CREDIT_CARD',
-          },
-        });
-
-        const ticketCodeTheater = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-        const shareTokenTheater = crypto.randomUUID();
-        const timestampTheater = Math.floor(Date.now() / 1000);
-        const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeTheater, theaterEvent.id, timestampTheater);
-
-        await prisma.ticket.create({
-          data: {
-            orderId: orderTheater.id,
-            eventId: theaterEvent.id,
-            sectorId: theaterVipSector.id,
-            seatId: seatA1.id,
-            customerId: cliente2Id,
-            ticketCode: ticketCodeTheater,
-            qrPayload,
-            secureToken,
-            shareToken: shareTokenTheater,
-            status: 'ACTIVE',
-          },
-        });
-
-        await prisma.sector.update({
-          where: { id: theaterVipSector.id },
-          data: { availableCapacity: { decrement: 1 } },
-        });
-      }
-    }
-  }
-
-  // Evento 4 (Festival Gastronômico - Memorial da América Latina): Lucas compra 1 Passe Geral
-  const festEvent = createdEvents.find((e) => e.title.includes('Gastronômico'));
-  if (festEvent) {
-    const festSectors = createdSectorsByEvent[festEvent.id];
-    const festPista = festSectors?.find((s) => s.type === SectorType.GENERAL_ADMISSION);
-
-    if (festPista) {
-      const orderFest = await prisma.order.create({
-        data: {
-          customerId: cliente1Id,
-          totalAmount: festPista.price,
-          status: 'APPROVED',
-          paymentMethod: 'PIX',
-        },
-      });
-
-      const ticketCodeFest = `ELT-${Math.floor(1000 + Math.random() * 9000)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-      const shareTokenFest = crypto.randomUUID();
-      const timestampFest = Math.floor(Date.now() / 1000);
-      const { secureToken, qrPayload } = generateTicketQRPayload(ticketCodeFest, festEvent.id, timestampFest);
-
-      await prisma.ticket.create({
-        data: {
-          orderId: orderFest.id,
-          eventId: festEvent.id,
-          sectorId: festPista.id,
-          customerId: cliente1Id,
-          ticketCode: ticketCodeFest,
-          qrPayload,
-          secureToken,
-          shareToken: shareTokenFest,
-          status: 'ACTIVE',
-        },
-      });
-
-      await prisma.sector.update({
-        where: { id: festPista.id },
-        data: { availableCapacity: { decrement: 1 } },
-      });
-    }
-  }
-
   console.log('✅ Seed executada com sucesso!');
   console.log(`📊 Estatísticas da Carga:`);
   console.log(`   - Total de Eventos Cadastrados: ${eventsCatalog.length}`);
-  console.log(`   - Eventos de HOJE com Portões ABERTOS (Prontos para Validação na Portaria):`);
-  console.log(`     * Festival Indie Rock Verzel 2026 (Show) -> Ingressos: ELT VIP (Lucas) & Pista (Camila)`);
-  console.log(`     * Festival Gastronômico & Cervejeiro (Festival) -> Ingresso: Passe Geral (Lucas)`);
-  console.log(`     * O Fantasma da Ópera: O Musical (Teatro) -> Ingresso: Plateia VIP (Camila)`);
-  console.log(`     * Interestelar: Edição Especial IMAX (Cinema) -> Ingresso: VIP IMAX (Lucas)`);
-  console.log(`   - Usuário de Portaria: portaria@verzel.com.br (Senha: ${defaultPassword})`);
+  console.log(`   - Disponibilidade: 100% dos ingressos e assentos disponíveis (0 ingressos pré-comprados)`);
+  console.log(`   - Usuários de Teste Configurados:`);
+  console.log(`     * Organizador: organizador@verzel.com.br (Senha: ${defaultPassword})`);
+  console.log(`     * Cliente 1:   cliente1@verzel.com.br    (Senha: ${defaultPassword})`);
+  console.log(`     * Cliente 2:   cliente2@verzel.com.br    (Senha: ${defaultPassword})`);
+  console.log(`     * Portaria:    portaria@verzel.com.br    (Senha: ${defaultPassword})`);
   console.log(`   - Todos os ${eventsCatalog.length} eventos foram vinculados à conta portaria@verzel.com.br!`);
 }
 

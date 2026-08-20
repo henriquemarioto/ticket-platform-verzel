@@ -632,7 +632,7 @@ flowchart TD
 - **RN02 - Capacidade Real dos Setores**: No setor numerado, a capacidade total (`totalCapacity`) deve corresponder exatamente à soma dos assentos cadastrados na tabela `seats`.
 - **RN03 - Assentos com Status Inicial Disponível**: Todos os assentos criados no seed inicial devem ter o status `AVAILABLE`, permitindo que o avaliador teste a reserva imediatamente.
 - **RN04 - Vínculo Total da Portaria**: A conta de portaria padrão (`portaria@verzel.com.br`) deve ser vinculada a todos os eventos gerados na seed através da tabela `event_gatekeepers`, garantindo que o operador possa selecionar e validar qualquer evento do catálogo de testes.
-- **RN05 - Datas Dinâmicas e Eventos com Entrada Liberada**: As datas e horários dos eventos semeados são calculados dinamicamente a partir do momento de execução (`Date.now()`). O catálogo contempla múltiplos eventos ocorrendo na data atual com portões abertos (`entryStartTime <= now`, `endDate > now`) e ingressos de teste emitidos para validação imediata na portaria, além de eventos distribuídos nos dias e semanas seguintes.
+- **RN05 - Datas Dinâmicas e Disponibilidade Integral (100%)**: As datas e horários dos eventos semeados são calculados dinamicamente a partir do momento de execução (`Date.now()`). O catálogo contempla múltiplos eventos ocorrendo na data atual com portões abertos (`entryStartTime <= now`, `endDate > now`) e eventos distribuídos nos dias e semanas seguintes. A seed inicial não pré-gera ingressos comprados nem pedidos fictícios, mantendo todos os assentos com status `AVAILABLE` e todos os setores com 100% de capacidade disponível (`availableCapacity = totalCapacity`), permitindo que avaliadores e clientes executem o fluxo completo de compra e emissão de ponta a ponta.
 
 ---
 
