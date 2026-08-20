@@ -216,7 +216,7 @@ export function TicketCard({
           <div className="mt-2 flex flex-col gap-2">
             <div className="flex gap-2">
               <Button
-                className="flex flex-1 items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 text-sm"
                 onClick={() => onShowQR(ticket)}
               >
                 <QrCode className="h-4 w-4" />
@@ -334,7 +334,7 @@ export function TicketCard({
               onClick={handleCancelTicket}
               loading={isCancelling}
             >
-              Confirmar Cancelamento
+              Cancelar
             </Button>
           </div>
         </div>

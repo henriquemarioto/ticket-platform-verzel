@@ -60,6 +60,15 @@ O design baseia-se na identidade "Kinetic Pulse" (Light Mode / Alto Contraste). 
   - `Body`: `text-sm leading-relaxed text-slate-300`
   - `Monospace (Vouchers/Códigos)`: `font-mono tracking-wider`
 
+---
+
+## 4. Responsividade e Grids por Módulo
+
+- **Vitrine e Catálogo (`/`, `/events`)**: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
+- **Painel "Meus Ingressos" (`/my-tickets`)**:
+  - **Até 1023px (`< lg` / Mobile & Tablet)**: 1 card por linha (`grid-cols-1`), evitando aperto horizontal nos vouchers que contêm banner lateral e metadados detalhados.
+  - **A partir de 1024px (`lg:` / Desktop)**: 2 cards por linha (`lg:grid-cols-2 gap-6`), mantendo proporções harmônicas e espaçamento generoso.
+- **Painel da Portaria (`/gatekeeper`)**: Layout centralizado com alvos de toque generosos (mínimo 48x48px) e visualização de alto contraste.
 
 ---
 

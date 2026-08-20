@@ -1123,7 +1123,8 @@ sequenceDiagram
 3. A tela apresenta:
    - **Aba "Próximos Eventos"**: Ingressos para eventos cuja data ainda não ocorreu e com status `ACTIVE`.
    - **Aba "Histórico / Passados"**: Ingressos de eventos já finalizados, com status `USED` ou `CANCELLED`.
-4. Cada ingresso é exibido em formato de **Card Voucher**:
+4. Cada ingresso é exibido em formato de **Card Voucher** em grid responsivo otimizado:
+   - **Grid Responsivo**: 1 card por linha em larguras de até 1023px (`grid-cols-1`) e 2 cards por linha a partir de 1024px (`lg:grid-cols-2 gap-6`), garantindo amplo espaçamento horizontal e legibilidade dos metadados.
    - Imagem do banner do evento em miniatura.
    - Título do evento, data e horário por extenso.
    - Local físico e cidade.
@@ -1150,6 +1151,7 @@ sequenceDiagram
 - **RN01 - Isolamento por Titular**: O cliente só tem permissão para visualizar ingressos comprados por sua própria conta (`customerId === currentUserId`).
 - **RN02 - Visibilidade do QR Code**: Ingressos com status `USED` ou `CANCELLED` continuam com o histórico visível, mas com marca d'água / overlay indicando "UTILIZADO" ou "CANCELADO".
 - **RN03 - Atualização Automática ao Fechar o Modal do QR Code**: Ao fechar o modal do QR Code de um ingresso na tela de "Meus Ingressos", o sistema deve revalidar e atualizar imediatamente os dados dos ingressos (re-executando a consulta e atualizando o estado local), refletindo instantaneamente mudanças de status ocorridas na portaria (ex: transição de `ACTIVE` para `USED`).
+- **RN04 - Grid Responsivo dos Vouchers**: A listagem de ingressos em `/my-tickets` deve renderizar rigorosamente 1 card por linha em telas com viewport de até 1023px (`grid-cols-1`) e exatamente 2 cards por linha a partir de 1024px (`lg:grid-cols-2`), assegurando legibilidade dos dados (horário, data, local, setor, assento e código) e proporções confortáveis do voucher.
 
 ---
 
