@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword, createSession } from "@/lib/auth";
 import { loginSchema } from "@/lib/validations/auth";
+import { logger } from "@/lib/logger";
 import { z } from "zod";
 
 export async function POST(request: Request) {
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Login error:", error);
+    logger.error("Login error:", error);
     return NextResponse.json(
       { error: "Erro interno no servidor" },
       { status: 500 }

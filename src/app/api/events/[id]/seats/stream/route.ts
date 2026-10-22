@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { subscribeToSeatEvents, SeatEvent } from "@/lib/seat-events";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export async function GET(
             const payload = `data: ${JSON.stringify(event)}\n\n`;
             controller.enqueue(encoder.encode(payload));
           } catch (err) {
-            console.error("[SSE Stream] Erro ao enviar evento de assento:", err);
+            logger.error("[SSE Stream] Erro ao enviar evento de assento", err);
           }
         });
 
@@ -35,7 +36,7 @@ export async function GET(
         const pingInterval = setInterval(() => {
           try {
             controller.enqueue(encoder.encode(": ping\n\n"));
-          } catch (err) {
+          } catch {
             clearInterval(pingInterval);
             unsubscribe();
           }
@@ -63,7 +64,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("[SSE Stream Route Error]", error);
+    logger.error("[SSE Stream Route Error]", error);
     return NextResponse.json({ error: "Erro interno no servidor" }, { status: 500 });
   }
 }

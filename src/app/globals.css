@@ -75,4 +75,36 @@ select:disabled,
   animation: cursor-blink 0.8s infinite;
 }
 
+/* Utilitários da Identidade Visual "Editorial & Tactile Ticketing" */
+.bg-editorial-grid {
+  background-color: var(--color-bg-main);
+  background-image: radial-gradient(rgba(19, 27, 46, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.ticket-perforation {
+  border-top: 1.5px dashed var(--color-border-subtle);
+}
+
+.ticket-card-surface {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ticket-card-surface:hover {
+  border-color: rgba(0, 87, 255, 0.35);
+  box-shadow: 0 10px 25px -5px rgba(19, 27, 46, 0.06), 0 8px 10px -6px rgba(19, 27, 46, 0.04);
+}
+
+.ticket-notch {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background-color: var(--color-bg-main);
+  border: 1px solid var(--color-border-subtle);
+  z-index: 10;
+}
+
 

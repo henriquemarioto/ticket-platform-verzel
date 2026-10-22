@@ -2,7 +2,7 @@ export type ValidationResult = "VALID" | "ALREADY_USED" | "WRONG_EVENT" | "INVAL
 
 export function playFeedbackAudio(result: ValidationResult) {
   if (typeof window === "undefined" || !window.AudioContext) return;
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AudioContextClass) return;
 
   const ctx = new AudioContextClass();

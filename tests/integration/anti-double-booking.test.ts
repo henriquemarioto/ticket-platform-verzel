@@ -246,4 +246,62 @@ describe("Anti-Double Booking ACID Concurrency Tests (UC10, UC11, UC30)", () => 
     });
     expect(sectorInDb?.availableCapacity).toBe(1);
   });
+
+  it("should enforce database-level CHECK constraint preventing negative availableCapacity", async () => {
+    // Tenta violar a constraint sectors_capacity_and_price_check diretamente no PostgreSQL
+    await expect(
+      prisma.$executeRaw`
+        UPDATE "sectors"
+        SET "availableCapacity" = -1
+        WHERE id = ${gaSectorId}
+      `
+    ).rejects.toThrow();
+  });
+
+  it("should enforce database-level Partial Unique Index preventing two active tickets for the same seat", async () => {
+    const order = await prisma.order.create({
+      data: {
+        customerId: customerIds[0],
+        totalAmount: 200,
+        status: "APPROVED",
+      },
+    });
+
+    const ticketCode1 = `ELT-DB1-${Date.now()}`;
+    const ticketCode2 = `ELT-DB2-${Date.now()}`;
+
+    // Cria o 1º ingresso ACTIVE para o assento
+    await prisma.ticket.create({
+      data: {
+        orderId: order.id,
+        eventId,
+        sectorId: numberedSectorId,
+        seatId: seatA1Id,
+        customerId: customerIds[0],
+        ticketCode: ticketCode1,
+        qrPayload: `payload-${ticketCode1}`,
+        secureToken: `token-${ticketCode1}`,
+        shareToken: `share-${ticketCode1}`,
+        status: "ACTIVE",
+      },
+    });
+
+    // Tentativa de criar o 2º ingresso ACTIVE para o mesmo assento deve violar o índice único parcial no PostgreSQL
+    await expect(
+      prisma.ticket.create({
+        data: {
+          orderId: order.id,
+          eventId,
+          sectorId: numberedSectorId,
+          seatId: seatA1Id,
+          customerId: customerIds[1],
+          ticketCode: ticketCode2,
+          qrPayload: `payload-${ticketCode2}`,
+          secureToken: `token-${ticketCode2}`,
+          shareToken: `share-${ticketCode2}`,
+          status: "ACTIVE",
+        },
+      })
+    ).rejects.toThrow();
+  });
 });

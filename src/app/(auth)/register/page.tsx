@@ -6,6 +6,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { useToast } from "@/components/ui/toast";
 import { registerSchema } from "@/lib/validations/auth";
 import { processPendingPurchase } from "@/lib/utils/pending-purchase";
@@ -74,8 +75,8 @@ function RegisterForm() {
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
-            Nome
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
+            Nome Completo
           </label>
           <Input
             type="text"
@@ -89,7 +90,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
             E-mail
           </label>
           <Input
@@ -104,8 +105,8 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
-            Senha
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
+            Senha (Mínimo 8 caracteres)
           </label>
           <Input
             type="password"
@@ -119,7 +120,7 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
             Confirmar Senha
           </label>
           <Input
@@ -134,28 +135,28 @@ function RegisterForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
-            Tipo de Conta
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
+            Tipo de Acesso
           </label>
           <Select 
             value={role} 
             onChange={(e) => setRole(e.target.value as "CUSTOMER" | "ORGANIZER")}
             disabled={isLoading}
           >
-            <option value="CUSTOMER">Cliente</option>
-            <option value="ORGANIZER">Organizador</option>
+            <option value="CUSTOMER">Comprador (Cliente)</option>
+            <option value="ORGANIZER">Produtor de Eventos (Organizador)</option>
           </Select>
         </div>
 
-        <Button type="submit" variant="primary" className="w-full mt-4" loading={isLoading}>
-          Cadastrar
+        <Button type="submit" variant="primary" className="w-full mt-4 font-bold shadow-sm" loading={isLoading}>
+          Criar Conta
         </Button>
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-sm text-text-muted">
-          Já tem uma conta?{" "}
-          <Link href="/login" className="font-medium text-primary hover:text-primary-hover hover:underline">
+        <p className="text-xs text-text-muted">
+          Já possui cadastro?{" "}
+          <Link href="/login" className="font-bold text-primary hover:underline">
             Faça login
           </Link>
         </p>
@@ -166,14 +167,15 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg shadow-sm bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-text-primary">Criar uma conta</h1>
-          <p className="mt-2 text-sm text-text-muted">Preencha os dados abaixo para se cadastrar</p>
+    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4 bg-editorial-grid">
+      <div className="w-full max-w-md rounded-2xl border border-border-subtle bg-bg-surface p-8 shadow-sm backdrop-blur-md">
+        <div className="mb-8 text-center flex flex-col items-center">
+          <BrandLogo size="lg" className="mb-4" />
+          <h1 className="text-xl font-bold text-text-primary">Criar Nova Conta</h1>
+          <p className="mt-1 text-xs text-text-muted">Junte-se à plataforma oficial de ingressos Verzel</p>
         </div>
 
-        <Suspense fallback={<div className="text-center text-text-muted">Carregando formulário...</div>}>
+        <Suspense fallback={<div className="text-center text-text-muted text-xs">Carregando formulário...</div>}>
           <RegisterForm />
         </Suspense>
       </div>

@@ -65,6 +65,7 @@ src/
 ├── components/                         # Biblioteca de Componentes React
 │   ├── ui/                             # Componentes atômicos do Design System
 │   │   ├── badge.tsx                   # Badges de status (success, warning, danger, neutral)
+│   │   ├── brand-logo.tsx              # Logotipo SVG autoral e wordmark da marca
 │   │   ├── button.tsx                  # Botões acessíveis com spinner loading
 │   │   ├── danger-modal.tsx            # Modal de confirmação para ações destrutivas
 │   │   ├── input.tsx                   # Inputs, Selects e Textareas com Zod feedback
@@ -74,18 +75,28 @@ src/
 │   │   ├── toast.tsx                   # Feedback flutuante unificado (useToast)
 │   │   └── tooltip.tsx                 # Tooltips acessíveis com delay
 │   ├── layout/                         # Componentes Estruturais
-│   │   ├── Navbar.tsx                  # Barra de navegação com perfil e login
-│   │   └── Footer.tsx                  # Rodapé institucional
+│   │   ├── Navbar.tsx                  # Barra de navegação editorial com BrandLogo e perfil
+│   │   └── Footer.tsx                  # Rodapé institucional completo
 │   └── modules/                        # Módulos de Negócio
 │       ├── events/                     # SeatMap, TicketSelector, SectorItem, EventCard, etc.
 │       └── gatekeeper/                 # GatekeeperDashboard, Scanner, ManualInput, Metrics, etc.
+│
+├── services/                           # Camada de Serviços de Domínio (Regras de Negócio e ACID)
+│   ├── errors.ts                       # ServiceError e handler padronizado de erros HTTP
+│   ├── checkout.service.ts             # Orquestração transacional de checkout (APPROVE/REJECT)
+│   ├── gate.service.ts                 # Validação criptográfica e operacional da portaria (4 estados)
+│   ├── reservation.service.ts          # Bloqueios atômicos de pista e assentos numerados
+│   ├── ticket.service.ts               # Cancelamento com estorno de estoque, share e listagem
+│   └── event.service.ts                # Gestão de eventos, portaria temporária e analytics
 │
 ├── hooks/                              # Custom React Hooks
 │   └── use-debounced-value.ts          # Hook para busca reativa debounced
 │
 ├── lib/                                # Utilitários e Infraestrutura de Código
 │   ├── auth.ts                         # Manipulação de Sessão JWT e Hashing
-│   ├── crypto.ts                       # Assinatura HMAC-SHA256 e validação de tokens
+│   ├── crypto.ts                       # Assinatura HMAC-SHA256 (256-bit) e CSPRNG (ticketCode/senhas)
+│   ├── logger.ts                       # Logger estruturado zero-dependências (JSON / Dev)
+│   ├── seat-events.ts                  # Hub SSE Pub/Sub e helper centralizado broadcastReservationEffects
 │   ├── gatekeeper-feedback.ts          # Web Audio API e vibração háptica
 │   ├── lazy-expiration.ts              # Rotinas de expiração lazy de reservas
 │   ├── masks.ts                        # Máscaras de CPF, Cartão, Data e Moeda

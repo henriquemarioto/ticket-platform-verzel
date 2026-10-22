@@ -377,3 +377,20 @@ DIRECT_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler
 2. **Sem `prisma.$disconnect()` manual em rotas**: Nunca chame `$disconnect()` ao final de Route Handlers ou Server Actions, pois isso forçaria novas conexões a cada requisição subsequente, anulando os ganhos do pooler.
 3. **Log enxuto em produção**: Em produção, configure `log: ["error"]` para reduzir o consumo de memória e I/O das lambdas.
 
+---
+
+## 4. Invariantes e Constraints Nativas no Nível do Banco (Defense-in-Depth)
+
+Além das transações ACID na camada `src/services/`, o banco de dados PostgreSQL impõe invariantes estruturais via migração SQL (`prisma/migrations/20261021230000_add_db_check_and_partial_unique_constraints/migration.sql`) para impedir estados inconsistentes mesmo que ocorra falha na aplicação:
+
+1. **Unicidade de Ingresso Ativo por Assento (`tickets_active_seat_unique`)**:
+   - `CREATE UNIQUE INDEX "tickets_active_seat_unique" ON "tickets" ("seatId") WHERE "seatId" IS NOT NULL AND "status" IN ('ACTIVE', 'USED');`
+   - Impede matematicamente que dois ingressos válidos (`ACTIVE` ou `USED`) existam para o mesmo assento numerado, permitindo a reemissão caso um ingresso anterior seja `CANCELLED`.
+2. **Invariante de Capacidade e Preço de Setores (`sectors_capacity_and_price_check`)**:
+   - `CHECK ("totalCapacity" > 0 AND "availableCapacity" >= 0 AND "availableCapacity" <= "totalCapacity" AND "price" >= 0)`
+   - Fecha qualquer brecha de *overselling* (`availableCapacity < 0`) ou devolução acima da capacidade total.
+3. **Consistência de Assento Reservado (`seats_reserved_consistency_check`)**:
+   - `CHECK ("status" != 'RESERVED' OR ("reservedById" IS NOT NULL AND "reservedUntil" IS NOT NULL))`
+4. **Invariantes de Valores Positivos e Datas (`reservation_items_positive_check`, `orders_total_amount_check`, `events_timeline_check`)**:
+   - Garante quantidades e valores não-negativos e exige `"entryStartTime" <= "eventDate"` e `"endDate" > "eventDate"`.
+

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ticketmasterMocks } from "@/lib/external/catalog-mocks";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,18 +44,34 @@ export async function GET(req: NextRequest) {
     });
 
     if (!response.ok) {
-      console.error("Ticketmaster API Error:", response.statusText);
+      logger.error("Ticketmaster API Error: " + response.statusText);
       throw new Error(`Falha na comunicação com o serviço externo Ticketmaster: ${response.status}`);
     }
 
+interface TicketmasterImage {
+  ratio?: string;
+  width?: number;
+  url?: string;
+}
+
+interface TicketmasterEvent {
+  id: string;
+  name: string;
+  images?: TicketmasterImage[];
+  classifications?: Array<{ genre?: { name?: string } }>;
+  _embedded?: {
+    venues?: Array<{ name?: string; city?: { name?: string } }>;
+  };
+}
+
     const data = await response.json();
 
-    const events = data._embedded?.events || [];
+    const events: TicketmasterEvent[] = data._embedded?.events || [];
 
-    const normalizedResults = events.map((event: any) => {
+    const normalizedResults = events.map((event: TicketmasterEvent) => {
       // Priorizar imagens 16:9 de alta resolução (>1000px)
-      const bestImage = event.images?.filter((img: any) => img.ratio === "16_9" && img.width > 1000)
-        .sort((a: any, b: any) => b.width - a.width)[0] 
+      const bestImage = event.images?.filter((img: TicketmasterImage) => img.ratio === "16_9" && (img.width ?? 0) > 1000)
+        .sort((a: TicketmasterImage, b: TicketmasterImage) => (b.width ?? 0) - (a.width ?? 0))[0] 
         || event.images?.[0]; // Fallback pra primeira
 
       const venue = event._embedded?.venues?.[0];
@@ -77,7 +94,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error) {
-    console.warn("Retornando fallback Ticketmaster devido a erro na API:", error);
+    logger.warn("Retornando fallback Ticketmaster devido a erro na API:", { error });
     const { searchParams } = new URL(req.url);
     const keyword = searchParams.get("keyword") || "";
 

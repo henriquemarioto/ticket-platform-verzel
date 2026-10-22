@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { updateEventSchema } from "@/lib/validations/events";
+import { getEventById, updateEvent } from "@/services/event.service";
+import { handleApiError } from "@/services/errors";
 
 export async function GET(
   _req: NextRequest,
@@ -8,38 +9,18 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-
     if (!id) {
-      return NextResponse.json(
-        { error: "ID do evento não fornecido." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "ID do evento não fornecido." }, { status: 400 });
     }
 
-    const event = await prisma.event.findUnique({
-      where: { id },
-      include: {
-        sectors: true,
-      },
-    });
-
-    if (!event) {
-      return NextResponse.json(
-        { error: "Evento não encontrado." },
-        { status: 404 }
-      );
-    }
+    const event = await getEventById(id);
 
     return NextResponse.json({
       success: true,
       event,
     });
-  } catch (error: unknown) {
-    console.error("Erro ao buscar evento:", error);
-    return NextResponse.json(
-      { error: "Erro interno no servidor ao buscar evento." },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleApiError(error, "GetEventRoute", "Erro interno no servidor ao buscar evento.");
   }
 }
 
@@ -52,10 +33,7 @@ export async function PUT(
     const userRole = req.headers.get("x-user-role");
 
     if (!userId) {
-      return NextResponse.json(
-        { error: "Não autorizado." },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
     }
 
     if (userRole !== "ORGANIZER") {
@@ -66,30 +44,8 @@ export async function PUT(
     }
 
     const { id } = await params;
-
     if (!id) {
-      return NextResponse.json(
-        { error: "ID do evento não fornecido." },
-        { status: 400 }
-      );
-    }
-
-    const event = await prisma.event.findUnique({
-      where: { id },
-    });
-
-    if (!event) {
-      return NextResponse.json(
-        { error: "Evento não encontrado." },
-        { status: 404 }
-      );
-    }
-
-    if (event.organizerId !== userId) {
-      return NextResponse.json(
-        { error: "Você não tem permissão para editar este evento." },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "ID do evento não fornecido." }, { status: 400 });
     }
 
     const body = await req.json();
@@ -105,50 +61,13 @@ export async function PUT(
       );
     }
 
-    const {
-      title,
-      description,
-      category,
-      bannerUrl,
-      locationName,
-      street,
-      number,
-      neighborhood,
-      city,
-      eventDate,
-      endDate,
-      entryStartTime,
-      isAdult,
-    } = validation.data;
-
-    const updatedEvent = await prisma.event.update({
-      where: { id },
-      data: {
-        title,
-        description,
-        category,
-        bannerUrl,
-        locationName,
-        street,
-        number,
-        neighborhood,
-        city,
-        eventDate: new Date(eventDate),
-        endDate: endDate ? new Date(endDate) : null,
-        entryStartTime: new Date(entryStartTime),
-        isAdult: isAdult ?? false,
-      },
-    });
+    const updatedEvent = await updateEvent(userId, id, validation.data);
 
     return NextResponse.json({
       success: true,
       event: updatedEvent,
     });
-  } catch (error: unknown) {
-    console.error("Erro ao atualizar evento:", error);
-    return NextResponse.json(
-      { error: "Erro interno no servidor ao atualizar evento." },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleApiError(error, "UpdateEventRoute", "Erro interno no servidor ao atualizar evento.");
   }
 }

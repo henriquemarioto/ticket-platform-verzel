@@ -10,9 +10,12 @@ Este documento estabelece as diretrizes de experiência de usuário (UX), princ�
 
 ---
 
-## 1. Princípios de Experiência e Anti-AI Slop
+## 1. Princípios de Experiência e Anti-AI Slop ("Editorial & Tactile Ticketing")
 
-- **Propósito em cada pixel**: Evitar elementos meramente decorativos, gradientes de texto excessivos ou cards aninhados desnecessariamente.
+- **Identidade Autoral (`<BrandLogo />`)**: Proibido usar ícones genéricos de biblioteca (como `<Ticket />` do Lucide) como logotipo da marca. A plataforma utiliza um emblema vetorial SVG exclusivo combinando um bilhete perfurado inclinado com o monograma arquitetônico **"V"** e tipografia contrastada (`VERZEL` + tag monoespaçada `TICKETS`).
+- **Estética Tátil de Bilheteria (Tactile Stub & Perforation)**: Cards de eventos, o destaque Hero ("Featured Pass") e os vouchers de ingresso utilizam elementos gráficos inspirados em ingressos físicos reais: recortes semicirculares nas extremidades (`.ticket-notch`), linhas de picote tracejadas (`.ticket-perforation`), selos de data em blocos monoespaçados e números de série criptográficos (`HMAC-256 VERIFIED`).
+- **Hero Editorial Assimétrico**: A vitrine principal (`/`) apresenta layout editorial de duas colunas combinando curadoria tipográfica limpa na esquerda com um Ingresso em Destaque interativo na direita, sobre fundo com malha arquitetônica sutil (`.bg-editorial-grid`).
+- **Propósito em cada pixel**: Evitar elementos meramente decorativos, gradientes de texto excessivos, cores arco-íris aleatórias ou cards aninhados desnecessariamente.
 - **Ergonomia Operacional para Portaria**: A interface da portaria deve ter alto contraste para visualização sob sol ou baixa luminosidade e alvos de toque generosos (mínimo 48x48px).
 - **Checkout Sem Fricção**: Clareza absoluta nos valores, taxas e tempo restante da reserva com visualização do mapa de assentos selecionados.
 - **Acessibilidade (WCAG 2.1 AA)**: Contraste mínimo de texto de 4.5:1 e suporte completo a navegação por teclado (`Tab`, `Escape`, `Enter`).

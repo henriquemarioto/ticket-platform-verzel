@@ -1256,10 +1256,10 @@ sequenceDiagram
     participant UI as Front-End (Renderizador de QR)
 
     System->>HMAC: generateQRPayload(ticketCode, eventId, createdAt)
-    HMAC->>HMAC: Monta mensagem canônica: "v1:ELT-4819:evt_rock2026:1786579200"
+    HMAC->>HMAC: Monta mensagem canônica: "v1:ELT-4819-A1B2:evt_rock2026:1786579200"
     HMAC->>HMAC: Calcula HMAC_SHA256(mensagem, QR_HMAC_SECRET)
-    HMAC->>HMAC: Produz assinatura hexadecimal truncada (32 chars)
-    HMAC-->>System: Retorna payload: "v1:ELT-4819:evt_rock2026:1786579200:e9f1a238b76c8d4e9901ac88f4e2b10a"
+    HMAC->>HMAC: Produz assinatura hexadecimal completa de 256 bits (64 chars)
+    HMAC-->>System: Retorna payload: "v1:ELT-4819-A1B2:evt_rock2026:1786579200:e9f1a238b76c8d4e9901ac88f4e2b10a9c8b7d6e5f4a3b2c1d0e9f8a7b6c5d4e"
     System->>DB: Salva qrPayload no registro do Ticket
     DB-->>System: Persistido com sucesso
     System-->>UI: Envia qrPayload via API
@@ -1270,15 +1270,15 @@ sequenceDiagram
 
 ## 5. Fluxo Principal de Execução
 
-1. No momento da emissão de um ingresso, o backend reúne os dados fundamentais:
+1. No momento da emissão de um ingresso, o backend gera o código legível usando CSPRNG (`crypto.randomInt(1000, 10000)` + `crypto.randomBytes(2).toString('hex').toUpperCase()`) e reúne os dados fundamentais:
    - **Versão do Protocolo**: `v1`
-   - **Código do Ingresso**: Ex: `ELT-4819`
+   - **Código do Ingresso**: Ex: `ELT-4819-A1B2`
    - **ID do Evento**: Ex: `evt_rock2026`
    - **Timestamp Unix de Emissão**: Ex: `1786579200`
 2. O servidor concatena a mensagem canônica no formato:
    `v1:{ticketCode}:{eventId}:{timestamp}`
-3. O servidor aplica a função criptográfica HMAC-SHA256:
-   `signature = crypto.createHmac('sha256', process.env.QR_HMAC_SECRET).update(message).digest('hex').slice(0, 32)`
+3. O servidor aplica a função criptográfica HMAC-SHA256 mantendo os 256 bits completos (64 caracteres hexadecimais, sem truncamento):
+   `signature = crypto.createHmac('sha256', process.env.QR_HMAC_SECRET).update(message).digest('hex')`
 4. O payload completo é formado:
    `{message}:{signature}`
 5. O `qrPayload` resultante é salvo no banco de dados e retornado nas respostas de API de ingressos.

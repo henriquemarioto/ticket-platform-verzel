@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { removeEventGatekeeper } from "@/services/event.service";
+import { handleApiError } from "@/services/errors";
 
 export async function DELETE(
   req: NextRequest,
@@ -16,65 +17,20 @@ export async function DELETE(
 
     if (!userId || userRole !== "ORGANIZER") {
       return NextResponse.json(
-        { error: "Não autorizado. Apenas organizadores podem gerenciar portaria." },
+        { error: "Não autorizado. Apenas organizadores podem remover portaria." },
         { status: 403 }
       );
     }
 
     const { id: eventId, gatekeeperId } = await params;
 
-    const event = await prisma.event.findUnique({
-      where: { id: eventId },
-    });
-
-    if (!event) {
-      return NextResponse.json(
-        { error: "Evento não encontrado." },
-        { status: 404 }
-      );
-    }
-
-    if (event.organizerId !== userId) {
-      return NextResponse.json(
-        { error: "Você não tem permissão para gerenciar a portaria deste evento." },
-        { status: 403 }
-      );
-    }
-
-    const existingLink = await prisma.eventGatekeeper.findUnique({
-      where: {
-        eventId_gatekeeperId: {
-          eventId,
-          gatekeeperId,
-        },
-      },
-    });
-
-    if (!existingLink) {
-      return NextResponse.json(
-        { error: "Operador de portaria não encontrado neste evento." },
-        { status: 404 }
-      );
-    }
-
-    await prisma.eventGatekeeper.delete({
-      where: {
-        eventId_gatekeeperId: {
-          eventId,
-          gatekeeperId,
-        },
-      },
-    });
+    const result = await removeEventGatekeeper(userId, eventId, gatekeeperId);
 
     return NextResponse.json({
       success: true,
-      message: "Operador de portaria desvinculado do evento com sucesso.",
+      ...result,
     });
-  } catch (error: unknown) {
-    console.error("Erro ao desvincular operador de portaria:", error);
-    return NextResponse.json(
-      { error: "Erro interno no servidor ao desvincular operador." },
-      { status: 500 }
-    );
+  } catch (error) {
+    return handleApiError(error, "RemoveEventGatekeeperRoute", "Erro interno no servidor ao desvincular operador de portaria.");
   }
 }

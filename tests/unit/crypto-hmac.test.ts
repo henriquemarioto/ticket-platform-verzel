@@ -3,6 +3,8 @@ import {
   generateTicketQRPayload,
   parseAndVerifyQRPayload,
   generateSharePasscode,
+  generateSecureTicketCode,
+  generateSecureGatekeeperPassword,
 } from "@/lib/crypto";
 
 describe("Crypto HMAC Utilities (UC19, UC30)", () => {
@@ -18,7 +20,7 @@ describe("Crypto HMAC Utilities (UC19, UC30)", () => {
   });
 
   describe("generateTicketQRPayload", () => {
-    it("should generate a valid QR payload with 32-character HMAC signature", () => {
+    it("should generate a valid QR payload with 64-character (256-bit) HMAC signature", () => {
       const ticketCode = "TCK-123456";
       const eventId = "event-abc";
       const timestamp = 1700000000;
@@ -26,7 +28,7 @@ describe("Crypto HMAC Utilities (UC19, UC30)", () => {
       const result = generateTicketQRPayload(ticketCode, eventId, timestamp);
 
       expect(result).toBeDefined();
-      expect(result.secureToken).toHaveLength(32);
+      expect(result.secureToken).toHaveLength(64);
       expect(result.qrPayload).toBe(
         `v1:${ticketCode}:${eventId}:${timestamp}:${result.secureToken}`
       );
@@ -85,6 +87,20 @@ describe("Crypto HMAC Utilities (UC19, UC30)", () => {
       expect(parsed?.isValidSignature).toBe(false);
     });
 
+    it("should reject truncated 32-character signatures (256-bit requirement)", () => {
+      const ticketCode = "TCK-TRUNC";
+      const eventId = "event-trunc";
+      const timestamp = 1700000000;
+      const { qrPayload } = generateTicketQRPayload(ticketCode, eventId, timestamp);
+      const parts = qrPayload.split(":");
+      parts[4] = parts[4].slice(0, 32); // Truncate signature to 32 chars
+      const truncatedPayload = parts.join(":");
+
+      const parsed = parseAndVerifyQRPayload(truncatedPayload);
+      expect(parsed).not.toBeNull();
+      expect(parsed?.isValidSignature).toBe(false);
+    });
+
     it("should detect tampered ticket code with original signature", () => {
       const { secureToken } = generateTicketQRPayload("TCK-GENUINE", "ev-1", 1700000000);
       const forgedPayload = `v1:TCK-FORGED:ev-1:1700000000:${secureToken}`;
@@ -128,6 +144,22 @@ describe("Crypto HMAC Utilities (UC19, UC30)", () => {
       expect(() => generateSharePasscode("tok")).toThrow(
         "ERRO FATAL: Variável QR_HMAC_SECRET não definida no ambiente."
       );
+    });
+  });
+
+  describe("CSPRNG Utilities (Task 4.1)", () => {
+    it("should generate secure ticket codes in ELT-####-XXXX format", () => {
+      const code = generateSecureTicketCode();
+      expect(code).toMatch(/^ELT-\d{4}-[0-9A-F]{4}$/);
+      
+      const anotherCode = generateSecureTicketCode();
+      expect(code).not.toBe(anotherCode);
+    });
+
+    it("should generate secure gatekeeper passwords with Gate# prefix", () => {
+      const pwd = generateSecureGatekeeperPassword();
+      expect(pwd.startsWith("Gate#")).toBe(true);
+      expect(pwd).toHaveLength(11);
     });
   });
 });

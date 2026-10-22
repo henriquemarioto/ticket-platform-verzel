@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { POST as validateRoute } from "@/app/api/gate/validate/route";
-import { generateTicketQRPayload } from "@/lib/crypto";
+import { generateTicketQRPayload, generateSecureTicketCode } from "@/lib/crypto";
 import { createSession } from "@/lib/auth";
 import { mockCookies } from "../setup";
 
@@ -179,7 +179,7 @@ describe("Gatekeeper Validation Integration & Concurrency Tests (UC19, UC20, UC3
   });
 
   const createTestTicket = async (targetEventId: string, status: "ACTIVE" | "USED" | "CANCELLED" = "ACTIVE") => {
-    const ticketCode = `TCK-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    const ticketCode = generateSecureTicketCode();
     const timestamp = Math.floor(Date.now() / 1000);
     const { qrPayload, secureToken } = generateTicketQRPayload(ticketCode, targetEventId, timestamp);
     const shareToken = `share-${ticketCode}`;

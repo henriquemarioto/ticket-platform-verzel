@@ -3,12 +3,14 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { z } from "zod";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { useToast } from "@/components/ui/toast";
 import { loginSchema } from "@/lib/validations/auth";
 import { processPendingPurchase } from "@/lib/utils/pending-purchase";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, ShieldCheck, UserCheck, TicketCheck } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -84,8 +86,8 @@ function LoginForm() {
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
-            E-mail
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
+            E-mail de Acesso
           </label>
           <Input
             type="email"
@@ -99,8 +101,8 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-primary">
-            Senha
+          <label className="mb-1.5 block text-xs font-mono uppercase tracking-wider text-text-primary">
+            Senha Criptografada
           </label>
           <Input
             type="password"
@@ -113,28 +115,64 @@ function LoginForm() {
           />
         </div>
 
-        <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
-          Entrar
+        <Button type="submit" variant="primary" className="w-full font-bold shadow-sm" loading={isLoading}>
+          Entrar na Plataforma
         </Button>
       </form>
 
-      <div className="mt-8 shadow-sm pt-6">
-        <p className="mb-4 text-center text-sm font-medium text-text-muted">
-          Acesso Rápido (Ambiente de Teste)
+      {/* Cartões Táteis de Credencial para Homologação */}
+      <div className="mt-8 pt-6 border-t border-border-subtle">
+        <p className="mb-3 text-center text-xs font-mono uppercase tracking-wider text-text-muted">
+          Acesso Rápido // Ambiente de Teste
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" onClick={() => handlePrefill("ORGANIZER")} type="button">
-            Organizador
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER")} type="button">
-            Cliente 1 (Lucas)
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => handlePrefill("CUSTOMER_2")} type="button">
-            Cliente 2 (Camila)
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => handlePrefill("GATEKEEPER")} type="button">
-            Portaria (Roberto)
-          </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => handlePrefill("ORGANIZER")}
+            className="flex flex-col items-start p-2.5 rounded-lg border border-border-subtle bg-bg-main hover:bg-bg-surface-hover hover:border-primary/40 transition-colors text-left"
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold text-text-primary">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>Organizador</span>
+            </div>
+            <span className="text-[10px] font-mono text-text-muted mt-0.5">ORGANIZER</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handlePrefill("CUSTOMER")}
+            className="flex flex-col items-start p-2.5 rounded-lg border border-border-subtle bg-bg-main hover:bg-bg-surface-hover hover:border-primary/40 transition-colors text-left"
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold text-text-primary">
+              <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>Cliente (Lucas)</span>
+            </div>
+            <span className="text-[10px] font-mono text-text-muted mt-0.5">CUSTOMER #1</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handlePrefill("CUSTOMER_2")}
+            className="flex flex-col items-start p-2.5 rounded-lg border border-border-subtle bg-bg-main hover:bg-bg-surface-hover hover:border-primary/40 transition-colors text-left"
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold text-text-primary">
+              <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>Cliente (Camila)</span>
+            </div>
+            <span className="text-[10px] font-mono text-text-muted mt-0.5">CUSTOMER #2</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handlePrefill("GATEKEEPER")}
+            className="flex flex-col items-start p-2.5 rounded-lg border border-border-subtle bg-bg-main hover:bg-bg-surface-hover hover:border-primary/40 transition-colors text-left"
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold text-text-primary">
+              <TicketCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Portaria (Roberto)</span>
+            </div>
+            <span className="text-[10px] font-mono text-text-muted mt-0.5">GATEKEEPER</span>
+          </button>
         </div>
       </div>
     </>
@@ -143,16 +181,24 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg shadow-sm bg-bg-surface/50 p-8 shadow-xl backdrop-blur-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-text-primary">Bem-vindo de volta</h1>
-          <p className="mt-2 text-sm text-text-muted">Faça login para acessar sua conta</p>
+    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center p-4 bg-editorial-grid">
+      <div className="w-full max-w-md rounded-2xl border border-border-subtle bg-bg-surface p-8 shadow-sm backdrop-blur-md">
+        <div className="mb-8 text-center flex flex-col items-center">
+          <BrandLogo size="lg" className="mb-4" />
+          <h1 className="text-xl font-bold text-text-primary">Bem-vindo de volta</h1>
+          <p className="mt-1 text-xs text-text-muted">Informe suas credenciais para gerenciar ingressos</p>
         </div>
 
-        <Suspense fallback={<div className="text-center text-text-muted">Carregando formulário...</div>}>
+        <Suspense fallback={<div className="text-center text-text-muted text-xs">Carregando formulário...</div>}>
           <LoginForm />
         </Suspense>
+
+        <div className="mt-6 text-center text-xs text-text-muted">
+          Não possui cadastro?{" "}
+          <Link href="/register" className="font-bold text-primary hover:underline">
+            Criar conta
+          </Link>
+        </div>
       </div>
     </div>
   );

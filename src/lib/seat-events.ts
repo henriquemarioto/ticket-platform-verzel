@@ -49,3 +49,55 @@ export function publishSeatEvent(eventId: string, event: SeatEvent): void {
   const eventName = `seat-events:${eventId}`;
   seatEventEmitter.emit(eventName, event);
 }
+
+export interface ReservationSeatEffectItem {
+  seatId: string | null;
+  sectorId: string;
+  seat?: { row: string; number: number } | null;
+}
+
+/**
+ * Notificador centralizado de efeitos SSE em reservas e vendas.
+ * Emite um único evento SEAT_STATUS_CHANGED e eventos deduplicados de SECTOR_CAPACITY_CHANGED.
+ */
+export async function broadcastReservationEffects(params: {
+  eventId: string;
+  items: ReservationSeatEffectItem[];
+  seatStatus: "SOLD" | "AVAILABLE" | "RESERVED";
+  reservedUntil?: string | null;
+  reservedById?: string | null;
+  fetchSectorCapacity: (sectorId: string) => Promise<number | null>;
+}): Promise<void> {
+  const { eventId, items, seatStatus, reservedUntil, reservedById, fetchSectorCapacity } = params;
+
+  // 1. Assentos numerados
+  const seatItems = items.filter((item) => item.seatId);
+  if (seatItems.length > 0) {
+    publishSeatEvent(eventId, {
+      type: "SEAT_STATUS_CHANGED",
+      eventId,
+      seats: seatItems.map((item) => ({
+        id: item.seatId!,
+        status: seatStatus,
+        reservedUntil: reservedUntil ?? null,
+        reservedById: reservedById ?? null,
+        row: item.seat?.row,
+        number: item.seat?.number,
+      })),
+    });
+  }
+
+  // 2. Setores de pista (deduplicados por sectorId)
+  const gaSectorIds = Array.from(new Set(items.filter((item) => !item.seatId).map((item) => item.sectorId)));
+  for (const sectorId of gaSectorIds) {
+    const availableCapacity = await fetchSectorCapacity(sectorId);
+    if (availableCapacity !== null && availableCapacity !== undefined) {
+      publishSeatEvent(eventId, {
+        type: "SECTOR_CAPACITY_CHANGED",
+        eventId,
+        sectorId,
+        availableCapacity,
+      });
+    }
+  }
+}

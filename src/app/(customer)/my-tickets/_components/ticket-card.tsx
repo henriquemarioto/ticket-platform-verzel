@@ -13,6 +13,7 @@ import {
   Loader2,
   Clock,
   AlertTriangle,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   formatEventDateRange,
@@ -66,7 +67,8 @@ export function TicketCard({
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  const isEventFuture = new Date(event.eventDate).getTime() > Date.now();
+  const [now] = useState(() => Date.now());
+  const isEventFuture = new Date(event.eventDate).getTime() > now;
   const canCancel = ticket.status === 'ACTIVE' && isEventFuture;
 
   const handleShare = async () => {
@@ -146,12 +148,24 @@ export function TicketCard({
 
   return (
     <>
-      <div className="bg-bg-surface hover:bg-bg-surface-hover border-border-subtle flex flex-col overflow-hidden rounded-xl border shadow-sm transition-colors sm:flex-row">
-        <div
-          className="h-40 w-full shrink-0 bg-cover bg-center sm:h-auto sm:w-48"
-          style={{ backgroundImage: `url(${event.bannerUrl})` }}
-        />
+      <div className="ticket-card-surface flex flex-col overflow-hidden rounded-xl border border-border-subtle shadow-sm sm:flex-row relative">
+        {/* Faixa Técnica Superior para Mobile */}
+        <div className="flex sm:hidden items-center justify-between border-b border-border-subtle bg-bg-surface-hover/80 px-4 py-2 text-xs font-mono">
+          <span className="font-bold text-primary">VERZEL PASS // {ticket.ticketCode}</span>
+          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary border border-primary/20">
+            HMAC-256
+          </span>
+        </div>
 
+        {/* Canhoto Lateral / Banner */}
+        <div
+          className="h-44 w-full shrink-0 bg-cover bg-center sm:h-auto sm:w-48 relative"
+          style={{ backgroundImage: `url(${event.bannerUrl})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent sm:hidden" />
+        </div>
+
+        {/* Corpo do Bilhete */}
         <div className="relative flex flex-1 flex-col justify-between gap-4 p-5">
           {/* Marca d'água para inativos */}
           {ticket.status !== 'ACTIVE' && (
@@ -163,8 +177,19 @@ export function TicketCard({
           )}
 
           <div>
+            {/* Cabeçalho Técnico Desktop */}
+            <div className="hidden sm:flex items-center justify-between mb-3 pb-2 border-b border-border-subtle/60 text-xs font-mono">
+              <span className="font-bold text-primary flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                VERZEL PASS // {ticket.ticketCode}
+              </span>
+              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-primary border border-primary/20">
+                HMAC-256 VERIFIED
+              </span>
+            </div>
+
             <div className="mb-2 flex items-start justify-between gap-2">
-              <h3 className="text-text-primary text-lg leading-tight font-semibold">
+              <h3 className="text-text-primary text-lg leading-tight font-bold">
                 {event.title}
               </h3>
               {getStatusBadge()}
@@ -172,40 +197,41 @@ export function TicketCard({
 
             <div className="text-text-muted space-y-1.5 text-sm">
               {entryTimeLabel && (
-                <div className="text-primary flex items-center gap-2 text-xs font-medium">
+                <div className="text-primary flex items-center gap-2 text-xs font-semibold">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
                   <span>{entryTimeLabel}</span>
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 shrink-0" />
+                <Calendar className="h-4 w-4 shrink-0 text-text-muted" />
                 <span>Início: {formattedDate}</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0" />
+                <MapPin className="h-4 w-4 shrink-0 text-text-muted" />
                 <span>
-                  {event.locationName} • {event.city}
+                  {event.locationName} &bull; {event.city}
                 </span>
               </div>
             </div>
 
-            <div className="bg-bg-main border-border-subtle mt-4 grid grid-cols-2 gap-2 rounded-lg border p-3 text-sm shadow-sm">
+            {/* Bloco de Setor / Assento / Código */}
+            <div className="bg-bg-main border border-border-subtle mt-4 grid grid-cols-2 gap-2 rounded-lg p-3 text-sm">
               <div>
-                <p className="text-text-muted text-xs">Setor</p>
-                <p className="text-text-primary font-medium">{sector.name}</p>
+                <p className="text-text-muted text-[11px] font-mono uppercase">Setor</p>
+                <p className="text-text-primary font-bold">{sector.name}</p>
               </div>
               <div>
-                <p className="text-text-muted text-xs">Assento</p>
-                <p className="text-text-primary font-medium">
+                <p className="text-text-muted text-[11px] font-mono uppercase">Assento</p>
+                <p className="text-text-primary font-bold">
                   {seat
                     ? `${seat.row.toUpperCase()}${seat.number}`
                     : 'Pista (S/ Assento)'}
                 </p>
               </div>
-              <div className="border-border-subtle col-span-2 mt-2 flex items-center justify-between border-t pt-2">
+              <div className="border-border-subtle col-span-2 mt-2 flex items-center justify-between border-t border-dashed pt-2">
                 <div>
-                  <p className="text-text-muted text-xs">Código do Ingresso</p>
-                  <p className="text-primary font-mono font-semibold tracking-wider">
+                  <p className="text-text-muted text-[11px] font-mono uppercase">Código do Ingresso</p>
+                  <p className="text-primary font-mono font-bold tracking-wider">
                     {ticket.ticketCode}
                   </p>
                 </div>
@@ -213,14 +239,16 @@ export function TicketCard({
             </div>
           </div>
 
+          {/* Ações */}
           <div className="mt-2 flex flex-col gap-2">
             <div className="flex gap-2">
               <Button
-                className="flex flex-1 items-center justify-center gap-2 text-sm"
+                variant="primary"
+                className="flex flex-1 items-center justify-center gap-2 text-sm font-bold"
                 onClick={() => onShowQR(ticket)}
               >
                 <QrCode className="h-4 w-4" />
-                QR Code
+                Exibir QR Code
               </Button>
               <Button
                 variant="outline"
@@ -242,7 +270,7 @@ export function TicketCard({
             {canCancel && (
               <Button
                 variant="outline"
-                className="text-danger border-danger/30 hover:bg-danger/10 hover:text-danger hover:border-danger/60 w-full text-sm font-medium transition-colors"
+                className="text-danger border-danger/30 hover:bg-danger/10 hover:text-danger hover:border-danger/60 w-full text-xs font-semibold transition-colors"
                 onClick={() => setIsCancelModalOpen(true)}
               >
                 Cancelar Ingresso
@@ -269,11 +297,11 @@ export function TicketCard({
 
           <p className="text-text-muted mb-6 text-sm">
             Tem certeza de que deseja cancelar este ingresso? Esta ação é
-            irreversível.
+            irreversível e seu QR Code será revogado na portaria.
           </p>
 
           {/* Detalhes do Cancelamento */}
-          <div className="bg-bg-main border-border-subtle mb-4 w-full space-y-2.5 rounded-xl border p-4 text-left text-sm">
+          <div className="bg-bg-main border border-border-subtle mb-4 w-full space-y-2.5 rounded-xl p-4 text-left text-sm">
             <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-text-muted">Evento:</span>
               <span
@@ -310,11 +338,10 @@ export function TicketCard({
           </div>
 
           {/* Aviso Defensivo */}
-          <div className="bg-danger/5 border-danger/20 mb-6 flex w-full items-start gap-2.5 rounded-xl border p-3.5 text-left">
+          <div className="bg-danger/5 border border-danger/20 mb-6 flex w-full items-start gap-2.5 rounded-xl p-3.5 text-left">
             <AlertTriangle className="text-danger mt-0.5 h-4 w-4 shrink-0" />
             <p className="text-danger text-xs leading-relaxed font-medium">
-              Após o cancelamento, seu QR Code será desativado e a vaga voltará
-              a ficar disponível para outros clientes.
+              Após o cancelamento, seu QR Code será desativado e o assento voltará a ficar disponível para outros clientes.
             </p>
           </div>
 
@@ -334,7 +361,7 @@ export function TicketCard({
               onClick={handleCancelTicket}
               loading={isCancelling}
             >
-              Cancelar
+              Confirmar Cancelamento
             </Button>
           </div>
         </div>

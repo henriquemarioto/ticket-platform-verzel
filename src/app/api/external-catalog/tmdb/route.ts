@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { tmdbMocks } from "@/lib/external/catalog-mocks";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,14 +46,24 @@ export async function GET(req: NextRequest) {
     });
 
     if (!response.ok) {
-      console.error("TMDb API Error:", response.statusText);
+      logger.error("TMDb API Error: " + response.statusText);
       // Se houver erro HTTP (ex: 429 ou 5xx), cai no fallback também
       throw new Error(`Falha na comunicação com o serviço externo TMDb: ${response.status}`);
     }
 
+interface TmdbMovie {
+  id: number;
+  title: string;
+  original_title?: string;
+  overview?: string;
+  release_date?: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+}
+
     const data = await response.json();
 
-    const normalizedResults = data.results.map((movie: any) => ({
+    const normalizedResults = (data.results as TmdbMovie[]).map((movie: TmdbMovie) => ({
       externalId: `tmdb_${movie.id}`,
       title: movie.title,
       originalTitle: movie.original_title,
@@ -72,7 +83,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error) {
-    console.warn("Retornando fallback TMDB devido a erro na API:", error);
+    logger.warn("Retornando fallback TMDB devido a erro na API:", { error });
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query") || "";
 

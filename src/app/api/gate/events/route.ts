@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { EventStatus } from "@prisma/client";
+import { listAuthorizedGatekeeperEvents } from "@/services/gate.service";
+import { handleApiError } from "@/services/errors";
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,97 +25,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const now = new Date();
-
-    const events = await prisma.event.findMany({
-      where: {
-        status: {
-          in: [EventStatus.PUBLISHED, EventStatus.CLOSED],
-        },
-        gatekeepers: {
-          some: {
-            gatekeeperId: userId,
-          },
-        },
-      },
-      orderBy: {
-        eventDate: "asc",
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        category: true,
-        bannerUrl: true,
-        locationName: true,
-        street: true,
-        number: true,
-        neighborhood: true,
-        city: true,
-        eventDate: true,
-        endDate: true,
-        entryStartTime: true,
-        status: true,
-        tickets: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-      },
-    });
-
-    const formattedEvents = events.map((event) => {
-      const totalSold = event.tickets.filter(
-        (t) => t.status === "ACTIVE" || t.status === "USED"
-      ).length;
-      const totalCheckedIn = event.tickets.filter(
-        (t) => t.status === "USED"
-      ).length;
-
-      const eventEndTime = event.endDate
-        ? new Date(event.endDate)
-        : new Date(new Date(event.eventDate).getTime() + 6 * 60 * 60 * 1000);
-      const isEntryOpen = now >= new Date(event.entryStartTime);
-      const isEnded = now >= eventEndTime;
-      const isSelectable = isEntryOpen && !isEnded;
-
-      return {
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        category: event.category,
-        bannerUrl: event.bannerUrl,
-        locationName: event.locationName,
-        street: event.street,
-        number: event.number,
-        neighborhood: event.neighborhood,
-        city: event.city,
-        eventDate: event.eventDate.toISOString(),
-        endDate: event.endDate ? event.endDate.toISOString() : null,
-        entryStartTime: event.entryStartTime.toISOString(),
-        isEntryOpen,
-        isEnded,
-        isSelectable,
-        status: event.status,
-        totalSold,
-        totalCheckedIn,
-      };
-    });
+    const events = await listAuthorizedGatekeeperEvents(userId);
 
     return NextResponse.json(
       {
         success: true,
         serverTime: new Date().toISOString(),
-        events: formattedEvents,
+        events,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Erro ao listar eventos da portaria:", error);
-    return NextResponse.json(
-      { error: "Erro interno ao carregar eventos da portaria" },
-      { status: 500 }
-    );
+    return handleApiError(error, "GateEventsRoute", "Erro interno ao carregar eventos da portaria");
   }
 }

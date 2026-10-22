@@ -15,10 +15,10 @@ Esta regra é de cumprimento obrigatório em todas as tarefas do projeto **Ticke
 
 ## 2. Padrões de Implementação Simples
 
-### Backend & Acesso a Dados
-- Utilize o cliente **Prisma** diretamente nas rotas ou em funções utilitárias diretas (`lib/`), sem criar camadas desnecessárias de repositórios genéricos ou serviços vazios (*anemic services*).
-- Validações de entrada devem ser feitas diretamente com **Zod schemas** em `src/lib/validations/`.
-- Retorne respostas HTTP consistentes com helpers diretos (`NextResponse.json(...)`).
+### Backend, Camada de Services & Acesso a Dados
+- Mantenha os Route Handlers (`src/app/api/**/route.ts`) enxutos e focados apenas no transporte HTTP (autenticação, validação de entrada com **Zod schemas** em `src/lib/validations/` e retorno `NextResponse.json`).
+- Isole a lógica de negócio, transações ACID e efeitos colaterais (SSE) em serviços de domínio coesos em `src/services/` (`checkout.service.ts`, `gate.service.ts`, `reservation.service.ts`, `ticket.service.ts`, `event.service.ts`), sem criar repositórios genéricos desnecessários ou *anemic pass-through services*.
+- Utilize o logger estruturado (`src/lib/logger.ts`) no lugar de `console.error` / `console.warn`.
 
 ### Frontend & Componentes
 - Use **Server Components** por padrão no Next.js App Router para buscar dados diretamente.

@@ -284,3 +284,38 @@ Este documento rastreia a execução sistemática das tarefas de engenharia da *
   - [x] Testes unitários de HMAC, RBAC e schemas Zod.
   - [x] Testes de concorrência ACID anti-double booking.
   - [x] Testes de validação de portaria nos 4 estados.
+
+---
+
+## 🚀 Fase 4: Refinamento Arquitetural, Segurança Criptográfica, Constraints SQL e Identidade Visual Autoral
+
+- [x] **Task 4.1: Segurança Criptográfica (HMAC-SHA256 256-bit Completo & CSPRNG)**
+  - [x] Remover truncamento `.slice(0, 32)` em `src/lib/crypto.ts`, preservando os 64 caracteres hexadecimais (256 bits) na geração e validação timing-safe do QR Code.
+  - [x] Implementar `generateSecureTicketCode()` e `generateSecureGatekeeperPassword()` usando `crypto.randomInt` e `crypto.randomBytes`, eliminando todo uso de `Math.random()` no projeto.
+  - [x] Atualizar testes unitários e de integração (`tests/unit/crypto-hmac.test.ts` e `tests/integration/gate-validation.test.ts`).
+
+- [x] **Task 4.2: Observabilidade Estruturada (`src/lib/logger.ts`) e Centralização SSE (`src/lib/seat-events.ts`)**
+  - [x] Implementar logger estruturado zero-dependências em `src/lib/logger.ts` (`info`, `warn`, `error`, `debug`) com serialização de erros e contexto.
+  - [x] Extrair helper centralizado `broadcastReservationEffects` em `src/lib/seat-events.ts`, eliminando duplicação de código SSE entre `APPROVE`, `REJECT`, reserva e cancelamento.
+  - [x] Substituir chamadas `console.error`/`console.warn` por `logger` em todas as rotas e serviços.
+
+- [x] **Task 4.3: Camada de Services (`src/services/`) e Desacoplamento dos Route Handlers**
+  - [x] Criar `src/services/errors.ts` (`ServiceError` e `handleApiError`).
+  - [x] Extrair `src/services/checkout.service.ts` quebrando validação, aprovação, recusa e verificação de sold-out em funções de responsabilidade única.
+  - [x] Extrair `src/services/gate.service.ts` quebrando autorização, verificação HMAC, janelas operacionais, log de validação, métricas e lock concorrente.
+  - [x] Extrair `src/services/reservation.service.ts`, `src/services/ticket.service.ts` e `src/services/event.service.ts`.
+  - [x] Refatorar os Route Handlers em `src/app/api/**` para que atuem apenas como camada de transporte HTTP enxuta.
+
+- [x] **Task 4.4: Constraints Nativas no Banco de Dados (PostgreSQL Partial Unique Index & CHECK Constraints)**
+  - [x] Criar e aplicar migração SQL `prisma/migrations/20261021230000_add_db_check_and_partial_unique_constraints/migration.sql` com:
+    - [x] Partial Unique Index `tickets_active_seat_unique` em `tickets("seatId") WHERE "seatId" IS NOT NULL AND "status" IN ('ACTIVE', 'USED')`.
+    - [x] Constraint `CHECK` `sectors_capacity_and_price_check` (`availableCapacity >= 0 AND availableCapacity <= totalCapacity AND totalCapacity > 0 AND price >= 0`).
+    - [x] Constraints `CHECK` em `seats`, `reservation_items`, `orders` e `events`.
+  - [x] Adicionar testes validando que o banco bloqueia violação direta de capacidade e duplicidade de assento ativo.
+
+- [x] **Task 4.5: Identidade Visual Autoral ("Editorial & Tactile Ticketing" — Anti-AI Slop)**
+  - [x] Criar componente SVG autoral `<BrandLogo />` (`src/components/ui/brand-logo.tsx`) e substituir o ícone genérico `<Ticket />` na `Navbar`, `Footer` e telas de autenticação.
+  - [x] Atualizar `src/app/globals.css` com utilitários de acabamento editorial e tátil de bilheteria (`.bg-editorial-grid`, `.ticket-perforation`, entalhes de ingresso).
+  - [x] Redesenhar `Navbar.tsx` (indicador ativo de rota, badge de perfil do usuário) e `Footer.tsx` (rodapé editorial completo em 4 colunas com selos de segurança).
+  - [x] Redesenhar a Vitrine Principal (`src/app/(customer)/page.tsx`) com Hero Editorial Assimétrico + Card de Ingresso em Destaque ("Featured Event Pass") e cabeçalhos de seção numerados.
+  - [x] Redesenhar `EventCard`, `TicketCard` (`/my-tickets`), voucher público (`/tickets/share/[token]`) e telas de `login`/`register` com estética de bilheteria real (entalhes de picote, bloco de data monoespaçado e número de série criptográfico).

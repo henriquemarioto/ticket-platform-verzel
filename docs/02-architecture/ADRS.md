@@ -96,11 +96,11 @@ Adotar **JWT Stateless** assinado via HS256 (`jose`), persistido em cookie com a
 Os ingressos impressos ou exibidos em smartphones podem ser alvos de tentativas de falsificação (ex: geração de QR Code com ID inventado ou adulteração de imagem). A portaria precisa de garantia matemática de autenticidade.
 
 ## 2. Decisão
-Adotar **HMAC-SHA256** utilizando o módulo nativo `node:crypto` para assinar o payload do QR Code com uma chave secreta (`QR_HMAC_SECRET`).
+Adotar **HMAC-SHA256** em força total de **256 bits (64 caracteres hexadecimais, sem truncamento)** utilizando o módulo nativo `node:crypto` para assinar o payload do QR Code com uma chave secreta (`QR_HMAC_SECRET`), além de utilizar exclusivamente geradores criptograficamente seguros (`crypto.randomInt`, `crypto.randomBytes`, `crypto.randomUUID`) para emissão de `ticketCode` e credenciais temporárias.
 
 Payload estruturado:
 ```text
-v1:{ticketCode}:{eventId}:{timestamp}:{hmacSignature}
+v1:{ticketCode}:{eventId}:{timestamp}:{hmacSignature256BitHex}
 ```
 
 ## 3. Consequências
@@ -243,3 +243,34 @@ Adotar a paleta **Kinetic Pulse** declarada via `@theme` no TailwindCSS 4 em `sr
   - Componentes atômicos reutilizáveis (`Button`, `Input`, `Badge`, `Modal`, `Toast`, `Tooltip`, `DangerModal`, `Skeleton`) consomem tokens semânticos sem duplicação de classes.
 - **Negativas / Mitigações**:
   - Exige auditoria contínua para evitar o uso de cores inline fora da paleta do `@theme`.
+
+
+---
+
+# ADR 0010: Isolamento em Camada de Services, Logger Estruturado e Constraints Nativas no PostgreSQL
+
+- **Status**: Aceito
+- **Data**: 2026-10-21
+- **Decisores**: Equipe de Engenharia / Candidato Elite Dev
+
+---
+
+## 1. Contexto
+Manter regras de negócio complexas (como processamento de checkout `APPROVE`/`REJECT`, motor de portaria em 4 estados e disparo de eventos SSE) diretamente dentro de Route Handlers (`route.ts`) acopla as regras ao transporte HTTP, gera duplicação de efeitos colaterais (SSE) e dificulta testes e leitura. Adicionalmente, a garantia contra venda duplicada de assentos e saldo negativo de capacidade não deve depender apenas da aplicação, exigindo travas nativas (`CHECK` e `Partial Unique Index`) no PostgreSQL, acompanhadas de observabilidade estruturada no lugar de `console.error`.
+
+## 2. Decisão
+1. **Camada `src/services/`**: Isolar toda a lógica de domínio e transações ACID em serviços coesos (`checkout.service.ts`, `gate.service.ts`, `reservation.service.ts`, `ticket.service.ts`, `event.service.ts`), mantendo os arquivos `route.ts` restritos à autenticação, validação Zod e serialização HTTP via `handleApiError`.
+2. **Centralização SSE**: Unificar a emissão de eventos `SEAT_STATUS_CHANGED` e `SECTOR_CAPACITY_CHANGED` no helper `broadcastReservationEffects` em `src/lib/seat-events.ts`.
+3. **Logger Estruturado (`src/lib/logger.ts`)**: Substituir `console.error`/`console.warn` por um logger estruturado zero-dependências com suporte a níveis (`debug`, `info`, `warn`, `error`), contexto de serviço e serialização de erros em JSON.
+4. **Constraints no Banco de Dados (Defense-in-Depth)**:
+   - Índice único parcial `tickets_active_seat_unique` em `tickets("seatId") WHERE "seatId" IS NOT NULL AND "status" IN ('ACTIVE', 'USED')`.
+   - Constraint `CHECK` `sectors_capacity_and_price_check` garantindo `"availableCapacity" >= 0 AND "availableCapacity" <= "totalCapacity" AND "totalCapacity" > 0 AND "price" >= 0`.
+   - Constraints `CHECK` para consistência de reserva em `seats`, valores positivos em `reservation_items`/`orders` e linha do tempo de `events`.
+
+## 3. Consequências
+- **Positivas**:
+  - Route Handlers enxutos, testáveis e de responsabilidade única.
+  - Prevenção matemática de double-selling e overselling garantida tanto pela aplicação quanto pelo motor do PostgreSQL.
+  - Observabilidade padronizada com logs estruturados.
+- **Negativas / Mitigações**:
+  - Como o schema declarativo do Prisma não possui sintaxe nativa para `CHECK` e índices parciais `WHERE`, essas regras são mantidas e versionadas em migrações SQL oficiais em `prisma/migrations/`.
